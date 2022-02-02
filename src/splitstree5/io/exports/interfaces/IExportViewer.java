@@ -34,8 +34,6 @@ public interface IExportViewer extends IExporter, IFromViewer {
     /**
      * save taxa
      *
-     * @param w
-     * @param taxa
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, ViewerBlock viewerBlock) throws IOException;
 }

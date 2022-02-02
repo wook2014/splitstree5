@@ -57,8 +57,7 @@ public class TaxonomyTool {
     /**
      * run the program
      *
-     * @param args
-     */
+	 */
     public void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Simple tools for taxonomy processing");
         options.setVersion(ProgramProperties.getProgramVersion());

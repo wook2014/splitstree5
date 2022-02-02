@@ -31,7 +31,7 @@ import java.io.StringWriter;
 
 public class MSFImporterTest {
 
-    private MSFImporter msfImporter = new MSFImporter();
+    private final MSFImporter msfImporter = new MSFImporter();
 
     @Test
     public void parse() throws Exception {
@@ -47,8 +47,8 @@ public class MSFImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
 
     }
 }

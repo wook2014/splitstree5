@@ -104,10 +104,10 @@ public class CharactersFilter extends Algorithm<CharactersBlock, CharactersBlock
                         ch2count.put(ch, 1);
                 }
                 if (isOptionExcludeConstantSites() && ch2count.size() == 1) {
-                    columnMask.set(col);
-                } else if (isOptionExcludeParsimonyUninformativeSites() && ch2count.size() == 2 && ch2count.values().contains(1)) {
-                    columnMask.set(col);
-                }
+					columnMask.set(col);
+				} else if (isOptionExcludeParsimonyUninformativeSites() && ch2count.size() == 2 && ch2count.containsValue(1)) {
+					columnMask.set(col);
+				}
             }
         }
         System.err.println("Mask size: " + columnMask.cardinality());

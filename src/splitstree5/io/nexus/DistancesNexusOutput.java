@@ -34,14 +34,10 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param distancesBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, DistancesBlock distancesBlock) throws IOException {
-        final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
+		final DistancesNexusFormat format = distancesBlock.getFormat();
 
         w.write("\nBEGIN " + DistancesBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);
@@ -92,7 +88,7 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
                     }
 					buf.append(StringUtils.removeTrailingZerosAfterDot(String.format(" %.6f", distancesBlock.get(s, t))));
                 }
-                w.write(buf.toString() + "\n");
+				w.write(buf + "\n");
             }
             w.write(";\n");
         }
@@ -161,7 +157,6 @@ public class DistancesNexusOutput extends NexusIOBase implements INexusOutput<Di
     /**
      * Get the max length of all the labels.
      *
-     * @param taxaBlock
      * @return longer the max length.
      */
     public static int maxLabelLength(TaxaBlock taxaBlock) {

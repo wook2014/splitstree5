@@ -30,10 +30,7 @@ public class FixUndefinedDistances {
     /**
      * apply
      *
-     * @param ntax
-     * @param maxDist
-     * @param distancesBlock
-     */
+	 */
     public static void apply(int ntax, double maxDist, DistancesBlock distancesBlock) {
         int numUndefined = 0;
         for (int s = 1; s <= ntax; s++)

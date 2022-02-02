@@ -29,10 +29,7 @@ public class TaxaNexusOutput extends NexusIOBase {
     /**
      * writes the taxa block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @throws IOException
-     */
+	 */
     public void write(Writer w, TaxaBlock taxaBlock) throws IOException {
         w.write("\nBEGIN " + TaxaBlock.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);

@@ -73,7 +73,6 @@ public class AnalyzeGenomesDialog {
     /**
      * constructor
      *
-     * @param initialParent
      */
     public AnalyzeGenomesDialog(Stage initialParent) {
         final ExtendedFXMLLoader<AnalyzeGenomesController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
@@ -178,9 +177,7 @@ public class AnalyzeGenomesDialog {
         final RichTextLabel richTextLabel = new RichTextLabel();
         controller.getStatusFlowPane().getChildren().add(richTextLabel);
 
-        controller.getDisplayLabelsListView().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
-            richTextLabel.setText(n != null ? n : "");
-        });
+        controller.getDisplayLabelsListView().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> richTextLabel.setText(n != null ? n : ""));
 
         controller.getApplyButton().setOnAction(c -> {
 			final GenomesAnalyzer genomesAnalyzer = new GenomesAnalyzer(Arrays.asList(StringUtils.split(controller.getInputTextArea().getText(), ',')),
@@ -334,10 +331,8 @@ public class AnalyzeGenomesDialog {
 
         controller.getMaxToAddTextField().disableProperty().bind(controller.getFindReferencesButton().disabledProperty().or(running));
 
-        controller.getAddReferencesButton().setOnAction(e -> {
-            referenceIds.setAll(references.stream().limit(maxCount.intValue()).filter(p -> p.getValue() <= threshold.get()).map(Map.Entry::getKey).collect(Collectors.toList()));
-        });
-        controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
+		controller.getAddReferencesButton().setOnAction(e -> referenceIds.setAll(references.stream().limit(maxCount.intValue()).filter(p -> p.getValue() <= threshold.get()).map(Map.Entry::getKey).collect(Collectors.toList())));
+		controller.getAddReferencesButton().disableProperty().bind(Bindings.isEmpty(references).or(database.isNull()).or(running));
         controller.getMashDistancesChart().disableProperty().bind(controller.getAddReferencesButton().disabledProperty());
         controller.getMaxDistToSearchTextField().setTextFormatter(new TextFormatter<>(new DoubleStringConverter()));
 
@@ -377,7 +372,6 @@ public class AnalyzeGenomesDialog {
     /**
      * create a default output file name
      *
-     * @param inputFile
      * @return name
      */
     private static String createOutputName(File inputFile) {

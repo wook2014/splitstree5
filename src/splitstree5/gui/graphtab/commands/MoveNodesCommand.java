@@ -47,11 +47,6 @@ public class MoveNodesCommand extends UndoableRedoableCommand {
     /**
      * constructor
      *
-     * @param node2view
-     * @param edge2view
-     * @param nodes
-     * @param deltaX
-     * @param deltaY
      */
     public MoveNodesCommand(ArrayList<PolygonView2D> polygons, NodeArray<? extends NodeViewBase> node2view, EdgeArray<? extends EdgeViewBase> edge2view, Collection<Node> nodes, double deltaX, double deltaY) {
         super("Move nodes");

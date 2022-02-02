@@ -49,13 +49,7 @@ public class NewickTreeImporter implements IToTrees, IImportTrees {
     /**
      * parse trees
      *
-     * @param progressListener
-     * @param inputFile
-     * @param taxa
-     * @param trees
-     * @throws IOException
-     * @throws CanceledException
-     */
+	 */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, TreesBlock trees) throws IOException, CanceledException {
         var lineno = 0;
         try (var it = new FileLineIterator(inputFile)) {

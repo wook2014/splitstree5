@@ -48,8 +48,6 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     /**
      * constructor
      *
-     * @param document
-     * @param workflowNode
      */
     public AlgorithmBreadCrumbsToolBar(Document document, WorkflowNode workflowNode) {
         this.document = document;
@@ -85,9 +83,6 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
     /**
      * collects all connectors on the path to the target node
      *
-     * @param workflowNode
-     * @param targetNode
-     * @param connectors
      * @return path of connectors
      */
     private boolean findConnectorsAlongPathRec(WorkflowNode workflowNode, WorkflowNode targetNode, ArrayList<Connector> connectors) {
@@ -133,9 +128,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         connector.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
         stateChangeListeners.add(stateChangeListener);
 
-        button.setOnAction((e) -> {
-            document.getMainWindow().showAlgorithmView(connector);
-        });
+        button.setOnAction((e) -> document.getMainWindow().showAlgorithmView(connector));
         return button;
     }
 
@@ -160,9 +153,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         };
         dataNode.stateProperty().addListener(stateChangeListener);
         stateChangeListeners.add(stateChangeListener);
-        button.setOnAction((e) -> {
-            document.getMainWindow().showFormatTab();
-        });
+        button.setOnAction((e) -> document.getMainWindow().showFormatTab());
         return button;
     }
 
@@ -173,9 +164,7 @@ public class AlgorithmBreadCrumbsToolBar extends ToolBar {
         button.disableProperty().bind(document.getWorkflow().updatingProperty());
         final Tooltip tooltip = new Tooltip("Input data");
         button.setTooltip(tooltip);
-        button.setOnAction((e) -> {
-            document.getMainWindow().showInputTab();
-        });
+        button.setOnAction((e) -> document.getMainWindow().showInputTab());
         return button;
     }
 

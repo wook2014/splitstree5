@@ -31,9 +31,7 @@ public class PhyloGraphUtils {
     /**
      * add labels to graph
      *
-     * @param taxaBlock
-     * @param graph
-     */
+	 */
     public static void addLabels(TaxaBlock taxaBlock, PhyloGraph graph) {
         // remove labels for taxon nodes, in case some algorithm has already been applied
         for (int t = 1; t <= graph.getNumberOfTaxa(); t++) {

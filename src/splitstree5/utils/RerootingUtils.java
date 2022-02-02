@@ -26,7 +26,6 @@ import jloda.util.Pair;
 import jloda.util.Triplet;
 
 import java.util.BitSet;
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -38,8 +37,7 @@ public class RerootingUtils {
     /**
      * reroot tree by edge
      *
-     * @return true, if rerooted
-     */
+	 */
     public static void rerootByEdge(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, Edge e) {
         if ((e.getSource() == tree.getRoot() || e.getTarget() == tree.getRoot()) && tree.getRoot().getDegree() == 2)
             return; // no need to reroot
@@ -80,8 +78,7 @@ public class RerootingUtils {
     /**
      * reroot tree by node
      *
-     * @return true, if rerooted
-     */
+	 */
     public static void rerootByNode(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, Node v) {
         if (v == tree.getRoot())
             return;
@@ -110,9 +107,7 @@ public class RerootingUtils {
      * reroot a tree by outgroup. Find the node or edge middle point so that tree is optimally rooted for
      * the given outgroup  labels
      *
-     * @param tree
-     * @param outgroupTaxa
-     */
+	 */
     public static void rerootByOutGroup(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree, BitSet outgroupTaxa) {
         if (tree.getRoot() == null)
             return;
@@ -198,16 +193,7 @@ public class RerootingUtils {
     /**
      * recursively determine the best place to root the tree for the given outgroup
      *
-     * @param v
-     * @param e
-     * @param node2NumberOutgroup
-     * @param edge2OutgroupBelow
-     * @param edge2NodesBelow
-     * @param node2OutgroupBelow
-     * @param node2NodesBelow
-     * @param totalNodes
-     * @param totalOutgroup
-     */
+	 */
     private static void rerootByOutgroupRec(Node v, Edge e, NodeIntArray node2NumberOutgroup, EdgeIntArray edge2OutgroupBelow,
                                             EdgeIntArray edge2NodesBelow, NodeIntArray node2OutgroupBelow, NodeIntArray node2NodesBelow, int totalNodes, int totalOutgroup) {
         int outgroupBelowE = node2NumberOutgroup.getInt(v);
@@ -262,9 +248,7 @@ public class RerootingUtils {
     /**
      * re-root tree using midpoint rooting
      *
-     * @param tree
-     * @return true, if tree rerooted
-     */
+	 */
     public static void rerootByMidpoint(boolean internalNodeLabelsAreEdgeLabels, PhyloTree tree) {
         final SortedSet<Triplet<Edge, Float, Float>> rankedMidpointRootings = getRankedMidpointRootings(tree);
 
@@ -297,45 +281,42 @@ public class RerootingUtils {
      * @return collection of triplets: edge,
      */
     public static SortedSet<Triplet<Edge, Float, Float>> getRankedMidpointRootings(final PhyloTree tree) {
-        final EdgeFloatArray maxBottomUpDistance = new EdgeFloatArray(tree);
-        final EdgeFloatArray maxTopDownDistance = new EdgeFloatArray(tree);
+		final EdgeFloatArray maxBottomUpDistance = new EdgeFloatArray(tree);
+		final EdgeFloatArray maxTopDownDistance = new EdgeFloatArray(tree);
 
-        for (Edge e : tree.getRoot().outEdges())
-            computeMaxBottomUpDistance(tree, e, maxBottomUpDistance);
-        computeMaxTopDownDistanceRec(tree, tree.getRoot(), maxBottomUpDistance, maxTopDownDistance);
+		for (Edge e : tree.getRoot().outEdges())
+			computeMaxBottomUpDistance(tree, e, maxBottomUpDistance);
+		computeMaxTopDownDistanceRec(tree, tree.getRoot(), maxBottomUpDistance, maxTopDownDistance);
 
-        SortedSet<Triplet<Edge, Float, Float>> result = new TreeSet<Triplet<Edge, Float, Float>>(new Comparator<Triplet<Edge, Float, Float>>() {
-            public int compare(Triplet<Edge, Float, Float> a, Triplet<Edge, Float, Float> b) {
-                float compare = Math.abs(a.getSecond() - a.getThird()) - Math.abs(b.getSecond() - b.getThird());
-                if (compare < 0)
-                    return -1;
-                else if (compare > 0)
-                    return 1;
-                else if (a.getFirst().getId() < b.getFirst().getId())
-                    return -1;
-                else if (a.getFirst().getId() > b.getFirst().getId())
-                    return 1;
-                else
-                    return 0;
-            }
-        });
-        for (Edge e : tree.edges()) {
-            Triplet<Edge, Float, Float> triplet = new Triplet<Edge, Float, Float>(e, maxTopDownDistance.getFloat(e), maxBottomUpDistance.getFloat(e));
-            result.add(triplet);
-        }
-        if (false) {
-            System.err.println("Ranking:");
-            for (Triplet<Edge, Float, Float> triplet : result) {
-                System.err.println(triplet);
-            }
-        }
+		SortedSet<Triplet<Edge, Float, Float>> result = new TreeSet<Triplet<Edge, Float, Float>>((a, b) -> {
+			float compare = Math.abs(a.getSecond() - a.getThird()) - Math.abs(b.getSecond() - b.getThird());
+			if (compare < 0)
+				return -1;
+			else if (compare > 0)
+				return 1;
+			else if (a.getFirst().getId() < b.getFirst().getId())
+				return -1;
+			else if (a.getFirst().getId() > b.getFirst().getId())
+				return 1;
+			else
+				return 0;
+		});
+		for (Edge e : tree.edges()) {
+			Triplet<Edge, Float, Float> triplet = new Triplet<Edge, Float, Float>(e, maxTopDownDistance.getFloat(e), maxBottomUpDistance.getFloat(e));
+			result.add(triplet);
+		}
+		if (false) {
+			System.err.println("Ranking:");
+			for (Triplet<Edge, Float, Float> triplet : result) {
+				System.err.println(triplet);
+			}
+		}
         return result;
     }
 
     /**
      * compute the midpoint score for all edges
      *
-     * @param tree
      * @return midpoint scores
      */
     public static EdgeFloatArray getMidpointScores(PhyloTree tree) {
@@ -355,8 +336,6 @@ public class RerootingUtils {
     /**
      * compute the midpoint score a given root node
      *
-     * @param tree
-     * @param root
      * @return midpoint score
      */
     public static float getMidpointScore(PhyloTree tree, Node root) {
@@ -374,9 +353,6 @@ public class RerootingUtils {
     /**
      * compute the maximum distance from v to a leaf in a tree, avoiding edge f
      *
-     * @param tree
-     * @param v
-     * @param f
      * @return max distance
      */
     private static float computeMaxDistanceRec(PhyloTree tree, Node v, Edge f) {
@@ -393,9 +369,6 @@ public class RerootingUtils {
     /**
      * bottom up calculation of max down distance
      *
-     * @param tree
-     * @param e
-     * @param maxDownDistance
      * @return distance down (including length of e)
      */
     private static float computeMaxBottomUpDistance(PhyloTree tree, Edge e, EdgeFloatArray maxDownDistance) {
@@ -411,11 +384,7 @@ public class RerootingUtils {
     /**
      * recursively compute best topdown distance
      *
-     * @param tree
-     * @param v
-     * @param maxDownDistance
-     * @param maxUpDistance
-     */
+	 */
     private static void computeMaxTopDownDistanceRec(PhyloTree tree, Node v, EdgeFloatArray maxDownDistance, EdgeFloatArray maxUpDistance) {
         float bestUp;
         Edge inEdge = v.getFirstInEdge();
@@ -441,7 +410,6 @@ public class RerootingUtils {
     /**
      * gets the average distance from this node to a leaf.
      *
-     * @param v
      * @return average distance to a leaf
      */
     public static double computeAverageDistanceToALeaf(PhyloTree tree, Node v) {
@@ -460,11 +428,8 @@ public class RerootingUtils {
     /**
      * recursively does the work
      *
-     * @param v
      * @param distance from root
-     * @param seen
-     * @param pair
-     */
+	 */
     private static void computeAverageDistanceToLeafRec(PhyloTree tree, Node v, Edge e, double distance, NodeSet seen, Pair<Double, Integer> pair) {
         if (!seen.contains(v)) {
             seen.add(v);

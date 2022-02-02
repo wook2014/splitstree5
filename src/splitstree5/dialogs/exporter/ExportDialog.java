@@ -33,7 +33,6 @@ import splitstree5.core.datablocks.DataBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * shows the save dialog
@@ -48,9 +47,7 @@ public class ExportDialog {
     /**
      * constructor
      *
-     * @param owner
-     * @throws IOException
-     */
+	 */
     public ExportDialog(Stage owner, TaxaBlock workingTaxa, DataBlock dataBlock) {
         final ExtendedFXMLLoader<ExportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
@@ -135,8 +132,7 @@ public class ExportDialog {
     /**
      * show the import dialog
      *
-     * @param other
-     */
+	 */
     public static void show(Stage other, TaxaBlock taxonBlock, DataBlock dataBlock) {
         ExportDialog exportDialog = new ExportDialog(other, taxonBlock, dataBlock);
         exportDialog.show();

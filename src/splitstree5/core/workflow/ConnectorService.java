@@ -35,8 +35,8 @@ import splitstree5.core.datablocks.DataBlock;
  * Daniel Huson, 12/21/16.
  */
 public class ConnectorService<P extends DataBlock, C extends DataBlock> extends Service<Boolean> {
-    public static boolean verbose = false;
-    private final Connector<P, C> connector;
+    public static final boolean verbose = false;
+	private final Connector<P, C> connector;
 
     public ConnectorService(Connector<P, C> connector) {
         this.connector = connector;

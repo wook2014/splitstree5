@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.util.progress.ProgressListener;
 import jloda.util.progress.ProgressPercentage;
@@ -31,7 +31,7 @@ import java.io.StringWriter;
 
 public class NexmlNetworkImporterTest {
 
-    private NexmlNetworkImporter nexmlNetworkImporter = new NexmlNetworkImporter();
+	private final NexmlNetworkImporter nexmlNetworkImporter = new NexmlNetworkImporter();
 
     @Test
     public void parse() throws Exception {
@@ -45,8 +45,8 @@ public class NexmlNetworkImporterTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new NetworkNexusOutput().write(w1, taxaBlock, networkBlock);
-        System.err.println(w1.toString());
+		new NetworkNexusOutput().write(w1, taxaBlock, networkBlock);
+		System.err.println(w1);
 
     }
 

@@ -47,11 +47,7 @@ public class WorkflowDataLoader {
     /**
      * loads data into a file
      *
-     * @param workflow
-     * @param inputFile
-     * @param inputFormat
-     * @throws IOException
-     */
+	 */
     public static void load(Workflow workflow, String inputFile, String inputFormat) throws IOException, CanceledException {
         final DataNode<TaxaBlock> topTaxaNode = workflow.getTopTaxaNode();
         if (topTaxaNode == null)

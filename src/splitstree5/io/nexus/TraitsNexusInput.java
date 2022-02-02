@@ -181,7 +181,6 @@ public class TraitsNexusInput extends NexusIOBase implements INexusInput<TraitsB
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

@@ -56,21 +56,19 @@ import java.util.regex.Pattern;
  * Daniel Huson, Daria Evseeva, 2.2018
  */
 public class EditInputTab extends EditTextViewTab {
-    private static boolean debug = false;
-    private final int MAX_LENGTH_SPECIAL_CHAR_FIELD = 1;
-    private StringProperty missing = new SimpleStringProperty("");
-    private StringProperty gap = new SimpleStringProperty("");
+	private static final boolean debug = false;
+	private final int MAX_LENGTH_SPECIAL_CHAR_FIELD = 1;
+	private final StringProperty missing = new SimpleStringProperty("");
+	private final StringProperty gap = new SimpleStringProperty("");
 
-    private File tmpFile;
+	private File tmpFile;
 
-    // todo check all properties!
+	// todo check all properties!
 
-    /**
-     * constructor
-     *
-     * @param mainWindow
-     */
-    public EditInputTab(MainWindow mainWindow) {
+	/**
+	 * constructor
+	 */
+	public EditInputTab(MainWindow mainWindow) {
         super(new SimpleStringProperty("Input"));
         setGraphic(new HBox(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")), new Label("Input")));
         setMainWindow(mainWindow);

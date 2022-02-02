@@ -78,13 +78,6 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
     /**
      * create a node  view
      *
-     * @param v
-     * @param workingTaxonIds
-     * @param location
-     * @param shape
-     * @param shapeWidth
-     * @param shapeHeight
-     * @param text
      * @return node view
      */
     @Override
@@ -204,9 +197,7 @@ public class NetworkViewTab extends Graph2DTab<PhyloGraph> {
     /**
      * select all nodes below the given one
      *
-     * @param v
-     * @param nodeSelectionModel
-     */
+	 */
     private void selectAllBelowRec(Node v, ItemSelectionModel<Node> nodeSelectionModel, ItemSelectionModel<Edge> edgeSelectionModel) {
         for (Edge e : v.outEdges()) {
             nodeSelectionModel.select(e.getTarget());

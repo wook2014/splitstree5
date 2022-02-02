@@ -34,7 +34,7 @@ import java.io.FileReader;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created on 05.03.2017.
@@ -56,7 +56,7 @@ public class CodominantTest {
         taxaBlock2.addTaxaByNames(taxonNames2);
         DistancesBlock distancesBlock2 = new DistancesBlock();
 
-        assertEquals(false, codominant.isApplicable(taxaBlock2, charactersBlock2));
+		assertFalse(codominant.isApplicable(taxaBlock2, charactersBlock2));
     }
 
     @Test

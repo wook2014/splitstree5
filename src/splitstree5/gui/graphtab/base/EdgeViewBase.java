@@ -38,8 +38,7 @@ public abstract class EdgeViewBase {
     /**
      * construct a simple node view
      *
-     * @param e
-     */
+	 */
     public EdgeViewBase(Edge e) {
         this.e = e;
     }

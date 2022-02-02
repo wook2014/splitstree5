@@ -56,7 +56,7 @@ public class PhylipCharactersExporter implements IFromCharacters, IExportCharact
             for (int i = 1; i <= iterations; i++) {
                 int startIndex = optionLineLength * (i - 1) + 1;
                 for (int t = 1; t <= ntax; t++) {
-                    StringBuilder sequence = new StringBuilder("");
+                    StringBuilder sequence = new StringBuilder();
 
                     // set space after every 10 chars, but not in the beginning of line
                     for (int j = startIndex; j <= optionLineLength * i && j <= nchar; j++) {
@@ -74,7 +74,7 @@ public class PhylipCharactersExporter implements IFromCharacters, IExportCharact
             }
         } else {
             for (int t = 1; t <= ntax; t++) {
-                StringBuilder sequence = new StringBuilder("");
+				StringBuilder sequence = new StringBuilder();
                 for (int j = 1; j <= nchar; j++) {
                     if ((j - 1) % 10 == 0 && (j - 1) != 0) sequence.append(" "); // set space after every 10 chars
                     sequence.append(characters.get(t, j));

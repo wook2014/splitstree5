@@ -34,9 +34,6 @@ public interface IExportGenomes extends IExporter, IFromGenomes {
     /**
      * save genomes
      *
-     * @param w
-     * @param taxa
-     * @param genomes
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, GenomesBlock genomes) throws IOException;
 }

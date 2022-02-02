@@ -43,10 +43,7 @@ public class SplitsTree5NexusInput {
     /**
      * parse a SplitsTree5 block
      *
-     * @param np
-     * @param splitsTree5Block
-     * @throws IOException
-     */
+	 */
     public void parse(NexusStreamParser np, SplitsTree5Block splitsTree5Block) throws IOException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         splitsTree5Block.clear();
@@ -73,7 +70,6 @@ public class SplitsTree5NexusInput {
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

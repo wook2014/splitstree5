@@ -34,9 +34,7 @@ public class SimpleTaxaAnalysis extends Connector<TaxaBlock, AnalysisBlock> {
     /**
      * constructor
      *
-     * @param parent
-     * @param child
-     */
+	 */
     public SimpleTaxaAnalysis(DataNode<TaxaBlock> parent, DataNode<AnalysisBlock> child) {
         super(null, parent, child);
 

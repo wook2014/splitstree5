@@ -965,17 +965,12 @@ public class MenuController {
     /**
      * adds full screen support
      *
-     * @param stage
-     */
+	 */
     public void setupFullScreenMenuSupport(Stage stage) {
-        stage.fullScreenProperty().addListener((c, o, n) -> {
-            fullScreenMenuItem.setText(n ? "Exit Full Screen" : "Enter Full Screen");
-        });
-        fullScreenMenuItem.setOnAction((e) -> {
-            stage.setFullScreen(!stage.isFullScreen());
-        });
-        fullScreenMenuItem.setDisable(false);
-    }
+		stage.fullScreenProperty().addListener((c, o, n) -> fullScreenMenuItem.setText(n ? "Exit Full Screen" : "Enter Full Screen"));
+		fullScreenMenuItem.setOnAction((e) -> stage.setFullScreen(!stage.isFullScreen()));
+		fullScreenMenuItem.setDisable(false);
+	}
 
     public MainWindow getMainWindow() {
         return mainWindow;

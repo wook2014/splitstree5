@@ -87,9 +87,7 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
         progress.setTasks("Network embedding", "Init.");
         final NetworkViewTab viewTab = (NetworkViewTab) child.getTab();
 
-        Platform.runLater(() -> {
-            child.getTab().setText(child.getName());
-        });
+        Platform.runLater(() -> child.getTab().setText(child.getName()));
 
         copyDataFromParent(parent, graph, node2data, edge2data);
 
@@ -255,10 +253,6 @@ public class NetworkEmbedder extends Algorithm<NetworkBlock, ViewerBlock> implem
     /**
      * make working copy of data
      *
-     * @param networkBlock
-     * @param tarGraph
-     * @param tarNode2Data
-     * @param tarEdge2Data
      */
     private void copyDataFromParent(NetworkBlock networkBlock, PhyloGraph tarGraph, NodeArray<NetworkBlock.NodeData> tarNode2Data, EdgeArray<NetworkBlock.EdgeData> tarEdge2Data) {
         final PhyloGraph srcGraph = networkBlock.getGraph();

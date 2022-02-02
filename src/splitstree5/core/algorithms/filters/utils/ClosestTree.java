@@ -36,7 +36,6 @@ public class ClosestTree {
     /**
      * computes the closest tree
      *
-     * @param splits
      * @return closest tree
      */
     public static ArrayList<ASplit> apply(ProgressListener progress, final int ntax, final List<ASplit> splits, int[] cycle) throws CanceledException {

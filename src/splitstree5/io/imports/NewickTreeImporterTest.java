@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class NewickTreeImporterTest {
 
-    private NewickTreeImporter newickTreeImporter = new NewickTreeImporter();
+    private final NewickTreeImporter newickTreeImporter = new NewickTreeImporter();
 
     @org.junit.Test
     public void parse() throws Exception {
@@ -64,9 +64,9 @@ public class NewickTreeImporterTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         TreesNexusFormat tnf = new TreesNexusFormat();
         tnf.setOptionTranslate(false);
-        new TreesNexusOutput().write(w, taxaBlock, treesBlock);
-        System.err.println(w.toString());
-        assertEquals(test1, treesBlock.getTrees().get(0).toBracketString());
+		new TreesNexusOutput().write(w, taxaBlock, treesBlock);
+		System.err.println(w);
+		assertEquals(test1, treesBlock.getTrees().get(0).toBracketString());
     }
 
     @Test

@@ -171,7 +171,6 @@ public class SpringEmbedder {
     /**
      * computes the bounding box of all locations
      *
-     * @param node2location
      * @return bounding box
      */
     private static Bounds computeBBox(NodeArray<Point2D> node2location) {
@@ -191,8 +190,6 @@ public class SpringEmbedder {
     /**
      * compute the average split angle
      *
-     * @param graph
-     * @param node2point
      */
     public void computeAverageSplitAngles(PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         final Map<Integer, ArrayList<Double>> split2angles = new HashMap<>();
@@ -208,12 +205,6 @@ public class SpringEmbedder {
     /**
      * recursively do the work
      *
-     * @param graph
-     * @param v
-     * @param e
-     * @param node2point
-     * @param split2angles
-     * @param splitsInPath
      */
     private void visitAnglesRec(PhyloSplitsGraph graph, Node v, Edge e, NodeArray<Point2D> node2point, Map<Integer, ArrayList<Double>> split2angles, BitSet splitsInPath) {
         for (Edge f : v.adjacentEdges()) {
@@ -236,7 +227,6 @@ public class SpringEmbedder {
     /**
      * get the average value
      *
-     * @param array
      * @return average
      */
     public static double average(ArrayList<Double> array) {

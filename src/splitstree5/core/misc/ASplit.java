@@ -37,9 +37,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param ntax
-     */
+	 */
     public ASplit(BitSet A, int ntax) {
         this(A, ntax, 1, 1);
     }
@@ -47,10 +45,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param ntax
-     * @param weight
-     */
+	 */
     public ASplit(BitSet A, int ntax, double weight) {
         this(A, ntax, weight, 1);
     }
@@ -58,10 +53,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param ntax
-     * @param weight
-     */
+	 */
     public ASplit(BitSet A, int ntax, double weight, double confidence) {
         this.A = new BitSet();
         this.B = new BitSet();
@@ -81,9 +73,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param B
-     */
+	 */
     public ASplit(BitSet A, BitSet B) {
         this(A, B, 1, 1);
     }
@@ -91,10 +81,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param B
-     * @param weight
-     */
+	 */
     public ASplit(BitSet A, BitSet B, double weight) {
         this(A, B, weight, 1);
     }
@@ -102,10 +89,7 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * constructor
      *
-     * @param A
-     * @param B
-     * @param weight
-     */
+	 */
     public ASplit(BitSet A, BitSet B, double weight, double confidence) {
         if (A.cardinality() == 0 || B.cardinality() == 0)
             System.err.println("Internal error: A.cardinality()=" + A.cardinality() + ", B.cardinality()=" + B.cardinality());
@@ -158,7 +142,6 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * gets the split part that contains the given taxon, or A, if none contains it
      *
-     * @param t
      * @return split part containing taxon t
      */
     public BitSet getPartContaining(int t) {
@@ -171,7 +154,6 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * returns A, if A doesn't contain t, else B
      *
-     * @param t
      * @return set not containing t
      */
     public BitSet getPartNotContaining(int t) {
@@ -257,7 +239,6 @@ public final class ASplit implements Comparable<ASplit> {
     /**
      * is this equals to the given split in terms of A and B
      *
-     * @param obj
      * @return true, if obj is instance of ASplit and has the sets A and B
      */
     @Override

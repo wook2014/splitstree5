@@ -62,8 +62,7 @@ public class LabelListsManager {
     /**
      * constructor
      *
-     * @param controller
-     */
+	 */
     public LabelListsManager(AnalyzeGenomesController controller) {
         this.controller = controller;
         displayLabels = controller.getDisplayLabelsListView().getItems();
@@ -108,55 +107,51 @@ public class LabelListsManager {
                 undoManager.add("replace",
                         () -> {
                             displayLabels.setAll(original);
-                            updateFrequentWordButtons();
-                        },
-                        () -> {
-                            displayLabels.setAll(replaced);
-                            updateFrequentWordButtons();
-                        });
-            });
-        }
+							updateFrequentWordButtons();
+						},
+						() -> {
+							displayLabels.setAll(replaced);
+							updateFrequentWordButtons();
+						});
+			});
+		}
 
-        Button removeFirstButton = new Button("- first word");
-        removeFirstButton.setOnAction(c -> {
-            undoManager.doAndAdd(new UndoableRedoableCommand("Remove first word") {
-                final List<String> labels = new ArrayList<>(controller.getDisplayLabelsListView().getItems());
+		Button removeFirstButton = new Button("- first word");
+		removeFirstButton.setOnAction(c -> undoManager.doAndAdd(new UndoableRedoableCommand("Remove first word") {
+			final List<String> labels = new ArrayList<>(controller.getDisplayLabelsListView().getItems());
 
-                @Override
-                public void undo() {
-                    displayLabels.setAll(labels);
-                    updateFrequentWordButtons();
-                }
+			@Override
+			public void undo() {
+				displayLabels.setAll(labels);
+				updateFrequentWordButtons();
+			}
 
-                @Override
-                public void redo() {
-                    displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("^\\S+\\s*", ""), s)).collect(Collectors.toList()));
-                    updateFrequentWordButtons();
-                }
-            });
-        });
-        removeFirstButton.setTooltip(new Tooltip("Remove the first word from each item"));
-        removeFirstButton.disableProperty().bind(Bindings.isEmpty(displayLabels));
+			@Override
+			public void redo() {
+				displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("^\\S+\\s*", ""), s)).collect(Collectors.toList()));
+				updateFrequentWordButtons();
+			}
+		}));
+		removeFirstButton.setTooltip(new Tooltip("Remove the first word from each item"));
+		removeFirstButton.disableProperty().bind(Bindings.isEmpty(displayLabels));
 
-        Button removeLastButton = new Button("- last word");
-        removeLastButton.setOnAction(c -> {
-            undoManager.doAndAdd(new UndoableRedoableCommand("Remove last word") {
-                final List<String> labels = new ArrayList<>(displayLabels);
+		Button removeLastButton = new Button("- last word");
+		removeLastButton.setOnAction(c -> undoManager.doAndAdd(new UndoableRedoableCommand("Remove last word") {
+			final List<String> labels = new ArrayList<>(displayLabels);
 
-                @Override
-                public void undo() {
-                    displayLabels.setAll(labels);
-                    updateFrequentWordButtons();
-                }
+			@Override
+			public void undo() {
+				displayLabels.setAll(labels);
+				updateFrequentWordButtons();
+			}
 
-                @Override
-                public void redo() {
-                    displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("\\s*\\S+$", ""), s)).collect(Collectors.toList()));
-                    updateFrequentWordButtons();
-                }
-            });
-        });
-        removeLastButton.setTooltip(new Tooltip("Remove the last word from each item"));
+			@Override
+			public void redo() {
+				displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replaceAll("\\s*\\S+$", ""), s)).collect(Collectors.toList()));
+				updateFrequentWordButtons();
+			}
+		}));
+		removeLastButton.setTooltip(new Tooltip("Remove the last word from each item"));
         removeLastButton.disableProperty().bind(Bindings.isEmpty(displayLabels));
 
         controller.getAdditionalButtonsHBox().getChildren().addAll(new Separator(Orientation.VERTICAL), removeFirstButton, removeLastButton, new Separator(Orientation.VERTICAL));
@@ -167,10 +162,8 @@ public class LabelListsManager {
         controller.getLabelsRedoButton().setOnAction(c -> undoManager.redo());
         controller.getLabelsRedoButton().disableProperty().bind(undoManager.redoableProperty().not());
 
-        controller.getDisplayLabelsListView().setCellFactory(TextFieldListCell.forListView());
-        controller.getDisplayLabelsListView().setOnEditCommit(t -> {
-            controller.getDisplayLabelsListView().getItems().set(t.getIndex(), t.getNewValue());
-        });
+		controller.getDisplayLabelsListView().setCellFactory(TextFieldListCell.forListView());
+		controller.getDisplayLabelsListView().setOnEditCommit(t -> controller.getDisplayLabelsListView().getItems().set(t.getIndex(), t.getNewValue()));
     }
 
     public void clear() {
@@ -182,8 +175,7 @@ public class LabelListsManager {
     /**
      * update the list of labels
      *
-     * @param controller
-     */
+	 */
     public void update(AnalyzeGenomesController controller) {
         final ArrayList<String> oldDisplayLabels = new ArrayList<>(displayLabels);
         displayLabels.clear();
@@ -235,30 +227,28 @@ public class LabelListsManager {
         final List<Pair<String, Integer>> list = CollectionUtils.reverse(word2count.keySet().stream().map(a -> new Pair<>(a, word2count.get(a))).sorted(Comparator.comparingInt(Pair::getSecond)).collect(Collectors.toList()));
 
         for (int i = 0; i < Math.min(7, list.size()); i++) {
-            if (list.get(i).getSecond() < 5)
-                break;
-            final String word = list.get(i).getFirst();
-            final Button button = new Button("- " + word);
-            button.setUserData("frequent");
-            button.setTooltip(new Tooltip("Remove all occurrences of the word '" + word + "'"));
-            button.setOnAction(c -> {
-                undoManager.doAndAdd(new UndoableRedoableCommand("Delete word") {
-                    final List<String> labels = new ArrayList<>(displayLabels);
+			if (list.get(i).getSecond() < 5)
+				break;
+			final String word = list.get(i).getFirst();
+			final Button button = new Button("- " + word);
+			button.setUserData("frequent");
+			button.setTooltip(new Tooltip("Remove all occurrences of the word '" + word + "'"));
+			button.setOnAction(c -> undoManager.doAndAdd(new UndoableRedoableCommand("Delete word") {
+				final List<String> labels = new ArrayList<>(displayLabels);
 
-                    @Override
-                    public void undo() {
-                        displayLabels.setAll(labels);
-                        updateFrequentWordButtons();
-                    }
+				@Override
+				public void undo() {
+					displayLabels.setAll(labels);
+					updateFrequentWordButtons();
+				}
 
-                    @Override
-                    public void redo() {
-                        displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replace(word, ""), s)).collect(Collectors.toList()));
-                        updateFrequentWordButtons();
-                    }
-                });
-            });
-            controller.getAdditionalButtonsHBox().getChildren().add(button);
+				@Override
+				public void redo() {
+					displayLabels.setAll(labels.stream().map(s -> cleanOrKeep(s.replace(word, ""), s)).collect(Collectors.toList()));
+					updateFrequentWordButtons();
+				}
+			}));
+			controller.getAdditionalButtonsHBox().getChildren().add(button);
         }
     }
 

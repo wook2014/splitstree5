@@ -72,8 +72,7 @@ public class SplitsBlock extends DataBlock {
     /**
      * shallow copy
      *
-     * @param that
-     */
+	 */
     public void copy(SplitsBlock that) {
         clear();
         for (ASplit split : that.getSplits())
@@ -177,7 +176,6 @@ public class SplitsBlock extends DataBlock {
     /**
      * get the i-th split, 1-based
      *
-     * @param i
      * @return i-th split
      */
     public ASplit get(int i) {

@@ -53,11 +53,7 @@ public class DaylightOptimizer {
     /**
      * apply the algorithm to build a new graph
      *
-     * @param progress
-     * @param taxa
-     * @param phyloGraph
-     * @param node2point
-     */
+	 */
     public void apply(ProgressListener progress, TaxaBlock taxa, PhyloSplitsGraph phyloGraph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running daylight optimizer");
@@ -67,14 +63,13 @@ public class DaylightOptimizer {
     /**
      * runs the optimize daylight algorithm
      *
-     * @param taxa
-     */
+	 */
     private void runOptimizeDayLight(TaxaBlock taxa, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point) throws CanceledException {
         NodeSet ignore = new NodeSet(graph);
 
-        progress.setTasks("Optimize daylight", "iterating");
-        progress.setMaximum(getOptionIterations() * graph.getNumberOfNodes());
-        progress.setProgress(0);
+		progress.setTasks("Optimize daylight", "iterating");
+		progress.setMaximum((long) getOptionIterations() * graph.getNumberOfNodes());
+		progress.setProgress(0);
 
         final Node[] nodes = new Node[graph.getNumberOfNodes()];
         {
@@ -86,7 +81,7 @@ public class DaylightOptimizer {
 
         // use different randomized orders
         for (int i = 1; i <= getOptionIterations(); i++) {
-			for (Node v : CollectionUtils.randomize(nodes, 77 * i)) {
+			for (Node v : CollectionUtils.randomize(nodes, 77L * i)) {
 				if (v.getDegree() > 1 && !ignore.contains(v)) {
 					if (!optimizeDaylightNode(taxa.getNtax(), graph, v, node2point))
 						ignore.add(v);
@@ -101,8 +96,7 @@ public class DaylightOptimizer {
     /**
      * optimize the daylight angles of the graph
      *
-     * @param v
-     */
+	 */
     private boolean optimizeDaylightNode(int ntax, PhyloSplitsGraph graph, Node v, NodeArray<javafx.geometry.Point2D> node2point) throws NotOwnerException, CanceledException {
         int numComp = 0;
         EdgeIntArray edge2comp = new EdgeIntArray(graph);
@@ -162,15 +156,7 @@ public class DaylightOptimizer {
     /**
      * recursively visit the whole subgraph, obtaining the min and max observed angle
      *
-     * @param root
-     * @param v
-     * @param e
-     * @param edge2comp
-     * @param numComp
-     * @param graph
-     * @param visited
-     * @param minMaxAngle
-     */
+	 */
     private void visitComponentRec(Node root, Node v, Edge e, EdgeIntArray edge2comp, int numComp, PhyloSplitsGraph graph, NodeArray<javafx.geometry.Point2D> node2point, NodeSet visited,
                                    double angle, Pair<Double, Double> minMaxAngle) throws CanceledException {
 

@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BioNJTest {
 
-    private BioNJ bioNJ = new BioNJ();
+    private final BioNJ bioNJ = new BioNJ();
 
     @Test
     public void testCompute() throws Exception {

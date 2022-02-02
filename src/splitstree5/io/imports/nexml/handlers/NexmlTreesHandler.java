@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML.handlers;
+package splitstree5.io.imports.nexml.handlers;
 
 import jloda.graph.Node;
 import jloda.phylo.PhyloTree;

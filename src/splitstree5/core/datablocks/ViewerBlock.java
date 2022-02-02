@@ -44,8 +44,7 @@ public class ViewerBlock extends DataBlock {
     /**
      * constructor
      *
-     * @param viewerTab
-     */
+	 */
     private ViewerBlock(GraphTabBase viewerTab, Type type) {
         this.viewerTab = viewerTab;
         this.type = type;
@@ -168,8 +167,7 @@ public class ViewerBlock extends DataBlock {
     /**
      * create a viewer block of the given type
      *
-     * @param type
-     */
+	 */
     public static ViewerBlock create(Type type) {
         switch (type) {
             case SplitsNetwork3DViewer:

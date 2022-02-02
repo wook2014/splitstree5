@@ -83,7 +83,6 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Find first instance
      *
-     * @param regularExpression
      * @return - returns boolean: true if text found, false otherwise
      */
     public boolean findFirst(String regularExpression) {
@@ -95,7 +94,6 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Find next instance
      *
-     * @param regularExpression
      * @return - returns boolean: true if text found, false otherwise
      */
     public boolean findNext(String regularExpression) {
@@ -105,7 +103,6 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Find previous instance
      *
-     * @param regularExpression
      * @return - returns boolean: true if text found, false otherwise
      */
     public boolean findPrevious(String regularExpression) {
@@ -115,9 +112,7 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Replace selection with current. Does nothing if selection invalid.
      *
-     * @param regularExpression
-     * @param replaceText
-     */
+	 */
     public boolean replaceNext(String regularExpression, String replaceText) {
         if (codeArea == null) return false;
         if (findNext(regularExpression)) {
@@ -130,8 +125,6 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Replace all occurrences of text in document, subject to options.
      *
-     * @param regularExpression
-     * @param replaceText
      * @return number of instances replaced
      */
     public int replaceAll(String regularExpression, String replaceText, boolean selectionOnly) {
@@ -188,8 +181,7 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * Selects all occurrences of text in document, subject to options and constraints of document type
      *
-     * @param pattern
-     */
+	 */
     public int findAll(String pattern) {
         //Not implemented for text editors.... as we cannot select multiple chunks of text.
         return 0;
@@ -213,8 +205,7 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * set select state of all objects
      *
-     * @param select
-     */
+	 */
     public void selectAll(boolean select) {
         if (select) {
             codeArea.selectAll();
@@ -293,8 +284,7 @@ public class CodeAreaSearcher implements ITextSearcher {
     /**
      * set scope global rather than selected
      *
-     * @param globalScope
-     */
+	 */
     public void setGlobalScope(boolean globalScope) {
     }
 

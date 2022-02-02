@@ -63,7 +63,7 @@ public class NeighborNetTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
     }
 
     @Test
@@ -87,8 +87,8 @@ public class NeighborNetTest {
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
+		System.err.println(w);
     }
 
 }

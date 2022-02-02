@@ -45,12 +45,7 @@ public class EmbeddingService extends Service<NodeArray<Point3D>> {
     /**
      * setup the task
      *
-     * @param splitsGraph
-     * @param node2view
-     * @param numOfSteps
-     * @param linear
-     * @param withZpush
-     */
+	 */
     public void setup(PhyloSplitsGraph splitsGraph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
         this.splitsGraph = splitsGraph;
         this.node2view = node2view;

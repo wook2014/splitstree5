@@ -49,10 +49,7 @@ public class NodeLabelLayouter {
     /**
      * layout nodes for radial tree
      *
-     * @param phyloGraph
-     * @param node2view
-     * @param edge2view
-     */
+	 */
     public static void radialLayout(boolean sparseLabels, PhyloGraph phyloGraph, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         final ArrayList<BoundingBox> nodeShapes = new ArrayList<>(phyloGraph.getNumberOfNodes());
         final ArrayList<Triplet<BoundingBox, Node, Double>> labelShapes = new ArrayList<>(phyloGraph.getNumberOfNodes());
@@ -218,10 +215,7 @@ public class NodeLabelLayouter {
     /**
      * layout nodes in left-to-right tree layout
      *
-     * @param tree
-     * @param node2view
-     * @param edge2view
-     */
+	 */
     public static void leftToRightLayout(boolean sparseLabels, boolean alignLeafLabels, PhyloGraph tree, Node root, NodeArray<NodeViewBase> node2view, EdgeArray<EdgeViewBase> edge2view) {
         final ArrayList<BoundingBox> labelBoundsList = new ArrayList<>();
 
@@ -280,8 +274,6 @@ public class NodeLabelLayouter {
     /**
      * iterate over multiple iterators sequentially
      *
-     * @param iterators
-     * @param <T>
      * @return iterable over all given iterators
      */
     @SafeVarargs

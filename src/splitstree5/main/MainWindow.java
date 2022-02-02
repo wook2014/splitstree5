@@ -62,8 +62,6 @@ import splitstree5.gui.workflowtree.WorkflowTreeSupport;
 import splitstree5.menu.MenuController;
 import splitstree5.toolbar.MainToolBarController;
 
-import java.io.IOException;
-
 public class MainWindow implements IMainWindow {
     static final Single<AnalyzeGenomesDialog> analyzeGenomesDialog = new Single<>();
     private final Document document;
@@ -106,8 +104,7 @@ public class MainWindow implements IMainWindow {
     /**
      * constructor
      *
-     * @throws IOException
-     */
+	 */
     public MainWindow() {
         this.document = new Document();
         this.workflow = document.getWorkflow();
@@ -178,9 +175,7 @@ public class MainWindow implements IMainWindow {
         methodsViewTab = new MethodsViewTab(document);
 
 
-        document.dirtyProperty().addListener((c, o, n) -> {
-            dirtyStar.set(n ? "*" : "");
-        });
+		document.dirtyProperty().addListener((c, o, n) -> dirtyStar.set(n ? "*" : ""));
 
         titleProperty.bind(Bindings.concat("Main Window - ").concat(document.nameProperty()).concat(dirtyStar).concat(" - " + ProgramProperties.getProgramName()));
 
@@ -361,23 +356,18 @@ public class MainWindow implements IMainWindow {
     /**
      * add a viewer tab
      *
-     * @param viewerTab
-     */
+	 */
     private void add(ViewerTab viewerTab) {
-        mainWindowController.getMainTabPane().getTabs().add(0, viewerTab);
-        viewerTab.setOnClosed((e) -> {
-            workflow.delete(viewerTab.getDataNode().getParent(), true, true);
-        });
-        mainWindowController.getMainTabPane().getSelectionModel().select(0);
+		mainWindowController.getMainTabPane().getTabs().add(0, viewerTab);
+		viewerTab.setOnClosed((e) -> workflow.delete(viewerTab.getDataNode().getParent(), true, true));
+		mainWindowController.getMainTabPane().getSelectionModel().select(0);
         viewerTab.setMainWindow(this);
     }
 
     /**
      * update the menus
      *
-     * @param selectedTab
-     * @param controller
-     */
+	 */
     private void updateMenus(Tab selectedTab, MenuController controller) {
         controller.unbindAndDisableAllMenuItems();
         MainWindowMenuController.setupMainMenus(this);
@@ -398,8 +388,7 @@ public class MainWindow implements IMainWindow {
     /**
      * show a data view node
      *
-     * @param workflowNode
-     */
+	 */
     public synchronized void showDataView(DataNode workflowNode) {
         // if the data block has a getTab method, then assume that it is present and select it
         try {
@@ -422,10 +411,8 @@ public class MainWindow implements IMainWindow {
                 if (viewerTab == null || viewerTab.getTabPane() == null) {
                     viewerTab = new DataViewTab(document, workflowNode);
                     aNode2ViewerTab.put(workflowNode, viewerTab);
-                    mainTabPane.getTabs().add(0, viewerTab);
-                    viewerTab.setOnClosed((e) -> {
-                        aNode2ViewerTab.remove(workflowNode);
-                    });
+					mainTabPane.getTabs().add(0, viewerTab);
+					viewerTab.setOnClosed((e) -> aNode2ViewerTab.remove(workflowNode));
                 }
                 mainTabPane.getSelectionModel().select(viewerTab);
                 final Stage stage = (Stage) viewerTab.getTabPane().getScene().getWindow();
@@ -449,18 +436,15 @@ public class MainWindow implements IMainWindow {
     /**
      * show a connector/algorithm node
      *
-     * @param connector
-     */
+	 */
     public void showAlgorithmView(Connector connector) {
         if (connector != null) {
             ViewerTab viewerTab = aNode2ViewerTab.get(connector);
             if (viewerTab == null) {
                 viewerTab = new AlgorithmTab<>(document, connector);
                 aNode2ViewerTab.put(connector, viewerTab);
-                algorithmsTabPane.getTabs().add(0, viewerTab);
-                viewerTab.setOnClosed((e) -> {
-                    aNode2ViewerTab.remove(connector);
-                });
+				algorithmsTabPane.getTabs().add(0, viewerTab);
+				viewerTab.setOnClosed((e) -> aNode2ViewerTab.remove(connector));
             }
 
             algorithmsTabPane.getSelectionModel().select(viewerTab);
@@ -478,8 +462,7 @@ public class MainWindow implements IMainWindow {
     /**
      * Clear the current window. Stop any running tasks.
      *
-     * @return true if closed, false if canceled
-     */
+	 */
     public void clear() {
         workflow.cancelAll();
         for (Tab tab : mainTabPane.getTabs()) {
@@ -529,8 +512,7 @@ public class MainWindow implements IMainWindow {
     /**
      * show a pair of algorithm and data, if the data is a view data block
      *
-     * @param pair
-     */
+	 */
     public void show(Pair<Connector, DataNode> pair) {
         if (pair != null) {
             showAlgorithmView(pair.getFirst());
@@ -543,9 +525,6 @@ public class MainWindow implements IMainWindow {
         return workflow;
     }
 
-    /**
-     * show the enter data tab
-     */
     /*public void showInputTab() {
         if (inputTab == null) {
             inputTab = new InputTab(this);

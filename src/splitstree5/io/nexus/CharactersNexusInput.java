@@ -42,7 +42,7 @@ import java.util.*;
  */
 public class CharactersNexusInput extends NexusIOBase implements INexusInput<CharactersBlock> {
     private boolean ignoreMatrix = false;
-    private boolean treatUnknownAsError = false;
+	private final boolean treatUnknownAsError = false;
 
     public static final String SYNTAX = "BEGIN " + CharactersBlock.BLOCK_NAME + ";\n" +
             "\t[TITLE {title};]\n" +
@@ -75,12 +75,8 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * parse a characters block
      *
-     * @param np
-     * @param taxa
-     * @param charactersBlock
      * @return taxon names, if found
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxa, CharactersBlock charactersBlock) throws IOException {
         charactersBlock.clear();
@@ -271,14 +267,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * read the matrix
      *
-     * @param np
-     * @param taxa
-     * @param characters
-     * @param format
-     * @param unknownStates
-     * @return
-     * @throws IOException
-     */
+	 */
     private ArrayList<String> readMatrix(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                          Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
@@ -351,14 +340,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * read the matrix
      *
-     * @param np
-     * @param taxa
-     * @param characters
-     * @param format
-     * @param unknownStates
-     * @return
-     * @throws IOException
-     */
+	 */
     private ArrayList<String> readMatrixTransposed(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                    Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
@@ -435,14 +417,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * read the matrix
      *
-     * @param np
-     * @param taxa
-     * @param characters
-     * @param format
-     * @param unknownStates
-     * @return
-     * @throws IOException
-     */
+	 */
     private ArrayList<String> readMatrixInterleaved(NexusStreamParser np, boolean hasTaxonNames, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format,
                                                     Set<Character> unknownStates) throws IOException {
         final boolean checkStates = characters.getDataType() == CharactersType.Protein ||
@@ -542,11 +517,7 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * read the character state labels
      *
-     * @param np
-     * @param charLabeler
-     * @param stateLabeler
-     * @throws IOException
-     */
+	 */
     private void readCharStateLabels(NexusStreamParser np, Map<Integer, String> charLabeler, StateLabeler stateLabeler) throws IOException {
 
         while (np.peekNextToken() != (int) ';') {
@@ -597,7 +568,6 @@ public class CharactersNexusInput extends NexusIOBase implements INexusInput<Cha
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

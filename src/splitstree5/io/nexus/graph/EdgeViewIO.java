@@ -47,7 +47,6 @@ public class EdgeViewIO {
     /**
      * write an edge view
      *
-     * @param ev
      * @return string representation of edge view
      */
     public static String toString(EdgeView2D ev) {
@@ -115,7 +114,7 @@ public class EdgeViewIO {
             if (!first)
                 buf.append("'");
         }
-		buf.append(String.format(" %s %s", StringUtils.toString(ev.getStrokeWidth(), 2), ((Color) ev.getStroke()).toString()));
+		buf.append(String.format(" %s %s", StringUtils.toString(ev.getStrokeWidth(), 2), ev.getStroke().toString()));
 
         if (ev.getLabel() != null && ev.getLabel().getText().length() > 0) {
             final Labeled label = ev.getLabel();
@@ -124,7 +123,7 @@ public class EdgeViewIO {
 					StringUtils.toString(label.getTranslateX(), 4),
 					StringUtils.toString(label.getTranslateY(), 4)));
 			buf.append(String.format(" %s '%s'",
-					((Color) label.getTextFill()).toString(),
+					label.getTextFill().toString(),
 					FontUtils.toString(label.getFont())));
         }
         return buf.toString();
@@ -133,13 +132,8 @@ public class EdgeViewIO {
     /**
      * creates an edge view
      *
-     * @param np
-     * @param graph
-     * @param graphTab
-     * @param id2node
      * @return edge view
-     * @throws IOExceptionWithLineNumber
-     */
+	 */
     public static EdgeView2D valueOf(NexusStreamParser np, PhyloGraph graph, Graph2DTab graphTab, Map<Integer, Node> id2node) throws IOExceptionWithLineNumber {
         np.matchIgnoreCase("E:");
 

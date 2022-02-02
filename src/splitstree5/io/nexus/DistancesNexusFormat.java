@@ -116,8 +116,7 @@ public class DistancesNexusFormat implements INexusFormat {
     /**
      * Set the var type
      *
-     * @param val
-     */
+	 */
     public void setVarType(String val) {
         this.varType = val;
     }

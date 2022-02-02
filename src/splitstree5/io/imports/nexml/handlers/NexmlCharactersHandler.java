@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML.handlers;
+package splitstree5.io.imports.nexml.handlers;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -32,23 +32,23 @@ import java.util.Map;
 
 public class NexmlCharactersHandler extends DefaultHandler {
 
-    // todo multiple symbols like (01), use Statelabeler?
-    private boolean otu = false;
-    private boolean bSeq = false;
-    private boolean bCells = false;
+	// todo multiple symbols like (01), use Statelabeler?
+	private boolean otu = false;
+	private boolean bSeq = false;
+	private boolean bCells = false;
 
-    private ArrayList<String> taxaLabels = new ArrayList<>();
-    private ArrayList<String> matrix = new ArrayList<>();
-    private CharactersType dataType = CharactersType.Unknown;
-    private StringBuilder tmp;
-    private String currentStatesID;
-    private int nchar = 0;
+	private final ArrayList<String> taxaLabels = new ArrayList<>();
+	private final ArrayList<String> matrix = new ArrayList<>();
+	private CharactersType dataType = CharactersType.Unknown;
+	private StringBuilder tmp;
+	private String currentStatesID;
+	private final int nchar = 0;
 
-    private HashMap<String, Character> states2symbols;
-    private ArrayList<String> uncertain_state_set_IDs;
-    private ArrayList<String> polymorphic_state_set_IDs;
+	private HashMap<String, Character> states2symbols;
+	private ArrayList<String> uncertain_state_set_IDs;
+	private ArrayList<String> polymorphic_state_set_IDs;
 
-    private HashMap<String, HashMap<String, Character>> id2states;
+	private HashMap<String, HashMap<String, Character>> id2states;
     private HashMap<String, HashMap<String, Character>> column2state;
 
     private StateLabeler stateLabeler;

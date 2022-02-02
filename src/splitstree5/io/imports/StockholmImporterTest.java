@@ -32,13 +32,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class StockholmImporterTest {
 
-    private StockholmImporter stockholmImporter = new StockholmImporter();
+	private final StockholmImporter stockholmImporter = new StockholmImporter();
 
     @Test
     public void parse() throws Exception {
@@ -52,8 +52,8 @@ public class StockholmImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
     }
 
     @Test
@@ -68,8 +68,8 @@ public class StockholmImporterTest {
 					applicableFiles.add(FileUtils.getFileNameWithoutPath(file.getName()));
             }
         }
-        System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("PF02171_seed.txt"));
+		System.err.println(applicableFiles);
+		assertEquals(applicableFiles, List.of("PF02171_seed.txt"));
     }
 
 }

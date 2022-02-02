@@ -50,12 +50,7 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
     /**
      * parse a file
      *
-     * @param progressListener
-     * @param inputFile
-     * @param taxa
-     * @param characters
-     * @throws IOException
-     */
+	 */
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters) throws IOException, CanceledException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
         final ArrayList<String> matrix = new ArrayList<>();
@@ -66,9 +61,9 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
         try (FileLineIterator it = new FileLineIterator(inputFile)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
-            int currentSequenceLength = 0;
-            StringBuilder currentSequence = new StringBuilder("");
-            boolean ignoreNext = false;
+			int currentSequenceLength = 0;
+			StringBuilder currentSequence = new StringBuilder();
+			boolean ignoreNext = false;
 
             while (it.hasNext()) {
                 final String line = it.next();
@@ -98,8 +93,8 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
 
                     if (!currentSequence.toString().equals("")) matrix.add(currentSequence.toString());
                     nchar = currentSequenceLength;
-                    currentSequenceLength = 0;
-                    currentSequence = new StringBuilder("");
+					currentSequenceLength = 0;
+					currentSequence = new StringBuilder();
                 } else {
                     if (ignoreNext) {
                         ignoreNext = false;
@@ -134,7 +129,7 @@ public class FastaImporter extends CharactersFormat implements IToCharacters, II
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-        StringBuilder foundSymbols = new StringBuilder("");
+		StringBuilder foundSymbols = new StringBuilder();
         for (int i = 1; i <= characters.getNtax(); i++) {
             for (int j = 1; j <= characters.getNchar(); j++) {
                 char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));

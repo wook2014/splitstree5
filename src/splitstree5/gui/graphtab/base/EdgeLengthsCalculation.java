@@ -34,9 +34,7 @@ public class EdgeLengthsCalculation {
     /**
      * compute edge edge lengths of given type
      *
-     * @param tree
-     * @param type
-     */
+	 */
     public static EdgeFloatArray computeEdgeLengths(PhyloTree tree, TreeEmbedder.EdgeLengths type) {
         final EdgeFloatArray edgeLengths = new EdgeFloatArray(tree);
         computeEdgeLengths(tree, type, edgeLengths);
@@ -46,9 +44,7 @@ public class EdgeLengthsCalculation {
     /**
      * compute edge edge lengths of given type
      *
-     * @param tree
-     * @param type
-     */
+	 */
     public static void computeEdgeLengths(final PhyloTree tree, TreeEmbedder.EdgeLengths type, EdgeFloatArray edgeLengths) {
         switch (type) {
             case Cladogram: {
@@ -81,7 +77,6 @@ public class EdgeLengthsCalculation {
     /**
      * compute the max depth below
      *
-     * @param v
      * @return max depth below
      */
     private static int computeMaxDepthRec(Node v) {
@@ -99,7 +94,6 @@ public class EdgeLengthsCalculation {
     /**
      * compute the max depth
      *
-     * @param v
      * @return max depth
      */
     private static int computeNode2DepthRec(Node v, final IntArray node2depth) {
@@ -114,11 +108,7 @@ public class EdgeLengthsCalculation {
     /**
      * computeedge lengths for early branching cladogram
      *
-     * @param maxDepth
-     * @param depth
-     * @param v
-     * @param edgeLengths
-     */
+	 */
     private static void setEdgeLengthsEarlyBranchingRec(int maxDepth, int depth, Node v, EdgeFloatArray edgeLengths) {
         for (Edge e : v.outEdges()) {
             final Node w = e.getTarget();
@@ -134,8 +124,6 @@ public class EdgeLengthsCalculation {
     /**
      * set the weights
      *
-     * @param v
-     * @param node2depth
      * @return depth
      */
     private static float setEdgeLengthsRec(Node v, IntArray node2depth, EdgeFloatArray edgeLengths) {

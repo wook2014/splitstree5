@@ -37,9 +37,7 @@ public class NexusIOBase {
     /**
      * write the block title and link, if set
      *
-     * @param w
-     * @throws IOException
-     */
+	 */
     public void writeTitleAndLink(Writer w) throws IOException {
         if (getTitle() != null && getTitle().length() > 0) {
             w.write("TITLE " + getTitle() + ";\n");
@@ -51,9 +49,7 @@ public class NexusIOBase {
     /**
      * parse the title and link, if present
      *
-     * @param np
-     * @throws IOExceptionWithLineNumber
-     */
+	 */
     public void parseTitleAndLink(NexusStreamParser np) throws IOExceptionWithLineNumber {
         setTitle(null);
         setLink(null);

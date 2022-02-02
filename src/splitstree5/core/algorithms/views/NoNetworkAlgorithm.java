@@ -44,9 +44,7 @@ public class NoNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> /* i
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
-        Platform.runLater(() -> {
-            viewerBlock.getTab().setText(viewerBlock.getName());
-        });
+        Platform.runLater(() -> viewerBlock.getTab().setText(viewerBlock.getName()));
 
         viewTab.init(new PhyloSplitsGraph());
         Platform.runLater(() -> {

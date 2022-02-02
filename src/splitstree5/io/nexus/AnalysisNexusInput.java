@@ -45,11 +45,8 @@ public class AnalysisNexusInput extends NexusIOBase {
     /**
      * parse an analysis result block
      *
-     * @param np
-     * @param block
      * @return list of taxon names found
-     * @throws IOException
-     */
+	 */
     public ArrayList<String> parse(NexusStreamParser np, AnalysisBlock block) throws IOException {
         block.clear();
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
@@ -86,7 +83,6 @@ public class AnalysisNexusInput extends NexusIOBase {
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

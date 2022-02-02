@@ -76,12 +76,7 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
     /**
      * parse a splits block
      *
-     * @param np
-     * @param taxaBlock
-     * @param splitsBlock
-     * @return
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, SplitsBlock splitsBlock) throws IOException {
         splitsBlock.clear();
@@ -267,7 +262,6 @@ public class SplitsNexusInput extends NexusIOBase implements INexusInput<SplitsB
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

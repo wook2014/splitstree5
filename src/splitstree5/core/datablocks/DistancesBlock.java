@@ -44,8 +44,7 @@ public class DistancesBlock extends DataBlock {
     /**
      * shallow copy
      *
-     * @param that
-     */
+	 */
     public void copy(DistancesBlock that) {
         distances = that.getDistances();
         variances = that.getVariances();
@@ -86,8 +85,7 @@ public class DistancesBlock extends DataBlock {
      *
      * @param i     in range 1-nTax
      * @param j     in range 1-nTax
-     * @param value
-     */
+	 */
     public void set(int i, int j, double value) {
         distances[i - 1][j - 1] = value;
     }
@@ -99,10 +97,7 @@ public class DistancesBlock extends DataBlock {
     /**
      * sets the value for (s,t) and (t,s), indices 1-based
      *
-     * @param s
-     * @param t
-     * @param value
-     */
+	 */
     public void setBoth(int s, int t, double value) {
         distances[s - 1][t - 1] = distances[t - 1][s - 1] = value;
     }
@@ -110,8 +105,6 @@ public class DistancesBlock extends DataBlock {
     /**
      * gets the variances,  indices 1-based
      *
-     * @param s
-     * @param t
      * @return variances or -1, if not set
      */
     public double getVariance(int s, int t) {
@@ -124,10 +117,7 @@ public class DistancesBlock extends DataBlock {
     /**
      * sets the variances,  indices 1-based
      *
-     * @param s
-     * @param t
-     * @param value
-     */
+	 */
     public void setVariance(int s, int t, double value) {
         synchronized (this) {
             if (variances == null) {
@@ -148,8 +138,7 @@ public class DistancesBlock extends DataBlock {
     /**
      * set distances, change dimensions if necessary. If dimensions are changed, delete variances
      *
-     * @param distances
-     */
+	 */
     public void set(double[][] distances) {
         if (this.distances.length != distances.length) {
             this.distances = new double[distances.length][distances.length];
@@ -164,9 +153,7 @@ public class DistancesBlock extends DataBlock {
     /**
      * set values, change dimensions if necessary
      *
-     * @param distances
-     * @param variances
-     */
+	 */
     public void set(double[][] distances, double[][] variances) {
         if (this.distances == null || this.distances.length != distances.length)
             this.distances = new double[distances.length][distances.length];

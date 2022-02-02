@@ -103,7 +103,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     protected NodeArray<NodeViewBase> node2view;
     protected EdgeArray<EdgeViewBase> edge2view;
 
-    protected ArrayList<PolygonView2D> polygons = new ArrayList<>();
+    protected final ArrayList<PolygonView2D> polygons = new ArrayList<>();
 
     protected final StackPane centerPane = new StackPane();
 
@@ -453,7 +453,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     /**
      * select nodes  labels
      *
-     * @param set
      */
     public void selectNodesByLabel(Collection<String> set, boolean select) {
         for (Node node : getGraph().nodes()) {
@@ -469,7 +468,6 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
     /**
      * select nodes and edges by labels
      *
-     * @param set
      */
     public void selectByLabel(Collection<String> set) {
         if (false)
@@ -591,24 +589,18 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
 
     @Override
     public void updateMenus(MenuController controller) {
-        setOnClosed((e) -> {
-            getMainWindow().getWorkflow().deleteNodeAndPathAndDescendants(getDataNode());
-        });
+        setOnClosed((e) -> getMainWindow().getWorkflow().deleteNodeAndPathAndDescendants(getDataNode()));
         setClosable(true);
 
         controller.getPageSetupMenuItem().setOnAction((e) -> Print.showPageLayout(getMainWindow().getStage()));
         controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), centerPane));
 
         if (getUndoManager() != null) {
-            controller.getUndoMenuItem().setOnAction((e) -> {
-                getUndoManager().undo();
-            });
+            controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
             controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
             controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
-            controller.getRedoMenuItem().setOnAction((e) -> {
-                getUndoManager().redo();
-            });
+            controller.getRedoMenuItem().setOnAction((e) -> getUndoManager().redo());
             controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
@@ -685,10 +677,7 @@ abstract public class GraphTabBase<G extends PhyloGraph> extends ViewerTab imple
         controller.getDeselectEdgesMenuItem().setOnAction((e) -> edgeSelectionModel.clearSelection());
         controller.getDeselectEdgesMenuItem().disableProperty().bind(edgeSelectionModel.emptyProperty());
 
-        controller.getSelectFromPreviousMenuItem().setOnAction((e) -> {
-            selectByLabel(MainWindowManager.getPreviousSelection());
-
-        });
+        controller.getSelectFromPreviousMenuItem().setOnAction((e) -> selectByLabel(MainWindowManager.getPreviousSelection()));
         // todo: do we need to unbind this when this tab disappears?
         controller.getSelectFromPreviousMenuItem().disableProperty().bind(Bindings.isEmpty(MainWindowManager.getPreviousSelection()));
 

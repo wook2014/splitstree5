@@ -93,26 +93,20 @@ public class ExportService extends Service<Boolean> {
     protected void succeeded() {
         exportDialog.getController().getProgressBar().setVisible(false);
         exportDialog.getController().getProgressBar().progressProperty().unbind();
-        exportDialog.getController().getCancelButton().setOnAction((c) -> {
-            exportDialog.close();
-        });
+		exportDialog.getController().getCancelButton().setOnAction((c) -> exportDialog.close());
     }
 
     @Override
     protected void cancelled() {
         exportDialog.getController().getProgressBar().setVisible(false);
-        exportDialog.getController().getProgressBar().progressProperty().unbind();
-        exportDialog.getController().getCancelButton().setOnAction((c) -> {
-            exportDialog.close();
-        });
+		exportDialog.getController().getProgressBar().progressProperty().unbind();
+		exportDialog.getController().getCancelButton().setOnAction((c) -> exportDialog.close());
     }
 
     @Override
     protected void failed() {
         exportDialog.getController().getProgressBar().setVisible(false);
-        exportDialog.getController().getProgressBar().progressProperty().unbind();
-        exportDialog.getController().getCancelButton().setOnAction((c) -> {
-            exportDialog.close();
-        });
+		exportDialog.getController().getProgressBar().progressProperty().unbind();
+		exportDialog.getController().getCancelButton().setOnAction((c) -> exportDialog.close());
     }
 }

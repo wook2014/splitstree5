@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class FastaImporterTest {
 
-    private FastaImporter fastaImporter = new FastaImporter();
+    private final FastaImporter fastaImporter = new FastaImporter();
 
     @Test
     public void parseI() throws Exception {
@@ -56,8 +56,8 @@ public class FastaImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
     }
 
     @Test
@@ -73,8 +73,8 @@ public class FastaImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
     }
 
     @Test
@@ -90,8 +90,8 @@ public class FastaImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
     }
 
     @Test
@@ -108,8 +108,8 @@ public class FastaImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
     }
 
     @Test

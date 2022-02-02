@@ -123,7 +123,7 @@ public abstract class QuasiMedianBase {
                     if (count == 1)
                         graph.setLabel(v, taxa.get(graph.getTaxa(v).iterator().next()).getDisplayLabelOrName());
                     else if (count > 1)
-                        graph.setLabel(v, "{" + buf.toString() + "}");
+                        graph.setLabel(v, "{" + buf + "}");
                 }
             }
             String full = expandCondensed(condensed, orig2CondensedPos, translator);
@@ -140,7 +140,6 @@ public abstract class QuasiMedianBase {
     /**
      * compute the matrix of unmasked characters
      *
-     * @param chars
      * @return unmasked characters
      */
     private char[][] getCharacters(CharactersBlock chars) {
@@ -172,8 +171,6 @@ public abstract class QuasiMedianBase {
     /**
      * determines the majority state for the given position
      *
-     * @param chars
-     * @param c
      * @return majority state
      */
     private char determineMajorityState(CharactersBlock chars, int c) {
@@ -197,7 +194,6 @@ public abstract class QuasiMedianBase {
     /**
      * all character labels
      *
-     * @param chars
      * @return character labels
      */
     private String[] getCharacterLabels(CharactersBlock chars) {
@@ -222,17 +218,12 @@ public abstract class QuasiMedianBase {
     /**
      * computes the actual graph
      *
-     * @param inputSequences
-     * @param weights
-     */
+	 */
     public abstract void computeGraph(ProgressListener progressListener, Set<String> inputSequences, double[] weights, PhyloGraph graph) throws CanceledException;
 
     /**
      * computes all original positions at which the two sequences differ in display coordinates 1--length
      *
-     * @param conA
-     * @param conB
-     * @param orig2CondensedPos
      * @return positions at which orig sequences differ
      */
     private String computeEdgeLabel(String[] labels, String conA, String conB, int[] orig2CondensedPos, Translator translator) {
@@ -260,9 +251,6 @@ public abstract class QuasiMedianBase {
     /**
      * gets the differences in display coordinates 1--length
      *
-     * @param conA
-     * @param conB
-     * @param orig2CondensedPos
      * @return length
      */
     private int[] getDifferences(String conA, String conB, int[] orig2CondensedPos, Translator translator) {
@@ -285,7 +273,6 @@ public abstract class QuasiMedianBase {
     /**
      * invert the orig 2 new mapping
      *
-     * @param orig2new
      * @return new 2 orig mapping
      */
     private BitSet[] invert(int[] orig2new) {
@@ -306,8 +293,6 @@ public abstract class QuasiMedianBase {
     /**
      * computes the weights associated with the condensed characters
      *
-     * @param numChars
-     * @param origPos2CondensedPos
      * @return weights
      */
     private double[] computeWeights(int numChars, int[] origPos2CondensedPos) {
@@ -327,8 +312,6 @@ public abstract class QuasiMedianBase {
     /**
      * expand a condensed sequence
      *
-     * @param condensed
-     * @param orig2CondensedPos
      * @return expanded sequence
      */
     private String expandCondensed(String condensed, int[] orig2CondensedPos, Translator translator) {
@@ -349,10 +332,6 @@ public abstract class QuasiMedianBase {
     /**
      * computes the condensed sequences
      *
-     * @param ntax
-     * @param chars
-     * @param origPos2CondensedPos
-     * @param origTaxa2CondensedTaxa
      * @return array condensed sequences
      */
     private String[] condenseCharacters(int ntax, int nchar, char[][] chars, int[] origPos2CondensedPos, int[] origTaxa2CondensedTaxa, Translator translator) {
@@ -443,28 +422,28 @@ public abstract class QuasiMedianBase {
         // condensed taxa start at 0
         for (int t = 1; t <= ntax; t++) {
             origTaxa2CondensedTaxa[t]--;
-        }
+		}
 
-        String[] result = new String[list.size()];
-        int which = 0;
-        for (Object aList : list) {
-            result[which++] = (String) aList;
-        }
-        return result;
-    }
+		String[] result = new String[list.size()];
+		int which = 0;
+		for (Object aList : list) {
+			result[which++] = (String) aList;
+		}
+		return result;
+	}
 
-    class Translator {
-        Map mapOrigPosCondensedPosCondensedCharToOrigChar = new HashMap();
-        int maxOrigPos = 0;
-        int maxOrigChar = 0;
-        int maxCondensedPos = 0;
+	static class Translator {
+		final Map mapOrigPosCondensedPosCondensedCharToOrigChar = new HashMap();
+		int maxOrigPos = 0;
+		int maxOrigChar = 0;
+		int maxCondensedPos = 0;
 
-        public void put(int origPos, char origChar, int condensedPos, char condensedChar) {
-            maxOrigPos = Math.max(maxOrigPos, origPos);
-            maxOrigChar = Math.max(maxOrigChar, origChar);
-            maxCondensedPos = Math.max(maxCondensedPos, condensedPos);
-            Triple triple = new Triple(origPos, condensedPos, condensedChar);
-            Character ch = origChar;
+		public void put(int origPos, char origChar, int condensedPos, char condensedChar) {
+			maxOrigPos = Math.max(maxOrigPos, origPos);
+			maxOrigChar = Math.max(maxOrigChar, origChar);
+			maxCondensedPos = Math.max(maxCondensedPos, condensedPos);
+			Triple triple = new Triple(origPos, condensedPos, condensedChar);
+			Character ch = origChar;
             mapOrigPosCondensedPosCondensedCharToOrigChar.put(triple, ch);
         }
 
@@ -494,20 +473,20 @@ public abstract class QuasiMedianBase {
             return buf.toString();
         }
 
-        class Triple {
-            int first;
-            int second;
-            char third;
+		class Triple {
+			final int first;
+			final int second;
+			final char third;
 
-            Triple(int first, int second, char third) {
-                this.first = first;
-                this.second = second;
-                this.third = third;
-            }
+			Triple(int first, int second, char third) {
+				this.first = first;
+				this.second = second;
+				this.third = third;
+			}
 
-            public int hashCode() {
-                return first + 17 * second + 37 * third;
-            }
+			public int hashCode() {
+				return first + 17 * second + 37 * third;
+			}
 
             public boolean equals(Object other) {
                 if (other instanceof Triple) {

@@ -47,8 +47,7 @@ public class TreesBlock extends DataBlock {
     /**
      * shallow copy
      *
-     * @param that
-     */
+	 */
     public void copy(TreesBlock that) {
         clear();
         trees.addAll(that.getTrees());
@@ -129,7 +128,6 @@ public class TreesBlock extends DataBlock {
     /**
      * get t-th tree, starting with 1
      *
-     * @param t
      * @return tree
      */
     public PhyloTree getTree(int t) {

@@ -33,8 +33,6 @@ public interface IExportTaxa extends IExporter, IFromTaxa {
     /**
      * save taxa
      *
-     * @param w
-     * @param taxa
-     */
+	 */
     void export(Writer w, TaxaBlock taxa) throws IOException;
 }

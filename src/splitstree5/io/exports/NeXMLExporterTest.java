@@ -24,8 +24,8 @@ import jloda.util.progress.ProgressListener;
 import jloda.util.progress.ProgressPercentage;
 import org.junit.Test;
 import splitstree5.core.datablocks.*;
-import splitstree5.io.imports.NeXML.NexmlFileParser;
-import splitstree5.io.imports.NeXML.NexmlNetworkImporter;
+import splitstree5.io.imports.nexml.NexmlFileParser;
+import splitstree5.io.imports.nexml.NexmlNetworkImporter;
 import splitstree5.io.nexus.CharactersNexusInput;
 import splitstree5.io.nexus.TaxaNexusInput;
 
@@ -35,7 +35,7 @@ import java.util.List;
 
 public class NeXMLExporterTest {
 
-    private NeXMLExporter neXMLExporter = new NeXMLExporter();
+	private final NeXMLExporter neXMLExporter = new NeXMLExporter();
 
     @Test
     public void exportCharacters() throws Exception {

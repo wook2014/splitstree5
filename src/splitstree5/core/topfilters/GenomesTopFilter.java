@@ -38,11 +38,7 @@ public class GenomesTopFilter extends ATopFilter<GenomesBlock> {
     /**
      * constructor
      *
-     * @param originalTaxaNode
-     * @param modifiedTaxaNode
-     * @param parent
-     * @param child
-     */
+	 */
     public GenomesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<GenomesBlock> parent, DataNode<GenomesBlock> child) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 

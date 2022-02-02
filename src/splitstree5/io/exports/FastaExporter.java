@@ -44,7 +44,7 @@ public class FastaExporter implements IFromCharacters, IExportCharacters, IFromS
         int nchar = characters.getNchar();
 
         for (int i = 1; i <= ntax; i++) {
-            StringBuilder sequence = new StringBuilder("");
+            StringBuilder sequence = new StringBuilder();
             for (int j = 1; j <= nchar; j++) {
                 sequence.append(characters.get(i, j));
             }

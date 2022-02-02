@@ -42,12 +42,7 @@ public class WorkflowEditing {
     /**
      * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
      *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param algorithm1class
-     * @param data1class
      * @return connector and view node
-     * @throws Exception
      */
     public static Pair<Connector, DataNode> findOrCreatePath(Workflow workflow, DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass,
                                                              Class<? extends Algorithm> algorithm1class, Class<? extends DataBlock> data1class) {
@@ -57,10 +52,6 @@ public class WorkflowEditing {
     /**
      * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
      *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param algorithm1class
-     * @param data1class
      * @param algorithm2class    can be null
      * @param data2class         can be null if algorithm2class is also null
      * @return connector and view node
@@ -74,9 +65,6 @@ public class WorkflowEditing {
     /**
      * creates a short chain of nodes leading to a view. If the type of view is already present, returns the node
      *
-     * @param currentDataNode
-     * @param desiredParentClass
-     * @param path
      * @return connector and view node
      */
     public static Pair<Connector, DataNode> findOrCreatePath(Workflow workflow, DataNode currentDataNode, Class<? extends DataBlock> desiredParentClass, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
@@ -92,7 +80,7 @@ public class WorkflowEditing {
 
                     for (Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair : path) {
                         final DataNode dataNode = workflow.createDataNode(pair.getSecond().getConstructor().newInstance());
-                        final Connector connector = workflow.createConnector(lastDataNode, dataNode, (Algorithm) (pair.getFirst().getConstructor().newInstance()));
+                        final Connector connector = workflow.createConnector(lastDataNode, dataNode, pair.getFirst().getConstructor().newInstance());
                         if (firstConnector == null)
                             firstConnector = connector;
                         lastDataNode = dataNode;
@@ -112,7 +100,6 @@ public class WorkflowEditing {
     /**
      * find the filter for this node, if it exists, otherwise insert one and return it
      *
-     * @param dataNode
      * @return filter or null
      */
     public static Connector findOrInsertFilter(Workflow workflow, DataNode dataNode) {
@@ -173,7 +160,6 @@ public class WorkflowEditing {
     /**
      * finds tree trees block above this node and then finds or add tree-rooting algorithm
      *
-     * @param dataNode
      * @return tree rooting algorithm node or null
      */
     public static Pair<Connector, DataNode> findOrInsertTreeRootAlgorithm(Workflow workflow, DataNode dataNode, Algorithm<TreesBlock, TreesBlock> algorithm) {

@@ -72,8 +72,7 @@ public class TaxaFilterPane extends AlgorithmPane {
     /**
      * constructor
      *
-     * @param taxaFilter
-     */
+	 */
     public TaxaFilterPane(TaxaFilter taxaFilter) {
         this.taxaFilter = taxaFilter;
         final ExtendedFXMLLoader<TaxaFilterPaneController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
@@ -168,9 +167,7 @@ public class TaxaFilterPane extends AlgorithmPane {
             controller.getActiveList().setTooltip(new Tooltip("Active: " + controller.getActiveList().getItems().size()));
         });
 
-        controller.getInactiveList().getItems().addListener((InvalidationListener) (c) -> {
-            controller.getInactiveList().setTooltip(new Tooltip("Inactive: " + controller.getInactiveList().getItems().size()));
-        });
+		controller.getInactiveList().getItems().addListener((InvalidationListener) (c) -> controller.getInactiveList().setTooltip(new Tooltip("Inactive: " + controller.getInactiveList().getItems().size())));
 
         document.getTaxaSelectionModel().getSelectedItems().addListener(documentTaxonSelectionChangeListener);
 
@@ -233,9 +230,7 @@ public class TaxaFilterPane extends AlgorithmPane {
     /**
      * set or deselect taxa
      *
-     * @param taxa
-     * @param select
-     */
+	 */
     private void select(Collection<? extends Taxon> taxa, boolean select) {
         if (select) {
             boolean firstActive = true;

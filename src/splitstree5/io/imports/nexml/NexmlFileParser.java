@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.phylo.PhyloTree;
 import splitstree5.core.algorithms.interfaces.IToCharacters;
@@ -26,9 +26,9 @@ import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.CharactersBlock;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.imports.NeXML.handlers.NexmlCharactersHandler;
-import splitstree5.io.imports.NeXML.handlers.NexmlTaxaHandler;
-import splitstree5.io.imports.NeXML.handlers.NexmlTreesHandler;
+import splitstree5.io.imports.nexml.handlers.NexmlCharactersHandler;
+import splitstree5.io.imports.nexml.handlers.NexmlTaxaHandler;
+import splitstree5.io.imports.nexml.handlers.NexmlTreesHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;

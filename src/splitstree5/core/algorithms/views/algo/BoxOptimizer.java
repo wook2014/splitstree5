@@ -55,11 +55,7 @@ public class BoxOptimizer {
     /**
      * apply the algorithm to build a new graph
      *
-     * @param progress
-     * @param taxaBlock
-     * @param graph
-     * @param node2point
-     */
+	 */
     public void apply(ProgressListener progress, TaxaBlock taxaBlock, int numberOfSplits, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) throws CanceledException {
         this.progress = progress;
         System.err.println("Running box optimizer");
@@ -90,17 +86,16 @@ public class BoxOptimizer {
     /**
      * optimize the boxes of the graph
      *
-     * @param graph
-     */
+	 */
     private void runOptimizeBoxes(Node start, PhyloSplitsGraph graph, int numberOfSplits, NodeArray<Point2D> node2point, HashSet forbiddenSplits) throws CanceledException {
         //We first build EdgeSplits, where each split is linked with the set containing all its edges
         final HashMap<Integer, List<Edge>> edgeSplits = getEdgeSplits(graph);
 
         int nbIterations = optionIterations.get();
 
-        progress.setTasks("Optimize boxes", "iterating");
-        progress.setMaximum(nbIterations * numberOfSplits);
-        progress.setProgress(0);
+		progress.setTasks("Optimize boxes", "iterating");
+		progress.setMaximum((long) nbIterations * numberOfSplits);
+		progress.setProgress(0);
         int counter = 0;
 
         Set<Integer> SplitsSet = edgeSplits.keySet();
@@ -133,28 +128,28 @@ public class BoxOptimizer {
                     } else {
                         progress.setSubtask("box optim.: " + score + "%  (" + (i) + ":+" + (int) Math.floor(miniScore) + "%)");
                     }
-                } else {
-                    progress.setSubtask("box optim.: " + score + "%  (" + (i) + ":" + miniScore + "%)");
-                }
-            }
-            previousSize = totalSize;
+				} else {
+					progress.setSubtask("box optim.: " + score + "%  (" + (i) + ":" + miniScore + "%)");
+				}
+			}
+			previousSize = totalSize;
 
-            SplitsSet = edgeSplits.keySet();
-            totalSize = 0;
+			SplitsSet = edgeSplits.keySet();
+			totalSize = 0;
 
-            //Iterator allSplits=SplitsSet.iterator();
-            for (Object aSplitsSet : SplitsSet) {
-                int CurrentSplit = (Integer) aSplitsSet;
-                if (!forbiddenSplits.contains(CurrentSplit)) {
-                    //We can move this split as it's is not in the forbidden list.
+			//Iterator allSplits=SplitsSet.iterator();
+			for (Integer aSplitsSet : SplitsSet) {
+				int CurrentSplit = aSplitsSet;
+				if (!forbiddenSplits.contains(CurrentSplit)) {
+					//We can move this split as it's is not in the forbidden list.
 
-                    //If the split is improvable, it will have more chances to be improved:
-                    counter++;
-                    progress.setProgress(counter);
-                    final List<Edge> currentEdges = edgeSplits.get(CurrentSplit);
-                    final Edge currentEdge = currentEdges.get(0);
+					//If the split is improvable, it will have more chances to be improved:
+					counter++;
+					progress.setProgress(counter);
+					final List<Edge> currentEdges = edgeSplits.get(CurrentSplit);
+					final Edge currentEdge = currentEdges.get(0);
 
-                    double oldAngle = graph.getAngle(currentEdge);
+					double oldAngle = graph.getAngle(currentEdge);
 
                     //Compute the min and max variations of the split considering only the split itself (which must remain planar).
                     final Pair<Double, Double> currentExtremeAngles = trigClockAngles(currentEdges, graph, node2point);
@@ -191,10 +186,7 @@ public class BoxOptimizer {
      * Can be used to get the current area of the split by setting minAngle=maxAngle= the split angle
      *
      * @param splitEdges list of the Edges of the Split, not necessary all directed in the same sense.
-     * @param graph
-     * @param minAngle
-     * @param maxAngle
-     */
+	 */
     public Pair<Double, Double> maximizeArea(List<Edge> splitEdges, PhyloSplitsGraph graph, double minAngle, double maxAngle) {
         //We will first express the area of the split as A cos x + B sin x, x being the split angle
         double alpha = 0;
@@ -267,8 +259,7 @@ public class BoxOptimizer {
      * needs to be corrected to deal with boxes with DiffAngle=0
      *
      * @param SplitEdges sorted list of the split edges
-     * @param graph
-     */
+	 */
     public Pair<Double, Double> trigClockAngles(List<Edge> SplitEdges, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         Iterator edgeIt = SplitEdges.iterator();
         Edge currentEdge = (Edge) edgeIt.next();
@@ -321,8 +312,7 @@ public class BoxOptimizer {
     /**
      * returns a HashMap which gives for each split the list of its edges.
      *
-     * @param graph
-     */
+	 */
     public HashMap<Integer, List<Edge>> getEdgeSplits(PhyloSplitsGraph graph) {
         final HashMap<Integer, List<Edge>> edgeSplits = new HashMap<>();
         Edge CurrentEdge = graph.getFirstEdge();
@@ -442,7 +432,6 @@ public class BoxOptimizer {
      *
      * @param clockAngle clockAngle found so far
      * @param trigAngle  trigAngle found so far
-     * @param oldAngle
      * @param SplitEdges sorted list of the split edges
      * @param Angle      we want to affect to the split
      */
@@ -579,17 +568,9 @@ public class BoxOptimizer {
     /**
      * recursively visit the whole subgraph, obtaining the min and max observed angle
      *
-     * @param v
-     * @param e
      * @param specialNode     1 if v is a neighbour of angle1in, 2 if v neighbour of angle2in else 0
      * @param previousAngle1  previous angle, except when specialNode=1
      * @param previousAngle2  previous angle, except when specialNode=2
-     * @param angle1in
-     * @param angle1out
-     * @param angle2in
-     * @param angle2out
-     * @param graph
-     * @param visited
      * @param foundParameters angle1 angle2
      */
     private void visitComponentRec2(Node v, Edge e, int specialNode, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters, boolean dontCompute) {// throws CanceledException {
@@ -666,14 +647,6 @@ public class BoxOptimizer {
     /**
      * recursively visit the whole subgraph, obtaining the min and max observed angle
      *
-     * @param v
-     * @param e
-     * @param angle1in
-     * @param angle1out
-     * @param angle2in
-     * @param angle2out
-     * @param graph
-     * @param visited
      * @param foundParameters xmin ymin xmax ymax angle1 angle2
      */
     private void visitComponentRec1(Node v, Edge e, double previousAngle1, double previousAngle2, Node angle1in, Node angle1out, Node angle2in, Node angle2out, PhyloSplitsGraph graph, NodeArray<Point2D> node2point, NodeSet visited, double[] foundParameters) {
@@ -702,9 +675,7 @@ public class BoxOptimizer {
     /**
      * assigns coordinates to nodes
      *
-     * @param useWeights
-     * @param graph
-     */
+	 */
     private void assignCoordinatesToNodes(Node start, boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         node2point.put(start, new Point2D(0, 0));
         final BitSet splitsInPath = new BitSet();
@@ -717,11 +688,7 @@ public class BoxOptimizer {
     /**
      * recursively assigns coordinates to all nodes
      *
-     * @param v
-     * @param splitsInPath
-     * @param nodesVisited
-     * @param useWeights
-     */
+	 */
     private void assignCoordinatesToNodesRec(Node v, BitSet splitsInPath, NodeSet nodesVisited, boolean useWeights, PhyloSplitsGraph graph, NodeArray<Point2D> node2point) {
         if (!nodesVisited.contains(v)) {
             //Deleted so that the user can cancel and it doesn't destroy everything: doc.getProgressListener().checkForCancel();

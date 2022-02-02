@@ -26,7 +26,6 @@ import jloda.util.CanceledException;
 import jloda.util.StringUtils;
 import jloda.util.progress.ProgressListener;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,8 +48,7 @@ public class DashingSketch {
     /**
      * construct a new sketch
      *
-     * @param kmerSize
-     */
+	 */
     public DashingSketch(String name, int kmerSize, int prefixSize) {
         this.name = name;
         this.kmerSize = kmerSize;
@@ -61,10 +59,8 @@ public class DashingSketch {
     /**
      * for a given genome size and the desired probability prob of observing a random k-mer calculate the optimal k value
      *
-     * @param genomeSize
      * @param prob       - probability of observing a random k-mer
-     * @return
-     */
+	 */
     public static int optimalK(long genomeSize, float prob) {
         return (int) Math.ceil(Math.log(genomeSize * (1 - prob) / prob) / Math.log(4));
     }
@@ -72,12 +68,7 @@ public class DashingSketch {
     /**
      * compute a dashing sketch
      *
-     * @param name
-     * @param sequences
-     * @param kMerSize
-     * @return
-     * @throws IOException
-     */
+	 */
     public static DashingSketch compute(String name, Collection<byte[]> sequences, int kMerSize, int prefixSize, int seed, boolean filterUniqueKMers, ProgressListener progress) {
         final DashingSketch sketch = new DashingSketch(name, kMerSize, prefixSize);
 
@@ -163,9 +154,7 @@ public class DashingSketch {
     /**
      * estimates cardinalities of sets with the register values by calculating harmonic means
      *
-     * @param register
-     * @return
-     */
+	 */
     public static double computeHarmonicMean(int[] register) {
         final int registerSize = register.length;
         float denominator = 0;
@@ -178,8 +167,6 @@ public class DashingSketch {
     /**
      * count leading zeros after prefix
      *
-     * @param val
-     * @param prefixSize
      * @return number of zeros
      */
     public static int countZerosAfterPrefix(long val, int prefixSize) {
@@ -218,8 +205,6 @@ public class DashingSketch {
     /**
      * compute the union of two sketches
      *
-     * @param sketch1
-     * @param sketch2
      * @return union
      */
     public static DashingSketch union(DashingSketch sketch1, DashingSketch sketch2) {

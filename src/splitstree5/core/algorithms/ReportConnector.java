@@ -33,9 +33,7 @@ public class ReportConnector<D extends DataBlock> extends Connector<D, AnalysisB
     /**
      * report the block
      *
-     * @param taxaBlock
-     * @param parent
-     */
+	 */
     public ReportConnector(TaxaBlock taxaBlock, DataNode<D> parent) {
         super(taxaBlock, parent, new DataNode<>(new AnalysisBlock()));
         setAlgorithm((Algorithm) new Report());

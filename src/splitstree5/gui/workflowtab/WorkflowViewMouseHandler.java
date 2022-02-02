@@ -56,8 +56,7 @@ public class WorkflowViewMouseHandler {
     /**
      * install a mouse handler
      *
-     * @param nodeView
-     */
+	 */
     public static void install(WorkflowViewTab workflowView, Group group, WorkflowNodeView nodeView) {
         new WorkflowViewMouseHandler(workflowView, group, nodeView);
     }
@@ -65,8 +64,7 @@ public class WorkflowViewMouseHandler {
     /**
      * setup the mouse handler
      *
-     * @param nodeView
-     */
+	 */
     private WorkflowViewMouseHandler(WorkflowViewTab workflowView, Group group, WorkflowNodeView nodeView) {
         line.setStroke(Color.DARKGRAY);
 
@@ -79,10 +77,9 @@ public class WorkflowViewMouseHandler {
                 final Point2D point = group.screenToLocal(e.getScreenX(), e.getScreenY());
                 mouseDownX = point.getX();
                 mouseDownY = point.getY();
-                ;
 
-                shiftDown = e.isShiftDown();
-                controlDown = e.isControlDown();
+				shiftDown = e.isShiftDown();
+				controlDown = e.isControlDown();
 
                 node2change.clear();
 

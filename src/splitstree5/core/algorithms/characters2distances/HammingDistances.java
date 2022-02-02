@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  * @author Daniel Huson, 2003, 2017
  */
 public class HammingDistances extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
-    private BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
+    private final BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
 
     public List<String> listOptions() {
         return Collections.singletonList("Normalize");

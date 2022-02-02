@@ -94,10 +94,7 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
     /**
      * this is run after the node has been instantiated
      *
-     * @param taxaBlock
-     * @param parent
-     * @throws Exception
-     */
+	 */
     public void setupBeforeDisplay(TaxaBlock taxaBlock, CharactersBlock parent) {
         if (listenerSetSiteVarParams != null)
             optionSetSiteVarParamsProperty().removeListener(listenerSetSiteVarParams);
@@ -117,11 +114,9 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
                             return captureRecapture.estimatePropInvariableSites(progress, parent);
                         }
                     });
-                    service.setOnSucceeded((e) -> setOptionPropInvariableSites(service.getValue()));
-                    service.setOnFailed((e) -> {
-                        NotificationManager.showError("Calculation of proportion of invariable sites failed: " + service.getException().getMessage());
-                    });
-                    service.start();
+					service.setOnSucceeded((e) -> setOptionPropInvariableSites(service.getValue()));
+					service.setOnFailed((e) -> NotificationManager.showError("Calculation of proportion of invariable sites failed: " + service.getException().getMessage()));
+					service.start();
                     break;
                 }
             }
@@ -142,11 +137,9 @@ public abstract class Nucleotides2DistancesBase extends Algorithm<CharactersBloc
                 }
                 case fromChars: {
                     final AService<double[]> service = new AService<>(() -> NucleotideModel.computeFreqs(parent, false));
-                    service.setOnSucceeded((e) -> setOptionBaseFrequencies(service.getValue()));
-                    service.setOnFailed((e) -> {
-                        NotificationManager.showError("Calculation of base frequencies failed: " + service.getException().getMessage());
-                    });
-                    service.start();
+					service.setOnSucceeded((e) -> setOptionBaseFrequencies(service.getValue()));
+					service.setOnFailed((e) -> NotificationManager.showError("Calculation of base frequencies failed: " + service.getException().getMessage()));
+					service.start();
 
                     // todo: don't know how to estimate QMatrix from data, ask Dave!
                     setOptionRateMatrix(DEFAULT_RATE_MATRIX);

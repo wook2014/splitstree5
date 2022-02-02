@@ -62,7 +62,6 @@ public abstract class NucleotideModel implements SubstitutionModel {
     /**
      * computes the exact distance.
      *
-     * @param F
      * @return exact distance
      */
     abstract public double exactDistance(double[][] F);
@@ -394,7 +393,6 @@ public abstract class NucleotideModel implements SubstitutionModel {
     /**
      * Return the inverse of the moment generating function
      *
-     * @param x
      * @return double
      */
     public static double mInverse(double x, double propInvariableSites, final double gamma) throws SaturatedDistancesException {
@@ -414,11 +412,7 @@ public abstract class NucleotideModel implements SubstitutionModel {
      * apply the model and fill the distance
      *
      * @param progress   used to display the progress
-     * @param characters
-     * @return
-     * @throws SplitsException
-     * @throws CanceledException
-     */
+	 */
     public void apply(ProgressListener progress, CharactersBlock characters, DistancesBlock distances, boolean useML) throws SplitsException, CanceledException {
         final int ntax = characters.getNtax();
         distances.setNtax(ntax);

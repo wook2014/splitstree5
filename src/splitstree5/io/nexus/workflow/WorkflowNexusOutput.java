@@ -42,10 +42,8 @@ public class WorkflowNexusOutput {
     /**
      * save the workflow in nexus format
      *
-     * @param workflow
      * @param file     file or stdout
-     * @throws IOException
-     */
+	 */
     public void save(Workflow workflow, final File file, boolean asWorkflowOnly) throws IOException {
         if (file.getParentFile() != null && file.getParentFile().isDirectory())
             ProgramProperties.put("SaveDir", file.getParent());
@@ -59,12 +57,7 @@ public class WorkflowNexusOutput {
     /**
      * write a workflow
      *
-     * @param workflow
-     * @param w
-     * @param asWorkflowOnly
-     * @return
-     * @throws IOException
-     */
+	 */
     public int save(Workflow workflow, Writer w, boolean asWorkflowOnly) throws IOException {
         SplitsTree5Block splitsTree5Block = new SplitsTree5Block();
         splitsTree5Block.setOptionNumberOfDataNodes(workflow.getNumberOfDataNodes());
@@ -128,9 +121,7 @@ public class WorkflowNexusOutput {
     /**
      * sets up the exporter so that it reports title and links
      *
-     * @param dataNode
-     * @param nexusExporter
-     */
+	 */
     private void setupExporter(DataNode dataNode, NexusExporter nexusExporter) {
         nexusExporter.setTitle(dataNode.getTitle());
         if (dataNode.getParent() != null)
@@ -140,9 +131,7 @@ public class WorkflowNexusOutput {
     /**
      * sets up the exporter so that it reports title and links
      *
-     * @param connector
-     * @param nexusExporter
-     */
+	 */
     private void setupExporter(Connector connector, NexusExporter nexusExporter) {
         nexusExporter.setTitle(connector.getTitle());
         if (connector.getParent() != null)

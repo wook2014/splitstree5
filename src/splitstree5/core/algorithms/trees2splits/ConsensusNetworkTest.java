@@ -65,7 +65,7 @@ public class ConsensusNetworkTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
 

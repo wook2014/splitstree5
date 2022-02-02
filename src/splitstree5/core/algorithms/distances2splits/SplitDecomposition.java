@@ -172,8 +172,6 @@ public class SplitDecomposition extends Algorithm<DistancesBlock, SplitsBlock> i
     /**
      * computes the fit
      *
-     * @param distancesBlock
-     * @param splits
      * @return fit, ls fit and stress
      */
     public static float computeFit(DistancesBlock distancesBlock, List<ASplit> splits) {

@@ -268,10 +268,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * scale all node coordinates so that they fit into the current scene
      *
-     * @param optionLayout
-     * @param target
-     * @param node2point
-     */
+	 */
     static double scaleAndCenterToFitTarget(GraphLayout optionLayout, Dimension2D target, NodeArray<Point2D> node2point, boolean center) {
         // scale to target dimensions:
         final float factorX;
@@ -314,13 +311,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * Recursively determines the angle of every edge in a circular layout
      *
-     * @param v
-     * @param f
-     * @param nextLeafNum
-     * @param angleParts
-     * @param edgeAngles
-     * @param leafGroupGap
-     * @param parentPlacement
      * @return number of leaves visited
      */
     static int setAnglesForCircularLayoutRec(final Node v, final Edge f, int nextLeafNum, final int angleParts, final EdgeFloatArray edgeAngles, float leafGroupGap, ParentPlacement parentPlacement) {
@@ -370,12 +360,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * set the locations of all nodes in a radial tree layout
      *
-     * @param v
-     * @param vPoint
-     * @param edgeLengths
-     * @param edgeAngles
-     * @param node2point
-     */
+	 */
     static void computeNodeLocationsForRadialRec(Node v, Point2D vPoint, EdgeFloatArray edgeLengths, EdgeFloatArray edgeAngles, NodeArray<Point2D> node2point) {
         node2point.put(v, vPoint);
         for (Edge e : v.outEdges()) {
@@ -425,12 +410,7 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * compute all edge points and setup edge views
      *
-     * @param v
-     * @param vAngle
-     * @param angles
-     * @param cubicCurveParentControl
-     * @param cubicCurveChildControl
-     */
+	 */
     static void computeEdgePointsForCircularRec(Node v, float vAngle, EdgeFloatArray angles, NodeArray<Point2D> node2points, EdgeArray<EdgeControlPoints> edge2controlPoints, int cubicCurveParentControl, int cubicCurveChildControl) {
         Point2D start = node2points.get(v);
         for (Edge e : v.outEdges()) {
@@ -452,11 +432,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * set the node heights for a rectilinear layout
      *
-     * @param v
-     * @param nextLeafRank
-     * @param nodeHeights
-     * @param leafGroupGap
-     * @param parentPlacement
      * @return next leaf height
      */
     static float setNodeHeightsRec(final Node v, float nextLeafRank, final NodeFloatArray nodeHeights, float leafGroupGap, ParentPlacement parentPlacement) {
@@ -546,8 +521,6 @@ public class TreeEmbedder extends Algorithm<TreesBlock, ViewerBlock> implements 
     /**
      * recursively compute the embedding
      *
-     * @param v
-     * @param e
      * @param hDistToRoot horizontal distance from node to root
      * @param leafNumber  rank of leaf in vertical ordering
      * @return index of last leaf

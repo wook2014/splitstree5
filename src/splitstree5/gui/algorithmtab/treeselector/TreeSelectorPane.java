@@ -45,8 +45,8 @@ import java.io.IOException;
  */
 public class TreeSelectorPane extends AlgorithmPane {
     private Connector<TreesBlock, TreesBlock> connector;
-    private TreeSelector treeSelector;
-    private final TreeSelectorPaneController controller;
+	private final TreeSelector treeSelector;
+	private final TreeSelectorPaneController controller;
     private Document document;
     private UndoManager undoManager;
     private final BooleanProperty isApplicable = new SimpleBooleanProperty(false);

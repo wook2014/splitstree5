@@ -80,8 +80,7 @@ public class TaxaBlock extends DataBlock {
     /**
      * copy a taxon block
      *
-     * @param src
-     */
+	 */
     public void copy(TaxaBlock src) {
         final ArrayList<Taxon> newTaxa = new ArrayList<>();
         for (Taxon srcTaxon : src.taxa) {
@@ -126,8 +125,7 @@ public class TaxaBlock extends DataBlock {
     /**
      * Set the number of taxa. Note that any change to the list of taxa will reset this
      *
-     * @param ntax
-     */
+	 */
     public void setNtax(int ntax) {
         this.ntax = ntax;
     }
@@ -163,7 +161,6 @@ public class TaxaBlock extends DataBlock {
     /**
      * get index of taxon
      *
-     * @param taxon
      * @return number between 1 and ntax, or -1 if not found
      */
     public int indexOf(Taxon taxon) {
@@ -176,7 +173,6 @@ public class TaxaBlock extends DataBlock {
     /**
      * get index of taxon by label
      *
-     * @param label
      * @return number between 1 and ntax, or -1 if not found
      */
     public int indexOf(String label) {
@@ -222,7 +218,6 @@ public class TaxaBlock extends DataBlock {
     /**
      * computes index map for modified block
      *
-     * @param modifiedTaxaBlock
      * @return modified map
      */
     public Map<Integer, Integer> computeIndexMap(TaxaBlock modifiedTaxaBlock) {
@@ -239,7 +234,6 @@ public class TaxaBlock extends DataBlock {
     /**
      * adds a taxon. Throws an exception if name already present
      *
-     * @param taxon
      * @throws IOException taxon name already present
      */
     public void add(Taxon taxon) throws IOException {
@@ -286,8 +280,7 @@ public class TaxaBlock extends DataBlock {
     /**
      * get the current set of taxa as a bit set
      *
-     * @return
-     */
+	 */
     public BitSet getTaxaSet() {
         final BitSet taxa = new BitSet();
         taxa.set(1, getNtax() + 1);

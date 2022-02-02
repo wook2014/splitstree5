@@ -33,11 +33,7 @@ public class NexusParser {
     /**
      * parse a single datablock
      *
-     * @param np
-     * @param taxaBlock
-     * @param dataBlock
-     * @throws IOException
-     */
+	 */
     public static void parse(NexusStreamParser np, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof CharactersBlock)
             new CharactersNexusInput().parse(np, taxaBlock, (CharactersBlock) dataBlock);

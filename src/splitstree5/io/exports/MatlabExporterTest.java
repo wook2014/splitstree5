@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MatlabExporterTest {
 
-    private MatlabExporter matlabExporter = new MatlabExporter();
+    private final MatlabExporter matlabExporter = new MatlabExporter();
 
     @Test
     public void export() throws Exception {

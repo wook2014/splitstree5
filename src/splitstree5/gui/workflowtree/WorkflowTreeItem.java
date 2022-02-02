@@ -50,14 +50,13 @@ import java.util.Collections;
 public class WorkflowTreeItem extends TreeItem<String> {
     private final Document document;
     private final WorkflowNode workflowNode;
-    private BooleanProperty disable = new SimpleBooleanProperty();
-    private final ChangeListener<UpdateState> stateChangeListener;
+	private final BooleanProperty disable = new SimpleBooleanProperty();
+	private final ChangeListener<UpdateState> stateChangeListener;
 
     /**
      * constructor
      *
-     * @param workflowNode
-     */
+	 */
     public WorkflowTreeItem(Document document, WorkflowNode workflowNode) {
         super("");
         this.document = document;
@@ -123,10 +122,8 @@ public class WorkflowTreeItem extends TreeItem<String> {
             workflowNode.stateProperty().addListener(new WeakChangeListener<>(stateChangeListener));
             {
                 final MenuItem show = new MenuItem("Open...");
-                show.setOnAction((x) -> {
-                    showView();
-                });
-                show.disableProperty().bind(disable);
+				show.setOnAction((x) -> showView());
+				show.disableProperty().bind(disable);
                 final MenuItem export = new MenuItem("Export...");
                 export.setOnAction((x) -> {
                     if (workflowNode instanceof DataNode)

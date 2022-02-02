@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.util.progress.ProgressListener;
 import jloda.util.progress.ProgressPercentage;
@@ -32,7 +32,7 @@ import java.io.StringWriter;
 
 public class NexmlTreesImporterTest {
 
-    private NexmlTreesImporter nexmlTreesImporter = new NexmlTreesImporter();
+	private final NexmlTreesImporter nexmlTreesImporter = new NexmlTreesImporter();
 
     @Test
     public void parse() throws Exception {
@@ -49,9 +49,9 @@ public class NexmlTreesImporterTest {
         new TaxaNexusOutput().write(w1, taxaBlock);
         TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
         treesNexusFormat.setOptionTranslate(false);
-        new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
-        System.err.println(w1.toString());
-        System.err.println("Partial: " + treesBlock.isPartial());
+		new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
+		System.err.println(w1);
+		System.err.println("Partial: " + treesBlock.isPartial());
 
     }
 

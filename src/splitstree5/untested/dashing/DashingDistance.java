@@ -29,8 +29,6 @@ public class DashingDistance {
     /**
      * computes the Dashing distance
      *
-     * @param a
-     * @param b
      * @return mash distance
      */
     public static double compute(DashingSketch a, DashingSketch b, GenomeDistanceType genomeDistanceType) {

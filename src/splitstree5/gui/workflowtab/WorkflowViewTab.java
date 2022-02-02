@@ -215,11 +215,6 @@ public class WorkflowViewTab extends ViewerTab {
     /**
      * recursively
      *
-     * @param v
-     * @param node2nodeView
-     * @param xDelta
-     * @param yDelta
-     * @param leavesVisited
      */
     private int assignNodeViewsAndCoordinatesForChildrenRec(WorkflowViewTab workflowView, WorkflowNode v, Map<WorkflowNode, WorkflowNodeView> node2nodeView, double xDelta, double yDelta, int leavesVisited) {
         if (v.getChildren().size() == 0) {
@@ -276,7 +271,6 @@ public class WorkflowViewTab extends ViewerTab {
     /**
      * setup menu items and bind their disable properties
      *
-     * @param controller
      */
     @Override
     public void updateMenus(MenuController controller) {
@@ -326,17 +320,15 @@ public class WorkflowViewTab extends ViewerTab {
         {
             final Set<WorkflowNode> nodes = new HashSet<>(getWorkflow().dataNodes());
             nodes.addAll(getWorkflow().connectors());
-            nodes.removeAll(selectionModel.getSelectedItems());
-            selectionModel.clearSelection();
+			selectionModel.getSelectedItems().forEach(nodes::remove);
+			selectionModel.clearSelection();
             selectionModel.selectItems(nodes);
         });
 
         controller.getInvertNodeSelectionMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
-        controller.getSelectAllBelowMenuItem().setOnAction((e) -> {
-            getWorkflow().selectAllBelow(selectionModel.getSelectedItems(), true);
-        });
-        controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
+		controller.getSelectAllBelowMenuItem().setOnAction((e) -> getWorkflow().selectAllBelow(selectionModel.getSelectedItems(), true));
+		controller.getSelectAllBelowMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
         // delete command:
         controller.getDeleteMenuItem().setOnAction((e) -> {
@@ -365,17 +357,17 @@ public class WorkflowViewTab extends ViewerTab {
             final ArrayList<UndoableRedoableCommand> list = new ArrayList<>();
             toDelete.addAll(deletableSelection);
             for (final WorkflowNode node : toDelete) {
-                if (node2EdgeViews.keySet().contains(node)) {
-                    final ArrayList<WorkflowEdgeView> listOfEdgeView = new ArrayList<>(node2EdgeViews.get(node));
-                    for (final WorkflowEdgeView edgeView : listOfEdgeView) {
-                        edgeViews.getChildren().remove(edgeView);
-                        list.add(new UndoableRedoableCommand("Delete") {
-                            public void undo() {
-                                if (!edgeViews.getChildren().contains(edgeView))
-                                    edgeViews.getChildren().add(edgeView);
-                            }
+				if (node2EdgeViews.containsKey(node)) {
+					final ArrayList<WorkflowEdgeView> listOfEdgeView = new ArrayList<>(node2EdgeViews.get(node));
+					for (final WorkflowEdgeView edgeView : listOfEdgeView) {
+						edgeViews.getChildren().remove(edgeView);
+						list.add(new UndoableRedoableCommand("Delete") {
+							public void undo() {
+								if (!edgeViews.getChildren().contains(edgeView))
+									edgeViews.getChildren().add(edgeView);
+							}
 
-                            public void redo() {
+							public void redo() {
                                 edgeViews.getChildren().remove(edgeView);
                             }
                         });
@@ -469,15 +461,11 @@ public class WorkflowViewTab extends ViewerTab {
         controller.getDuplicateMenuItem().setOnAction((e) -> callDuplicateCommand());
         controller.getDuplicateMenuItem().disableProperty().bind(selectionModel.emptyProperty());
 
-        controller.getZoomInMenuItem().setOnAction((e) -> {
-            scrollPane.zoomBy(1.1, 1.1);
-        });
-        controller.getZoomInMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
+		controller.getZoomInMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.1, 1.1));
+		controller.getZoomInMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
-        controller.getZoomOutMenuItem().setOnAction((e) -> {
-            scrollPane.zoomBy(1.0 / 1.1, 1.0 / 1.1);
-        });
-        controller.getZoomOutMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
+		controller.getZoomOutMenuItem().setOnAction((e) -> scrollPane.zoomBy(1.0 / 1.1, 1.0 / 1.1));
+		controller.getZoomOutMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
         controller.getResetMenuItem().setOnAction((e) -> scrollPane.resetZoom());
         controller.getResetMenuItem().disableProperty().bind(getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());

@@ -47,8 +47,8 @@ public class MinSpanningNetwork extends Algorithm<DistancesBlock, NetworkBlock> 
         return "Excoffier & Smouse 1994; Excoffier L, Smouse PE. Using allele frequencies and geographic subdivision to reconstruct gene trees within a species: molecular variance parsimony (1994) Genetics.136(1):343-59.";
     }
 
-    private DoubleProperty optionEpsilon = new SimpleDoubleProperty(0);
-    private BooleanProperty optionMinSpanningTree = new SimpleBooleanProperty(false);
+    private final DoubleProperty optionEpsilon = new SimpleDoubleProperty(0);
+    private final BooleanProperty optionMinSpanningTree = new SimpleBooleanProperty(false);
 
     public List<String> listOptions() {
         return Arrays.asList("Epsilon", "MinSpanningTree");

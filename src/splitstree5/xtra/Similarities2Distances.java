@@ -39,10 +39,7 @@ public class Similarities2Distances {
     /**
      * sort last MAF alignments
      *
-     * @param args
-     * @throws UsageException
-     * @throws java.io.FileNotFoundException
-     */
+	 */
     public static void main(String[] args) throws Exception {
         try {
             ProgramProperties.setProgramName("Similarities2Distances");
@@ -62,8 +59,7 @@ public class Similarities2Distances {
     /**
      * run the program
      *
-     * @param args
-     */
+	 */
     public void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Converts a list of similarities to a matrix of distances");
         options.setVersion(ProgramProperties.getProgramVersion());
@@ -86,8 +82,8 @@ public class Similarities2Distances {
                 final String b = tokens[1];
                 final double value;
                 if (tokens[2].contains("/")) {
-                    final double p = Double.parseDouble(tokens[2].substring(0, tokens[2].indexOf('/')).trim());
-                    final double q = Double.parseDouble(tokens[2].substring(tokens[2].indexOf('/') + 1, tokens[2].length()).trim());
+					final double p = Double.parseDouble(tokens[2].substring(0, tokens[2].indexOf('/')).trim());
+					final double q = Double.parseDouble(tokens[2].substring(tokens[2].indexOf('/') + 1).trim());
                     value = p / q;
                 } else
                     value = Double.parseDouble(tokens[2]);

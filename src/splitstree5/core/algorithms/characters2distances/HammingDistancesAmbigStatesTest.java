@@ -60,7 +60,7 @@ public class HammingDistancesAmbigStatesTest {
 
         StringWriter w = new StringWriter();
         new DistancesNexusOutput().write(w, taxa, distances);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();
@@ -100,8 +100,8 @@ public class HammingDistancesAmbigStatesTest {
         hammingDistances.compute(new ProgressPercentage(), taxa, characters, distances);
 
         StringWriter w = new StringWriter();
-        new DistancesNexusOutput().write(w, taxa, distances);
-        System.err.println(w.toString());
+		new DistancesNexusOutput().write(w, taxa, distances);
+		System.err.println(w);
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();

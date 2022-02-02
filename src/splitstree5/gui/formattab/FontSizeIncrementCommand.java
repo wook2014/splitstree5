@@ -50,12 +50,7 @@ public class FontSizeIncrementCommand extends UndoableRedoableCommand {
     /**
      * constructor
      *
-     * @param increment
-     * @param nodes
-     * @param node2view
-     * @param edges
-     * @param edge2view
-     */
+	 */
     public FontSizeIncrementCommand(double increment, Collection<Node> nodes, NodeArray<NodeViewBase> node2view, Collection<Edge> edges, EdgeArray<EdgeViewBase> edge2view) {
         super(increment > 0 ? "Font Increase" : "Font Decrease");
         this.increment = increment;

@@ -51,10 +51,7 @@ public class NodeView2D extends NodeViewBase {
     /**
      * construct a simple node view
      *
-     * @param location
-     * @param text
-     * @return
-     */
+	 */
     public NodeView2D(jloda.graph.Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape nodeShape, double shapeWidth, double shapeHeight, String text) {
         super(v, workingTaxonIds);
         setLocation(location);
@@ -194,9 +191,7 @@ public class NodeView2D extends NodeViewBase {
     /**
      * translate the coordinates of this node view
      *
-     * @param dx
-     * @param dy
-     */
+	 */
     public void translateCoordinates(double dx, double dy) {
         if (shapeGroup != null) {
             shapeGroup.setTranslateX(shapeGroup.getTranslateX() + dx);
@@ -216,8 +211,7 @@ public class NodeView2D extends NodeViewBase {
     /**
      * rotate by given angle
      *
-     * @param angle
-     */
+	 */
     public void rotateCoordinates(double angle) {
         final Point2D oldLocation = location;
         location = GeometryUtilsFX.rotate(location, angle);
@@ -238,9 +232,7 @@ public class NodeView2D extends NodeViewBase {
     /**
      * scale the coordinates of this node view
      *
-     * @param factorX
-     * @param factorY
-     */
+	 */
     public void scaleCoordinates(double factorX, double factorY) {
         var oldLocation = location;
         location = new Point2D(location.getX() * factorX, location.getY() * factorY);

@@ -53,10 +53,7 @@ public class NodeView3D extends NodeViewBase {
     /**
      * constructor
      *
-     * @param v
-     * @param location
-     * @param text
-     */
+	 */
     public NodeView3D(Node v, Iterable<Integer> taxa, Point3D location, String text) {
         super(v, taxa);
 
@@ -192,8 +189,7 @@ public class NodeView3D extends NodeViewBase {
                 if (label != null)
                     label.setTextFill(SelectionEffect.getInstance().getColor());
             } else {
-                if (labelGroup.getChildren().contains(selectionRectangle))
-                    labelGroup.getChildren().remove(selectionRectangle);
+				labelGroup.getChildren().remove(selectionRectangle);
                 if (label != null)
                     label.setTextFill(Color.BLACK);
             }
@@ -247,8 +243,7 @@ public class NodeView3D extends NodeViewBase {
      * setup the selection rectangle
      *
      * @param pane        that contains 3D shapes
-     * @param viewChanged
-     */
+	 */
     public void setupSelectionRectangle(Pane pane, Binding viewChanged) {
         if (selectionRectangle != null)
             labelGroup.getChildren().remove(selectionRectangle);

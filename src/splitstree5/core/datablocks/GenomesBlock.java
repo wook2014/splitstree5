@@ -45,8 +45,7 @@ public class GenomesBlock extends DataBlock {
     /**
      * shallow copy
      *
-     * @param that
-     */
+	 */
     public void copy(GenomesBlock that) {
         clear();
         genomes.addAll(that.getGenomes());

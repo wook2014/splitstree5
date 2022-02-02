@@ -124,8 +124,7 @@ public class FormatItem implements Cloneable {
     /**
      * adds the font to the fonts seen
      *
-     * @param font
-     */
+	 */
     public void addFont(Font font) {
         if (this.font == null) {
             this.font = font;
@@ -137,8 +136,7 @@ public class FormatItem implements Cloneable {
     /**
      * adds the edgeColor to the edgeColors seen
      *
-     * @param edgeColor
-     */
+	 */
     public void addEdgeColor(Color edgeColor) {
         if (this.edgeColor == null) {
             this.edgeColor = edgeColor;
@@ -150,8 +148,7 @@ public class FormatItem implements Cloneable {
     /**
      * adds the nodeColor to the nodeColors seen
      *
-     * @param nodeColor
-     */
+	 */
     public void addNodeColor(Color nodeColor) {
         if (this.nodeColor == null) {
             this.nodeColor = nodeColor;
@@ -163,8 +160,7 @@ public class FormatItem implements Cloneable {
     /**
      * adds the labelColor to the labelColors seen
      *
-     * @param labelColor
-     */
+	 */
     public void addLabelColor(Color labelColor) {
         if (this.labelColor == null) {
             this.labelColor = labelColor;
@@ -176,8 +172,7 @@ public class FormatItem implements Cloneable {
     /**
      * adds the edgeWidth to the edgeWidths seen
      *
-     * @param edgeWidth
-     */
+	 */
     public void addEdgeWidth(Double edgeWidth) {
         if (this.edgeWidth == null) {
             this.edgeWidth = edgeWidth;
@@ -236,10 +231,6 @@ public class FormatItem implements Cloneable {
     /**
      * determines the current format item based on the current selection
      *
-     * @param nodes
-     * @param node2view
-     * @param edges
-     * @param edge2view
      * @return current format item
      */
     public static FormatItem createFromSelection(Collection<Node> nodes, NodeArray<NodeViewBase> node2view,
@@ -283,11 +274,7 @@ public class FormatItem implements Cloneable {
     /**
      * apply this format item to the selected nodes and edges
      *
-     * @param nodes
-     * @param node2view
-     * @param edges
-     * @param edge2view
-     */
+	 */
     public void apply(Collection<Node> nodes, NodeArray<NodeViewBase> node2view,
                       Collection<Edge> edges, EdgeArray<EdgeViewBase> edge2view) {
 

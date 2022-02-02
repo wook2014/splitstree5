@@ -34,9 +34,7 @@ public class HKY85model extends NucleotideModel {
      * than the parameter kappa in Swofford et al, pg 436.)
      * We first compute the corresponding kappa, fill in Q according to the standard model.
      *
-     * @param basefreqs
-     * @param TsTv
-     */
+	 */
     public HKY85model(double[] basefreqs, double TsTv) {
         final double a = basefreqs[0] * basefreqs[2] + basefreqs[1] * basefreqs[3];
         final double b = (basefreqs[0] * basefreqs[1] + basefreqs[0] * basefreqs[3])
@@ -68,9 +66,7 @@ public class HKY85model extends NucleotideModel {
     /**
      * no exact distance associated with this model
      *
-     * @param F
-     * @throws RuntimeException
-     */
+	 */
     public double exactDistance(double[][] F) {
         throw new RuntimeException("exactDistance: not implemented");
     }

@@ -69,11 +69,7 @@ public class ConsensusTreeSplits extends Algorithm<TreesBlock, SplitsBlock> impl
     /**
      * compute the consensus splits
      *
-     * @param progress
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     */
+	 */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock parent, SplitsBlock child) throws CanceledException, SplitsException {
         final ConsensusNetwork consensusNetwork = new ConsensusNetwork();
         switch (getOptionConsensus()) {

@@ -65,7 +65,7 @@ public class BunemanTreeTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
 
@@ -112,8 +112,8 @@ public class BunemanTreeTest {
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
         new DistancesNexusOutput().write(w2, taxaBlock2, distancesBlock2);
-        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
-        System.err.println(w2.toString());
+		new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
+		System.err.println(w2);
 
         // compare splits
 

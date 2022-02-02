@@ -59,12 +59,7 @@ public class ImportService extends Service<Boolean> {
     /**
      * setup a task
      *
-     * @param reload
-     * @param parentMainWindow
-     * @param importer
-     * @param fileName
-     * @param progressBarParent
-     */
+	 */
     public void setup(boolean reload, MainWindow parentMainWindow, IImporter importer, String fileName, String title, Pane progressBarParent) {
         this.reload = reload;
         this.parentMainWindow = parentMainWindow;
@@ -76,9 +71,7 @@ public class ImportService extends Service<Boolean> {
         if (progressBarParent != null)
             progressBarParent.getChildren().add(progressPane);
 
-        setOnFailed((e) -> {
-            NotificationManager.showError("Import failed: " + getException().getMessage());
-        });
+		setOnFailed((e) -> NotificationManager.showError("Import failed: " + getException().getMessage()));
     }
 
     @Override
@@ -100,8 +93,6 @@ public class ImportService extends Service<Boolean> {
     /**
      * import from a file
      *
-     * @param importer
-     * @param fileName
      * @return taxa block and data block, or null
      */
     public static Pair<TaxaBlock, DataBlock> apply(ProgressListener progress, IImporter importer, String fileName) throws IOException, CanceledException {

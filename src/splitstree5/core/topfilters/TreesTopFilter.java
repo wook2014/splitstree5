@@ -39,11 +39,7 @@ public class TreesTopFilter extends ATopFilter<TreesBlock> {
      * /**
      * constructor
      *
-     * @param originalTaxaNode
-     * @param modifiedTaxaNode
-     * @param parentBlock
-     * @param childBlock
-     */
+	 */
     public TreesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<TreesBlock> parentBlock, DataNode<TreesBlock> childBlock) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentBlock, childBlock);
 

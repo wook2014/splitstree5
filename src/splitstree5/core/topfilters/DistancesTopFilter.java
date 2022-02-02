@@ -36,11 +36,7 @@ public class DistancesTopFilter extends ATopFilter<DistancesBlock> {
     /**
      * constructor
      *
-     * @param originalTaxaNode
-     * @param modifiedTaxaNode
-     * @param parent
-     * @param child
-     */
+	 */
     public DistancesTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<DistancesBlock> parent, DataNode<DistancesBlock> child) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parent, child);
 

@@ -37,11 +37,7 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param treesBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, TreesBlock treesBlock) throws IOException {
         final TreesNexusFormat format = (TreesNexusFormat) treesBlock.getFormat();
@@ -117,7 +113,6 @@ public class TreesNexusOutput extends NexusIOBase implements INexusOutput<TreesB
      * Returns the nexus flag [&R] indicating whether the tree should be considered
      * as rooted
      *
-     * @param tree
      * @return String  Returns [&R] if rooted, and "" otherwise.
      */
     private static String getFlags(PhyloTree tree) {

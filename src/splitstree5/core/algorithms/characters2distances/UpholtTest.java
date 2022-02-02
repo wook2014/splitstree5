@@ -63,7 +63,7 @@ public class UpholtTest {
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();

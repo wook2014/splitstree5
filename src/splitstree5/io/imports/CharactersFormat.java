@@ -41,10 +41,7 @@ public abstract class CharactersFormat {
      * add new taxa taxon to a given list of taxa labels
      * if repeating taxa label is found, convert to "label + number" form
      *
-     * @param line
-     * @param taxonNames
-     * @param linesCounter
-     */
+	 */
     static void addTaxaName(String line, ArrayList<String> taxonNames, int linesCounter) {
         int sameNamesCounter = 0;
         if (taxonNames.contains(line.substring(1))) {
@@ -64,10 +61,6 @@ public abstract class CharactersFormat {
     /**
      * check if a given sequence contains only numbers, alphabetic symbols and gap/missing/match chars
      *
-     * @param line
-     * @param counter
-     * @param allowedChars
-     * @throws IOException
      */
     protected static void checkIfCharactersValid(String line, int counter, String allowedChars) throws IOException {
         if (line.isEmpty())

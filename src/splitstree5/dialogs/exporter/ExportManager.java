@@ -53,9 +53,7 @@ public class ExportManager {
     /**
      * gets the list of names of all exporters suitable for this data
      *
-     * @param dataBlock
-     * @return
-     */
+	 */
     public ArrayList<String> getExporterNames(DataBlock dataBlock) {
         final ArrayList<String> list = new ArrayList<>();
 
@@ -83,8 +81,6 @@ public class ExportManager {
     /**
      * add a file suffix, if missing
      *
-     * @param selectedFile
-     * @param exporterName
      * @return file with suffix added, if necessary
      */
     public File ensureFileSuffix(File selectedFile, String exporterName) {
@@ -109,12 +105,7 @@ public class ExportManager {
     /**
      * save a datablock in the named format
      *
-     * @param fileName
-     * @param taxaBlock
-     * @param dataBlock
-     * @param exporterName
-     * @throws IOException
-     */
+	 */
     public void exportFile(String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, String exporterName) throws IOException {
         IExporter exporter = getExporterByName(exporterName);
         if (exporter != null) {

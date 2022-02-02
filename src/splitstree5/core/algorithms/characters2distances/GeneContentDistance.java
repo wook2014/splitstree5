@@ -42,7 +42,7 @@ import java.util.List;
 public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
     public final static String DESCRIPTION = "Compute distances based on shared genes (Snel Bork et al 1999, Huson and Steel 2003)";
 
-    private BooleanProperty optionUseML_DistancesDistance = new SimpleBooleanProperty(false);
+    private final BooleanProperty optionUseML_DistancesDistance = new SimpleBooleanProperty(false);
 
     @Override
     public String getCitation() {
@@ -79,10 +79,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     /**
      * computes the SnelBork et al distance
      *
-     * @param ntax
-     * @param genes
-     * @return the distance Object
-     */
+	 */
     private static void computeSnelBorkDistance(DistancesBlock dist, int ntax, BitSet[] genes) {
 
         dist.setNtax(ntax);
@@ -100,10 +97,7 @@ public class GeneContentDistance extends Algorithm<CharactersBlock, DistancesBlo
     /**
      * computes the maximum likelihood estimator distance Huson and Steel 2003
      *
-     * @param ntax
-     * @param genes
-     * @return the distance Object
-     */
+	 */
     private static void computeMLDistance(DistancesBlock dist, int ntax, BitSet[] genes) {
         dist.setNtax(ntax);
         // dtermine average importgenomes size:

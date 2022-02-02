@@ -40,7 +40,7 @@ import java.util.List;
 
 public class SingleLineSequencesImporter extends CharactersFormat implements IToCharacters, IImportCharacters, IImportNoAutoDetect {
 
-    private static int numberOfLinesToCheckInApplicable = 10;
+    private static final int numberOfLinesToCheckInApplicable = 10;
 
     @Override
     public void parse(ProgressListener progressListener, String inputFile, TaxaBlock taxa, CharactersBlock characters)
@@ -83,7 +83,7 @@ public class SingleLineSequencesImporter extends CharactersFormat implements ITo
     }
 
     private void readMatrix(ArrayList<String> matrix, CharactersBlock characters) throws IOException {
-        StringBuilder foundSymbols = new StringBuilder("");
+		StringBuilder foundSymbols = new StringBuilder();
         for (int i = 1; i <= characters.getNtax(); i++) {
             for (int j = 1; j <= characters.getNchar(); j++) {
                 char symbol = Character.toLowerCase(matrix.get(i - 1).charAt(j - 1));

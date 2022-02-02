@@ -35,11 +35,7 @@ public class SplitsNexusOutput extends NexusIOBase implements INexusOutput<Split
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param splitsBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, SplitsBlock splitsBlock) throws IOException {
         final SplitsNexusFormat format = (SplitsNexusFormat) splitsBlock.getFormat();

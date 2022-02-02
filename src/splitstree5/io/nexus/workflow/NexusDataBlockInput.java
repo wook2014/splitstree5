@@ -39,11 +39,8 @@ public class NexusDataBlockInput {
     /**
      * parse a nexus datablock
      *
-     * @param np
-     * @param taxa
      * @return datablock
-     * @throws IOException
-     */
+	 */
     public DataBlock parse(NexusStreamParser np, TaxaBlock taxa) throws IOException {
         try {
             if (np.peekMatchBeginBlock(TaxaBlock.BLOCK_NAME)) {

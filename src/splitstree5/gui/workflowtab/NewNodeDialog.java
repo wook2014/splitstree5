@@ -53,10 +53,7 @@ public class NewNodeDialog {
     /**
      * run the new node dialog
      *
-     * @param workflowView
-     * @param sourceNodeView
-     * @throws IOException
-     */
+	 */
     public NewNodeDialog(final WorkflowViewTab workflowView, WorkflowNodeView sourceNodeView, MouseEvent me) throws IOException {
         final Workflow workflow = workflowView.getDocument().getWorkflow();
         final DataNode sourceNode = (DataNode) sourceNodeView.getANode();
@@ -122,17 +119,12 @@ public class NewNodeDialog {
     /**
      * make the new nodes
      *
-     * @param workflowView
-     * @param sourceNodeView
-     * @param childDataBlock
-     * @param xTarget
-     * @param yTarget
-     */
+	 */
     private void makeNewNodes(final WorkflowViewTab workflowView, WorkflowNodeView sourceNodeView, DataBlock childDataBlock, double xTarget, double yTarget) {
         final DataNode targetNode = new DataNode(childDataBlock);
         workflowView.getWorkflow().addDataNode(targetNode);
-        final Connector connectorNode = workflowView.getWorkflow().createConnector((DataNode) sourceNodeView.getANode(), (DataNode) targetNode, (Algorithm) controller.getAlgorithmChoiceBox().getValue());
-        final WorkflowNodeView targetNodeView = new WorkflowNodeView(workflowView, targetNode);
+		final Connector connectorNode = workflowView.getWorkflow().createConnector((DataNode) sourceNodeView.getANode(), targetNode, controller.getAlgorithmChoiceBox().getValue());
+		final WorkflowNodeView targetNodeView = new WorkflowNodeView(workflowView, targetNode);
         final WorkflowNodeView connectorNodeView = new WorkflowNodeView(workflowView, connectorNode);
 
         targetNodeView.xProperty().set(xTarget);

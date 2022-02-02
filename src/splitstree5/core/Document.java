@@ -20,7 +20,6 @@
 package splitstree5.core;
 
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import jloda.fx.control.ItemSelectionModel;
@@ -59,20 +58,18 @@ public class Document {
      * constructor
      */
     public Document() {
-        name.set((++untitledCount < 2) ? "Untitled" : ("Untitled [" + untitledCount + "]"));
-        workflow = new Workflow(this);
-        workflow.updatingProperty().addListener((c, o, n) -> updateMethodsText());
-        workflow.incrementTopologyChanged();
+		name.set((++untitledCount < 2) ? "Untitled" : ("Untitled [" + untitledCount + "]"));
+		workflow = new Workflow(this);
+		workflow.updatingProperty().addListener((c, o, n) -> updateMethodsText());
+		workflow.incrementTopologyChanged();
 
-        fileName.addListener((c, o, n) -> {
-            Platform.runLater(() -> {
-				name.set(FileUtils.getFileNameWithoutPath(fileName.get()));
-				tmpFile.set(n.endsWith(".tmp"));
-            });
-        });
+		fileName.addListener((c, o, n) -> Platform.runLater(() -> {
+			name.set(FileUtils.getFileNameWithoutPath(fileName.get()));
+			tmpFile.set(n.endsWith(".tmp"));
+		}));
 
-        workflow.updatingProperty().addListener((InvalidationListener) c -> setDirty(true));
-    }
+		workflow.updatingProperty().addListener(c -> setDirty(true));
+	}
 
     /**
      * setup the taxon selection model (after top and working taxa nodes have been set)

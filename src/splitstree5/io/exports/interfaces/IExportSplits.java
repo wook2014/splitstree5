@@ -34,9 +34,6 @@ public interface IExportSplits extends IExporter, IFromSplits {
     /**
      * save splits
      *
-     * @param w
-     * @param taxa
-     * @param splitsBlock
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, SplitsBlock splitsBlock) throws IOException;
 }

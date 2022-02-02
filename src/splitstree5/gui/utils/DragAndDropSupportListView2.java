@@ -40,10 +40,7 @@ public class DragAndDropSupportListView2<T> {
     /**
      * setup drag and drop support between a pair of list views
      *
-     * @param listViewA
-     * @param listViewB
-     * @param <T>
-     */
+	 */
     public static <T> void setup(ListView<T> listViewA, ListView<T> listViewB, UndoManager undoManager, String changeName) {
         new DragAndDropSupportListView2<T>(listViewA, listViewB, undoManager, changeName);
     }
@@ -51,9 +48,7 @@ public class DragAndDropSupportListView2<T> {
     /**
      * constructs the support object
      *
-     * @param listViewA
-     * @param listViewB
-     */
+	 */
     private DragAndDropSupportListView2(ListView<T> listViewA, ListView<T> listViewB, UndoManager undoManager, String changeName) {
         final DataFormat dataFormat = getDataFormat(listViewA);
 
@@ -76,43 +71,31 @@ public class DragAndDropSupportListView2<T> {
             dragBoard.setContent(content);
         });
 
-        listViewA.setOnDragDone(dragEvent -> {
-        });
+		listViewA.setOnDragDone(dragEvent -> {
+		});
 
-        listViewB.setOnDragDone(dragEvent -> {
-        });
+		listViewB.setOnDragDone(dragEvent -> {
+		});
 
-        listViewA.setOnDragEntered(dragEvent -> {
-            listViewA.setBlendMode(BlendMode.DARKEN);
-        });
+		listViewA.setOnDragEntered(dragEvent -> listViewA.setBlendMode(BlendMode.DARKEN));
 
-        listViewB.setOnDragEntered(dragEvent -> {
-            listViewB.setBlendMode(BlendMode.DARKEN);
-        });
+		listViewB.setOnDragEntered(dragEvent -> listViewB.setBlendMode(BlendMode.DARKEN));
 
-        listViewA.setOnDragExited(dragEvent -> {
-            listViewA.setBlendMode(null);
-        });
-        listViewB.setOnDragExited(dragEvent -> {
-            listViewB.setBlendMode(null);
-        });
+		listViewA.setOnDragExited(dragEvent -> listViewA.setBlendMode(null));
+		listViewB.setOnDragExited(dragEvent -> listViewB.setBlendMode(null));
 
-        listViewA.setOnDragOver(dragEvent -> {
-            dragEvent.acceptTransferModes(TransferMode.MOVE);
-        });
-        listViewB.setOnDragOver(dragEvent -> {
-            dragEvent.acceptTransferModes(TransferMode.MOVE);
-        });
+		listViewA.setOnDragOver(dragEvent -> dragEvent.acceptTransferModes(TransferMode.MOVE));
+		listViewB.setOnDragOver(dragEvent -> dragEvent.acceptTransferModes(TransferMode.MOVE));
 
-        listViewA.setOnDragDropped(dragEvent -> {
-            if (fromList != null) {
-                ArrayList<T> prevA = null;
-                ArrayList<T> prevB = null;
+		listViewA.setOnDragDropped(dragEvent -> {
+			if (fromList != null) {
+				ArrayList<T> prevA = null;
+				ArrayList<T> prevB = null;
 
-                if (undoManager != null) {
-                    undoManager.setRecordChanges(false);
-                    prevA = new ArrayList<T>(listViewA.getItems());
-                    prevB = new ArrayList<T>(listViewB.getItems());
+				if (undoManager != null) {
+					undoManager.setRecordChanges(false);
+					prevA = new ArrayList<T>(listViewA.getItems());
+					prevB = new ArrayList<T>(listViewB.getItems());
                 }
                 final List<T> list = (List<T>) dragEvent.getDragboard().getContent(dataFormat);
                 fromList.getSelectionModel().clearSelection();

@@ -87,15 +87,14 @@ abstract public class DataBlock extends NameableBase {
     /**
      * gets instances of all known data blocks
      *
-     * @return
-     */
+	 */
     public static ArrayList<DataBlock> getAllDataBlocks() {
-        final ArrayList<DataBlock> list = new ArrayList<>();
-        for (Object object : PluginClassLoader.getInstances(DataBlock.class, "splitstree5.core.datablocks")) {
-            list.add((DataBlock) object);
-        }
-        return list;
-    }
+		final ArrayList<DataBlock> list = new ArrayList<>();
+		for (DataBlock object : PluginClassLoader.getInstances(DataBlock.class, "splitstree5.core.datablocks")) {
+			list.add(object);
+		}
+		return list;
+	}
 
     /**
      * gets the info for this block
@@ -162,9 +161,7 @@ abstract public class DataBlock extends NameableBase {
     /**
      * copy a datablock
      *
-     * @param taxaBlock
-     * @param dataBlock
-     */
+	 */
     public void copy(TaxaBlock taxaBlock, DataBlock dataBlock) {
         try (StringWriter w = new StringWriter()) {
             final NexusExporter nexusExporter = new NexusExporter();

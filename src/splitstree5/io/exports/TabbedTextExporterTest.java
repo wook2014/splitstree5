@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TabbedTextExporterTest {
 
-    private TabbedTextExporter tabbedTextExporter = new TabbedTextExporter();
+    private final TabbedTextExporter tabbedTextExporter = new TabbedTextExporter();
 
     @Test
     public void export() throws Exception {

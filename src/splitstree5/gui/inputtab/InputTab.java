@@ -58,8 +58,7 @@ public class InputTab extends TextViewTab {
     /**
      * constructor
      *
-     * @param mainWindow
-     */
+	 */
     public InputTab(MainWindow mainWindow) {
         super("Input");
         setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/Import16.gif")));

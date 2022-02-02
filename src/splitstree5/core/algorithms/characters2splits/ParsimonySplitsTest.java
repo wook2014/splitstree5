@@ -58,7 +58,7 @@ public class ParsimonySplitsTest {
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxa);
         new SplitsNexusOutput().write(w1, taxa, splits);
-        System.err.println(w1.toString());
+		System.err.println(w1);
 
         /*TaxaBlock taxaFromST4 = new TaxaBlock();
         SplitsBlock splitsFromSt4 = new SplitsBlock();

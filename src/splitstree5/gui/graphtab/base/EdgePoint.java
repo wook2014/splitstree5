@@ -55,8 +55,6 @@ public class EdgePoint {
     /**
      * gets an edge point by type
      *
-     * @param type
-     * @param edgePoints
      * @return first edge point of given type or null
      */
     public static EdgePoint getByType(Type type, EdgePoint[] edgePoints) {

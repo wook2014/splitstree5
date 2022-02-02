@@ -55,7 +55,7 @@ public class AccessReferenceDatabase implements Closeable {
     private final AccessReferenceDatabase[] copiesForSearching;
     private final AtomicInteger which = new AtomicInteger(0);
 
-    private static boolean verbose = false;
+    private static final boolean verbose = false;
 
     private final Set<Integer> unusableTaxa = new TreeSet<>();
 
@@ -70,10 +70,6 @@ public class AccessReferenceDatabase implements Closeable {
     /**
      * open database
      *
-     * @param dbFile
-     * @param copies
-     * @throws IOException
-     * @throws SQLException
      */
     public AccessReferenceDatabase(String dbFile, int copies) throws IOException, SQLException {
         this(dbFile, copies, true);
@@ -92,8 +88,6 @@ public class AccessReferenceDatabase implements Closeable {
      * @param dbFile   file
      * @param copies   number of copies to use in parallel processing
      * @param readOnly open read only
-     * @throws IOException
-     * @throws SQLException
      */
     public AccessReferenceDatabase(String dbFile, int copies, boolean readOnly) throws IOException, SQLException {
         this.dbFile = new File(dbFile);

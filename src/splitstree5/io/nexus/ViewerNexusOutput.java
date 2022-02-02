@@ -41,11 +41,7 @@ public class ViewerNexusOutput extends NexusIOBase implements INexusOutput<Viewe
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param viewerBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, ViewerBlock viewerBlock) throws IOException {
         w.write("\nBEGIN " + ViewerBlock.BLOCK_NAME + ";\n");

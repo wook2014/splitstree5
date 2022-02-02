@@ -43,7 +43,6 @@ public class TreesUtilities {
     /**
      * gets all taxa in tree, if node to taxa mapping has been set
      *
-     * @param tree
      * @return all taxa in tree
      */
     public static BitSet getTaxa(PhyloTree tree) {
@@ -59,8 +58,6 @@ public class TreesUtilities {
     /**
      * determines whether every pair of taxa occur together in some tree
      *
-     * @param taxa
-     * @param trees
      * @return returns true, if every pair of taxa occur together in some  tree
      */
     static public boolean hasAllPairs(TaxaBlock taxa, TreesBlock trees) {
@@ -94,7 +91,6 @@ public class TreesUtilities {
     /**
      * are there any labeled internal nodes and are all such labels numbers?
      *
-     * @param tree
      * @return true, if some internal nodes labeled and all labeled by numbers
      */
     public static boolean hasNumbersOnInternalNodes(PhyloTree tree) {
@@ -117,8 +113,7 @@ public class TreesUtilities {
     /**
      * reinterpret an numerical label of an internal node as the confidence associated with the incoming edge
      *
-     * @param tree
-     */
+	 */
     public static void changeNumbersOnInternalNodesToEdgeConfidencies(PhyloTree tree) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() != 0 && v.getInDegree() == 1) {
@@ -136,7 +131,6 @@ public class TreesUtilities {
     /**
      * are there any labeled leaf nodes and are all such labels numbers?
      *
-     * @param tree
      * @return true, if some leaves nodes labeled by numbers
      */
     public static boolean hasNumbersOnLeafNodes(PhyloTree tree) {
@@ -158,8 +152,7 @@ public class TreesUtilities {
     /**
      * change numerical leaf label to string
      *
-     * @param tree
-     */
+	 */
     public static void changeNumbersOnLeafNodesToLabels(final TaxaBlock taxaBlock, PhyloTree tree) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
             if (v.getOutDegree() == 0) {
@@ -178,7 +171,6 @@ public class TreesUtilities {
      * compute all the splits in a tree
      *
      * @param taxaInTree the taxa in the tree, if null, is computed
-     * @param tree
      * @param splits     the resulting splits are added here
      * @return bit set of taxa found in tree
      */
@@ -205,13 +197,7 @@ public class TreesUtilities {
     /**
      * recursively extract all splits
      *
-     * @param v
-     * @param e
-     * @param tree
-     * @param taxaInTree
-     * @param splits
-     * @return
-     */
+	 */
     private static BitSet tree2splitsRec(final Node v, final Edge e, final PhyloTree tree, final BitSet taxaInTree, final Collection<ASplit> splits) {
         final BitSet vAndBelowTaxa = BitSetUtils.asBitSet(tree.getTaxa(v));
 
@@ -260,7 +246,6 @@ public class TreesUtilities {
     /**
      * compute the total weight of a tree
      *
-     * @param tree
      * @return total weight
      */
     public static double computeTotalWeight(PhyloTree tree) {
@@ -275,7 +260,6 @@ public class TreesUtilities {
      * computes the induced tree
      *
      * @param oldTaxonId2NewTaxonId - old to new mapping, where removed taxa map to 0
-     * @param originalTree
      * @return induced tree
      */
     public static PhyloTree computeInducedTree(int[] oldTaxonId2NewTaxonId, PhyloTree originalTree) {

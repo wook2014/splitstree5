@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML.handlers;
+package splitstree5.io.imports.nexml.handlers;
 
 import jloda.graph.Edge;
 import jloda.graph.Node;
@@ -36,8 +36,8 @@ public class NexmlNetworkHandler extends DefaultHandler {
     private boolean bReadOneNetwork = false;
 
     NetworkBlock networkBlock;
-    Object currentElement;
-    private ArrayList<String> taxaLabels = new ArrayList<>();
+	Object currentElement;
+	private final ArrayList<String> taxaLabels = new ArrayList<>();
 
 
     @Override

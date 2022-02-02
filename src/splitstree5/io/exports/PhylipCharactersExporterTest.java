@@ -31,7 +31,7 @@ import java.util.List;
 
 public class PhylipCharactersExporterTest {
 
-    private PhylipCharactersExporter phylipCharactersExporter = new PhylipCharactersExporter();
+    private final PhylipCharactersExporter phylipCharactersExporter = new PhylipCharactersExporter();
 
     @Test
     public void export() throws Exception {

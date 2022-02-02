@@ -76,12 +76,12 @@ module splitstreefive {
     opens splitstree5.io.imports;
     opens splitstree5.io.imports.interfaces;
     opens splitstree5.io.imports.nexus;
-    opens splitstree5.io.imports.NeXML;
+    opens splitstree5.io.imports.nexml;
     opens splitstree5.io.exports;
     opens splitstree5.io.exports.interfaces;
 
     exports splitstree5.gui.utils;
     exports splitstree5.io.nexus;
-    exports splitstree5.io.imports.NeXML;
-    exports splitstree5.io.imports.NeXML.handlers;
+    exports splitstree5.io.imports.nexml;
+    exports splitstree5.io.imports.nexml.handlers;
 }

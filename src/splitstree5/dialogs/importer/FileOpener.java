@@ -36,9 +36,7 @@ public class FileOpener {
     /**
      * can this file be opened?
      *
-     * @param fileName
-     * @return
-     */
+	 */
     public static boolean isOpenable(String fileName) {
         if (!(new File(fileName)).canRead())
             return false;
@@ -50,10 +48,7 @@ public class FileOpener {
     /**
      * open the named file
      *
-     * @param reload
-     * @param parentMainWindow
-     * @param fileName
-     */
+	 */
     public static void open(boolean reload, MainWindow parentMainWindow, Pane statusPane, String fileName, Consumer<Throwable> exceptionHandler) {
         if (!(new File(fileName)).canRead())
             NotificationManager.showError("File not found or unreadable: " + fileName);

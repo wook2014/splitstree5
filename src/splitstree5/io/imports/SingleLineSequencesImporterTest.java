@@ -32,13 +32,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class SingleLineSequencesImporterTest {
 
-    private SingleLineSequencesImporter singleLineSequencesImporter = new SingleLineSequencesImporter();
+	private final SingleLineSequencesImporter singleLineSequencesImporter = new SingleLineSequencesImporter();
 
     @Test
     public void parse() throws Exception {
@@ -53,8 +53,8 @@ public class SingleLineSequencesImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
-        new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
-        System.err.println(w.toString());
+		new CharactersNexusOutput().write(w, taxaBlock, charactersBlock);
+		System.err.println(w);
 
     }
 
@@ -70,8 +70,8 @@ public class SingleLineSequencesImporterTest {
 					applicableFiles.add(FileUtils.getFileNameWithoutPath(file.getName()));
             }
         }
-        System.err.println(applicableFiles);
-        assertEquals(applicableFiles, Arrays.asList("singleLineDNA.txt"));
+		System.err.println(applicableFiles);
+		assertEquals(applicableFiles, List.of("singleLineDNA.txt"));
     }
 
 }

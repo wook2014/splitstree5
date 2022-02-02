@@ -152,8 +152,7 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
     /**
      * setup a node view
      *
-     * @param nv
-     */
+	 */
     @Override
     public void setupNodeView(NodeViewBase nv) {
         final NodeView2D nodeView = (NodeView2D) nv;
@@ -217,7 +216,6 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
     /**
      * get list of adjacent edges sorted by decreasing weight
      *
-     * @param v
      * @return adjacent edges
      */
     private ArrayList<Edge> getAdjacentEdgesSortedByDecreasingWeight(Node v) {
@@ -326,8 +324,8 @@ public class SplitsViewTab extends Graph2DTab<PhyloSplitsGraph> implements ISpli
      */
     public static void selectBySplit(PhyloSplitsGraph graph, Edge e, ItemSelectionModel<Integer> splitsSelectionModel, ItemSelectionModel<Node> nodeSelectionModel, boolean useLargerSide) {
         final int splitId = graph.getSplit(e);
-        selectAllNodesOnOneSide(graph, e, nodeSelectionModel, useLargerSide);
-        splitsSelectionModel.select((Integer) splitId);
+		selectAllNodesOnOneSide(graph, e, nodeSelectionModel, useLargerSide);
+		splitsSelectionModel.select(splitId);
     }
 
 

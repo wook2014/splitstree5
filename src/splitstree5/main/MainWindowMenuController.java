@@ -133,30 +133,28 @@ public class MainWindowMenuController {
 
                     newMainWindow.getWorkflow().loadData(pair.getFirst(), pair.getSecond());
                     newMainWindow.show(null, mainWindow.getStage().getX() + 50, mainWindow.getStage().getY() + 50, mainWindow.getStage().getWidth(), mainWindow.getStage().getHeight());
-                    NotificationManager.showInformation("Collapsed " + mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().size() + " to " + pair.getFirst().size() + " haplotypes");
+					NotificationManager.showInformation("Collapsed " + mainWindow.getWorkflow().getTopTaxaNode().getDataBlock().size() + " to " + pair.getFirst().size() + " haplotypes");
 
-                    newMainWindow.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
+					newMainWindow.getWorkflow().getTopTaxaNode().setState(UpdateState.VALID);
 
-                } else
-                    NotificationManager.showInformation("All haplotypes different");
-            } catch (Exception ex) {
-                NotificationManager.showError("Group identical haplotypes failed: " + ex.getMessage());
-            }
-        });
-        mainWindow.getWorkflow().topDataNodeProperty().addListener((c, o, n) -> {
-            controller.getGroupIdenticalHaplotypesFilesMenuItem().setDisable(n == null || (!(n.getDataBlock() instanceof CharactersBlock)
-                    && !(n.getDataBlock() instanceof DistancesBlock)));
-        });
+				} else
+					NotificationManager.showInformation("All haplotypes different");
+			} catch (Exception ex) {
+				NotificationManager.showError("Group identical haplotypes failed: " + ex.getMessage());
+			}
+		});
+		mainWindow.getWorkflow().topDataNodeProperty().addListener((c, o, n) -> controller.getGroupIdenticalHaplotypesFilesMenuItem().setDisable(n == null || (!(n.getDataBlock() instanceof CharactersBlock)
+																																							   && !(n.getDataBlock() instanceof DistancesBlock))));
 
-        controller.getOpenMenuItem().setOnAction(e -> {
-            final File previousDir = new File(ProgramProperties.get("InputDir", ""));
-            final FileChooser fileChooser = new FileChooser();
-            if (previousDir.isDirectory())
-                fileChooser.setInitialDirectory(previousDir);
-            fileChooser.setTitle("Open input file");
-            fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
-            final File selectedFile = fileChooser.showOpenDialog(mainWindow.getStage());
-            if (selectedFile != null) {
+		controller.getOpenMenuItem().setOnAction(e -> {
+			final File previousDir = new File(ProgramProperties.get("InputDir", ""));
+			final FileChooser fileChooser = new FileChooser();
+			if (previousDir.isDirectory())
+				fileChooser.setInitialDirectory(previousDir);
+			fileChooser.setTitle("Open input file");
+			fileChooser.getExtensionFilters().addAll(ImporterManager.getInstance().getAllExtensionFilters());
+			final File selectedFile = fileChooser.showOpenDialog(mainWindow.getStage());
+			if (selectedFile != null) {
                 if (selectedFile.getParentFile().isDirectory())
                     ProgramProperties.put("InputDir", selectedFile.getParent());
                 if (WorkflowNexusInput.isApplicable(selectedFile.getPath()))
@@ -227,9 +225,7 @@ public class MainWindowMenuController {
         controller.getSaveMenuItem().disableProperty().bind(document.dirtyProperty().not()
                 .or(document.updatingProperty()).or(document.nameProperty().isEmpty()).or(document.tmpFileProperty()).or(mainWindow.getWorkflow().hasTopTaxaProperty().not()));
 
-        controller.getSaveAsMenuItem().setOnAction(e -> {
-            SaveDialog.showSaveDialog(mainWindow, false);
-        });
+		controller.getSaveAsMenuItem().setOnAction(e -> SaveDialog.showSaveDialog(mainWindow, false));
 
         controller.getReplaceDataMenuItem().setOnAction(e -> {
             final Workflow workflow = mainWindow.getWorkflow();
@@ -271,9 +267,7 @@ public class MainWindowMenuController {
         });
         controller.getReplaceDataMenuItem().disableProperty().bind(mainWindow.getWorkflow().hasWorkingTaxonNodeForFXThreadProperty().not());
 
-        controller.getExportWorkflowMenuItem().setOnAction(e -> {
-            SaveDialog.showSaveDialog(mainWindow, true);
-        });
+		controller.getExportWorkflowMenuItem().setOnAction(e -> SaveDialog.showSaveDialog(mainWindow, true));
 
         controller.getShowWorkflowMenuItem().setOnAction(e -> mainWindow.showWorkflow());
     }
@@ -296,10 +290,7 @@ public class MainWindowMenuController {
     /**
      * this is where we setup all the construction menu item that add nodes to the workflow
      *
-     * @param mainWindow
-     * @param selectedTab
-     * @param controller
-     */
+	 */
     public static void updateConstructionMenuItems(MainWindow mainWindow, final Tab selectedTab, MenuController controller) {
         final Workflow workflow = mainWindow.getDocument().getWorkflow();
 
@@ -453,9 +444,7 @@ public class MainWindowMenuController {
                 NetworkEmbedder.class, ViewerBlock.NetworkViewerBlock.class)));
         controller.getHaplotypeNetworkViewMenuItem().disableProperty().bind(disableNetworkMethods);
 
-        controller.getShowMessageWindowMenuItem().setOnAction(e -> {
-            MessageWindow.getInstance().setVisible(true);
-        });
+		controller.getShowMessageWindowMenuItem().setOnAction(e -> MessageWindow.getInstance().setVisible(true));
 
         controller.getCheckForUpdatesMenuItem().setOnAction(e -> CheckForUpdate.apply());
         controller.getCheckForUpdatesMenuItem().disableProperty().bind(Bindings.isNotEmpty(workflow.dataNodes()).or(MainWindowManager.getInstance().sizeProperty().greaterThan(1)));

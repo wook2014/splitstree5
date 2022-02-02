@@ -52,11 +52,17 @@ import splitstree5.core.misc.Taxon;
 import splitstree5.core.workflow.UpdateState;
 import splitstree5.gui.graphtab.ISplitsViewTab;
 import splitstree5.gui.graphtab.SplitsViewTab;
-import splitstree5.gui.graphtab.base.*;
+import splitstree5.gui.graphtab.base.EdgeViewBase;
+import splitstree5.gui.graphtab.base.Graph2DTab;
+import splitstree5.gui.graphtab.base.GraphLayout;
+import splitstree5.gui.graphtab.base.NodeViewBase;
 import splitstree5.utils.SplitsUtilities;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * compute an implementing of a set of splits using the equals angle algorithm
@@ -122,9 +128,7 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         final ISplitsViewTab viewTab = (ISplitsViewTab) viewerBlock.getTab();
         //splitsViewTab.setNodeLabel2Style(nodeLabel2Style);
 
-        Platform.runLater(() -> {
-            viewerBlock.getTab().setText(viewerBlock.getName());
-        });
+		Platform.runLater(() -> viewerBlock.getTab().setText(viewerBlock.getName()));
 
         graph.clear();
         viewTab.init(graph);
@@ -133,8 +137,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
         final NodeArray<Point2D> node2point = new NodeArray<>(graph);
 
         final BitSet usedSplits = new BitSet();
-
-        final ArrayList<ArrayList<Node>> loops = new ArrayList<>();
 
         if (getOptionAlgorithm() == Algorithm.EqualAngleOnly || getOptionAlgorithm() == Algorithm.EqualAngleConvexHull)
             EqualAngle.apply(progress, isOptionUseWeights(), taxaBlock, splitsBlock, graph, node2point, forbiddenSplits, usedSplits);
@@ -190,14 +192,6 @@ public class SplitsNetworkAlgorithm extends Algorithm<SplitsBlock, ViewerBlock> 
             if (nodeView.getLabel() != null)
                 nodeView.getLabel().setFont(labelFont);
             progress.incrementProgress();
-        }
-
-
-        ((Graph2DTab) viewTab).getPolygons().clear();
-        for (ArrayList<Node> loop : loops) {
-            final PolygonView2D polygon = new PolygonView2D(loop, viewTab.getNode2view());
-            ((Graph2DTab) viewTab).getPolygons().add(polygon);
-            viewTab.getEdgesGroup().getChildren().add(polygon.getShape());
         }
 
         progress.setSubtask("Creating edges");

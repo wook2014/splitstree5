@@ -36,11 +36,8 @@ public class GreedyCompatible {
     /**
      * greedily computes compatible splits
      *
-     * @param progress
-     * @param splits
      * @return compatible splits
-     * @throws CanceledException
-     */
+	 */
     public static ArrayList<ASplit> apply(ProgressListener progress, final List<ASplit> splits) throws CanceledException {
         progress.setSubtask("Greedy compatible");
         progress.setMaximum(splits.size());

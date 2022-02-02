@@ -67,11 +67,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * heuristically remove high-dimension configurations in split graph
      *
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     * @throws CanceledException
-     */
+	 */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
         active = false;
 
@@ -95,11 +91,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * does the work
      *
-     * @param progress
-     * @param maxDimension
-     * @param srcSplits
-     * @param targetSplits
-     */
+	 */
     public void apply(ProgressListener progress, int maxDimension, List<ASplit> srcSplits, List<ASplit> targetSplits) {
         final BitSet toDelete = new BitSet(); // set of splits to be removed from split set
 
@@ -151,7 +143,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * build the incompatibility graph
      *
-     * @param splits
      * @return incompatibility graph
      */
     private Graph buildIncompatibilityGraph(List<ASplit> splits) {
@@ -176,7 +167,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * computes the subgraph in which every node is contained in a d-clique
      *
-     * @param graph
      * @param d     clique size
      */
     private void computeDSubgraph(ProgressListener progress, Graph graph, int d) throws CanceledException {
@@ -206,13 +196,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * recursively determine whether v is contained in a d-clique.
      *
-     * @param graph
-     * @param v
-     * @param e
-     * @param i
-     * @param d
-     * @param clique
-     * @param discard
      * @return true, if v contained in a d-clique
      */
     private boolean findClique(Graph graph, Node v, Edge e, int i, int d, NodeSet clique, NodeSet discard) {
@@ -237,8 +220,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * determines whether node w is connected to all nodes in U
      *
-     * @param w
-     * @param U
      * @return true, if w is connected to all nodes in U
      */
     private boolean isConnectedTo(Node w, NodeSet U) {
@@ -257,9 +238,7 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
      * Modify graph to become the maximal induced graph in which all nodes have degree >maxDegree
      * If maxDegree==1, then we additionally require that all remaining nodes are contained in a triangle
      *
-     * @param graph
-     * @param maxDegree
-     */
+	 */
     private void relaxGraph(ProgressListener progress, Graph graph, int maxDegree) throws CanceledException {
         System.err.print("Relax graph: ");
 
@@ -290,7 +269,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
     /**
      * gets the node will the lowest compatability score
      *
-     * @param graph
      * @return worst node
      */
     private Node getWorstNode(Graph graph) {
@@ -310,7 +288,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
      * gets the compatibility score of a node.
      * This is the weight of the splits minus the weight of all contradicting splits
      *
-     * @param v
      * @return compatibility score
      */
     private int getCompatibilityScore(Node v) {
@@ -326,7 +303,6 @@ public class DimensionFilter extends Algorithm<SplitsBlock, SplitsBlock> impleme
      * determines whether the node v has degree==d but  is not contained in a clique of size d+1
      *
      * @param d* @param graph
-     * @param v
      * @return false, if the node v has degree!=d or is contained in a d+1 clique
      */
     private boolean hasDegreeDButNotInClique(int d, Graph graph, Node v) {

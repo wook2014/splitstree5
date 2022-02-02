@@ -30,9 +30,6 @@ public interface IImportTraits extends IImporter {
     /**
      * import a file
      *
-     * @param fileName
-     * @param taxaBlock
-     * @param dataBlock
-     */
+	 */
     void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, TraitsBlock dataBlock) throws CanceledException, IOException;
 }

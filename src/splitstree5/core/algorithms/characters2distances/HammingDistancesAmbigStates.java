@@ -39,22 +39,20 @@ import java.util.List;
 
 public class HammingDistancesAmbigStates extends Algorithm<CharactersBlock, DistancesBlock> implements IFromCharacters, IToDistances {
 
-    public enum AmbiguousOptions {Ignore, AverageStates, MatchStates}
+	public enum AmbiguousOptions {Ignore, AverageStates, MatchStates}
 
-    ;
+	private final BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
+	private final Property<AmbiguousOptions> optionHandleAmbiguousStates = new SimpleObjectProperty<>(AmbiguousOptions.Ignore);
 
-    private BooleanProperty optionNormalize = new SimpleBooleanProperty(true);
-    private Property<AmbiguousOptions> optionHandleAmbiguousStates = new SimpleObjectProperty<>(AmbiguousOptions.Ignore);
+	public List<String> listOptions() {
+		return Arrays.asList("Normalize", "HandleAmbiguousStates");
+	}
 
-    public List<String> listOptions() {
-        return Arrays.asList("Normalize", "HandleAmbiguousStates");
-    }
-
-    @Override
-    public String getToolTip(String optionName) {
-        switch (optionName) {
-            case "Normalize":
-                return "Normalize distances";
+	@Override
+	public String getToolTip(String optionName) {
+		switch (optionName) {
+			case "Normalize":
+				return "Normalize distances";
             case "HandleAmbiguousStates":
                 return "Choose way to handle ambiguous nucleotides";
         }

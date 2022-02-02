@@ -61,9 +61,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     /**
      * parse a workflow in nexus format
      *
-     * @param parentWindow
-     * @param fileName
-     */
+	 */
     public static AService<MainWindow> open(MainWindow parentWindow, String fileName) {
         final AService<MainWindow> service = new AService<>();
         service.setExecutor(Platform::runLater); // todo: make this runnable in a separate thread
@@ -83,9 +81,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     /**
      * constructor
      *
-     * @param parentWindow
-     * @param fileName
-     */
+	 */
     private WorkflowNexusInput(MainWindow parentWindow, String fileName) {
         this.parentWindow = parentWindow;
         this.fileName = fileName;
@@ -147,7 +143,6 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     /**
      * does this file look like it contains a workflow?
      *
-     * @param fileName
      * @return true, if SplitsTree5Block present
      */
     public static boolean isApplicable(String fileName) {
@@ -165,12 +160,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     /**
      * input a work flow from a file
      *
-     * @param progress
-     * @param workflow
-     * @param fileName
-     * @throws IOException
-     * @throws CanceledException
-     */
+	 */
     public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, String fileName) throws IOException, CanceledException {
 		try (Reader reader = FileUtils.getReaderPossiblyZIPorGZIP(fileName)) {
 			progress.setMaximum((new File(fileName).length() / (FileUtils.isZIPorGZIPFile(fileName) ? 100 : 20)));
@@ -181,13 +171,7 @@ public class WorkflowNexusInput extends TaskWithProgressListener<MainWindow> {
     /**
      * inpurt a work flow from a reader
      *
-     * @param progress
-     * @param workflow
-     * @param viewerBlocks
-     * @param reader
-     * @throws IOException
-     * @throws CanceledException
-     */
+	 */
     public static void input(ProgressListener progress, Workflow workflow, ArrayList<ViewerBlock> viewerBlocks, Reader reader) throws IOException, CanceledException {
         try (NexusStreamParser np = new NexusStreamParser(reader)) {
             np.matchIgnoreCase("#nexus");

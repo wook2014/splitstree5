@@ -148,10 +148,7 @@ public class TraitsBlock extends DataBlock implements IAdditionalBlock {
     /**
      * copy subset of taxa
      *
-     * @param srcTaxa
-     * @param srcTraits
-     * @param enabledTaxa
-     */
+	 */
     public void copySubset(TaxaBlock srcTaxa, TraitsBlock srcTraits, Collection<Taxon> enabledTaxa) {
         labels = srcTraits.labels;
         traitLongitude = srcTraits.traitLongitude;

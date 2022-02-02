@@ -41,10 +41,7 @@ public class OptionNext<T> {
     /**
      * constructs an option
      *
-     * @param property
-     * @param name
-     * @param toolTipText
-     */
+	 */
     OptionNext(Property<T> property, String name, String toolTipText) {
         this.property = property;
         this.name = name;
@@ -74,7 +71,6 @@ public class OptionNext<T> {
      * gets all options associated with an optionable.
      * An option is given by a getOption/setOptionValue pair of methods
      *
-     * @param optionable
      * @return options
      */
     public static ArrayList<OptionNext> getAllOptions(Algorithm optionable) {
@@ -150,7 +146,6 @@ public class OptionNext<T> {
     /**
      * gets a mapping of names to options
      *
-     * @param optionable
      * @return map
      */
     public static Map<String, OptionNext> getName2Options(Algorithm optionable) {

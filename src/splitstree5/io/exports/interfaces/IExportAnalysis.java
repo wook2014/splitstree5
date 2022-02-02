@@ -33,8 +33,6 @@ public interface IExportAnalysis extends IExporter, IFromAnalysis {
     /**
      * save analysis
      *
-     * @param w
-     * @param analysis
-     */
+	 */
     void export(Writer w, AnalysisBlock analysis) throws IOException;
 }

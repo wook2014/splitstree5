@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FastaExporterTest {
 
-    private FastaExporter fastaExporter = new FastaExporter();
+    private final FastaExporter fastaExporter = new FastaExporter();
 
     @Test
     public void exportCharacters() throws Exception {

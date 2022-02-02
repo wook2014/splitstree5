@@ -58,7 +58,6 @@ public class NeighborNetSplits {
      * This version carries out adaptive L1 regularisation, controlled by the parameter lambdaFraction.
      * That is, it minimizes  0.5*||Ax - d||^2_2  +  \lambda ||x||_1
      *
-     * @param runPCG
      * @param nTax           number of taxa
      * @param cycle          taxon cycle, 1-based
      * @param distances      pairwise distances. Stores as a square matrix with taxa 1..ntax in rows 0..ntax-1  //TODO use a standard distance block here.
@@ -68,8 +67,7 @@ public class NeighborNetSplits {
      * @param lambdaFrac     the lambda fraction
      * @param progress       progress listener
      * @return weighted splits
-     * @throws CanceledException
-     */
+	 */
     static public ArrayList<ASplit> compute(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
         //Handle n=1,2 separately.
         if (true)
@@ -668,7 +666,6 @@ public class NeighborNetSplits {
      * refers to the split {i,i+1,i+2,...j-1}| ----
      *
      *
-     * @param runPCG
      * @param nTax           number of taxa
      * @param cycle          taxon cycle, 1-based
      * @param distances      pairwise distances, 0-based
@@ -678,8 +675,7 @@ public class NeighborNetSplits {
      * @param lambdaFrac     the lambda fraction
      * @param progress       progress listener
      * @return weighted splits
-     * @throws CanceledException
-     */
+	 */
     static public ArrayList<ASplit> computeRevised(boolean runPCG, int nTax, int[] cycle, double[][] distances, double[][] variances, double cutoff, LeastSquares leastSquares, Regularization regularization, double lambdaFrac, ProgressListener progress) throws CanceledException {
         //Handle n=1,2 separately.
         System.out.println("REVISED ALGORITHM\n======================\n");
@@ -698,8 +694,7 @@ public class NeighborNetSplits {
         }
         final int nPairs = (nTax * (nTax - 1)) / 2;
 
-        /****************** PCG ALGORITHM ***********************/
-            //Set up the distance vector.
+		//Set up the distance vector.
 
             double[] d = new double[nPairs + 1];
             {
@@ -732,9 +727,8 @@ public class NeighborNetSplits {
                 }
             }
             //return splitsPCG;
-        /*******************************************/
 
-        /* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
+		/* Re-order taxa so that the ordering is 0,1,2,...,n-1 */
         /*final double[] d = setupDRevised(nTax, nPairs, distances, cycle);
         final double[] v = setupVRevised(nTax, nPairs, distances, variances, leastSquares, cycle);
         final double[] x = new double[nPairs+1];*/
@@ -782,12 +776,7 @@ public class NeighborNetSplits {
      *      * we do the transition here. It is undone when extracting the splits
      *      *
      *      * In this revised version, vector d starts at index 1.
-     * @param nTax
-     * @param nPairs
-     * @param distances
-     * @param cycle
-     * @return
-     */
+	 */
     static private double[] setupDRevised(int nTax, int nPairs, double[][] distances, int[] cycle) {
         final double[] d = new double[nPairs+1];
         int index = 1;
@@ -855,10 +844,7 @@ public class NeighborNetSplits {
 
     /** sortArrayOld
      * Takes an array with n(n-1)/2 + 1 entries and sorts the entries to match the old index scheme
-     * @param x
-     * @param n
-     * @return
-     */
+	 */
     static private double[] sortArrayAsOld(double[] x, int n) {
         double[] sortedArray = new double[x.length-1];
         int index = 1;
@@ -1087,8 +1073,7 @@ public class NeighborNetSplits {
      * @param n  Number of taxa
      * @param x   Input vector, using entries 1...n(n-1)/2
      * @param p  Output vector. Must be initialised in advance.
-     * @return
-     */
+	 */
     static public void circularAtxRevised(int n, double[] x, double[] p) {
         int npairs = n*(n-1)/2;
         //p = new double[npairs+1];

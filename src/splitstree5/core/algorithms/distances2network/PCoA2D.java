@@ -45,27 +45,27 @@ import java.util.Map;
  */
 
 public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements IFromDistances, IToNetwork {
-    private Matrix distanceMatrix;
-    private double totalSquaredDistance;
-    private int rank;
-    private int numberOfPositiveEigenValues;
-    private double[] eigenValues;
-    private Map<String, double[]> name2vector = new HashMap<>();
-    private double[][] vectors;
-    private boolean done = false;
+	private Matrix distanceMatrix;
+	private double totalSquaredDistance;
+	private int rank;
+	private int numberOfPositiveEigenValues;
+	private double[] eigenValues;
+	private final Map<String, double[]> name2vector = new HashMap<>();
+	private double[][] vectors;
+	private boolean done = false;
 
-    private IntegerProperty optionFirstCoordinate = new SimpleIntegerProperty(1);
-    private IntegerProperty optionSecondCoordinate = new SimpleIntegerProperty(2);
+	private final IntegerProperty optionFirstCoordinate = new SimpleIntegerProperty(1);
+	private final IntegerProperty optionSecondCoordinate = new SimpleIntegerProperty(2);
 
 
-    @Override
-    public String getCitation() {
-        return "Gower 1966; Gower, J. C. (1966). Some distance properties of latent root and vector methods used in multivariate analysis. Biometrika, 53(3-4), 325-338.";
-    }
+	@Override
+	public String getCitation() {
+		return "Gower 1966; Gower, J. C. (1966). Some distance properties of latent root and vector methods used in multivariate analysis. Biometrika, 53(3-4), 325-338.";
+	}
 
-    public List<String> listOptions() {
-        return Arrays.asList("FirstCoordinate", "SecondCoordinate");
-    }
+	public List<String> listOptions() {
+		return Arrays.asList("FirstCoordinate", "SecondCoordinate");
+	}
 
     @Override
     public String getToolTip(String optionName) {
@@ -180,7 +180,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     /**
      * get coordinates for given name
      *
-     * @param name
      * @return coordinates
      */
     public double[] getCoordinates(String name) {
@@ -190,9 +189,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     /**
      * get i-th and j-th coordinates for given name
      *
-     * @param i
-     * @param j
-     * @param name
      * @return (i, j)
      */
     public double[] getProjection(int i, int j, String name) {
@@ -203,10 +199,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     /**
      * given i-th, j-th and k-th coordinates for given name
      *
-     * @param i
-     * @param j
-     * @param k
-     * @param name
      * @return (i, j, k)
      */
     public double[] getProjection(int i, int j, int k, String name) {
@@ -227,7 +219,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     /**
      * compute centered inner product matrix
      *
-     * @param matrix
      * @return new matrix
      */
     private Matrix computeDoubleCenteringOfSquaredMatrix(Matrix matrix) {
@@ -259,7 +250,6 @@ public class PCoA2D extends Algorithm<DistancesBlock, NetworkBlock> implements I
     /**
      * sort indices by values
      *
-     * @param m
      * @return sorted indices
      * todo: replace by proper sorting
      */

@@ -59,8 +59,7 @@ public class GenericAlgorithmPaneNext<P extends DataBlock, C extends DataBlock> 
     /**
      * constructor
      *
-     * @param algorithm
-     */
+	 */
     public GenericAlgorithmPaneNext(TaxaBlock taxaBlock, Connector<P, C> connector, Algorithm<P, C> algorithm) {
         this.connector = connector;
         algorithm.setupBeforeDisplay(taxaBlock, connector.getParent().getDataBlock());

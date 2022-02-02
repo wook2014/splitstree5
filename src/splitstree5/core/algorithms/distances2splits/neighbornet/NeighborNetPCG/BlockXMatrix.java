@@ -28,12 +28,12 @@ import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborN
 import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborNetPCG.VectorUtilities.add;
 
 public class BlockXMatrix {
-	public int n;  //Number of taxa = one more than the number of blocks
-	public int[] m; //Array of block sizes.
-	public TridiagonalMatrix[] A; //Diagonal blocks: tridiagonal
-	public SparseRowMatrix[] B; //Off-diagonal blocks: sparse
-	public SparseRowMatrix[] C; //Blocks in the last row/column.
-	public boolean hasCorners; //Flag indicating wether the top right and bottom left entries of A[n-1] are present.
+	public final int n;  //Number of taxa = one more than the number of blocks
+	public final int[] m; //Array of block sizes.
+	public final TridiagonalMatrix[] A; //Diagonal blocks: tridiagonal
+	public final SparseRowMatrix[] B; //Off-diagonal blocks: sparse
+	public final SparseRowMatrix[] C; //Blocks in the last row/column.
+	public final boolean hasCorners; //Flag indicating wether the top right and bottom left entries of A[n-1] are present.
 
 	/**
 	 * BlockXMatrix

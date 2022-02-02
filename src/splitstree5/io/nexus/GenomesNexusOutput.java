@@ -37,11 +37,7 @@ public class GenomesNexusOutput extends NexusIOBase implements INexusOutput<Geno
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param genomesBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, GenomesBlock genomesBlock) throws IOException {
         final GenomesNexusFormat format = (GenomesNexusFormat) genomesBlock.getFormat();

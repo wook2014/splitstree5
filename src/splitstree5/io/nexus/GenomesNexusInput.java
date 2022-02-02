@@ -61,12 +61,8 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
     /**
      * parse a genomes block
      *
-     * @param np
-     * @param taxaBlock
-     * @param genomesBlock
      * @return taxon names, if found
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, GenomesBlock genomesBlock) throws IOException {
         try {
@@ -183,7 +179,6 @@ public class GenomesNexusInput extends NexusIOBase implements INexusInput<Genome
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

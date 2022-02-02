@@ -44,11 +44,7 @@ public class CharactersTopFilter extends ATopFilter<CharactersBlock> {
     /**
      * constructor
      *
-     * @param originalTaxaNode
-     * @param modifiedTaxaNode
-     * @param parentNode
-     * @param childNode
-     */
+	 */
     public CharactersTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<CharactersBlock> parentNode, DataNode<CharactersBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 

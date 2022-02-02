@@ -59,7 +59,7 @@ public class AlgorithmTab<P extends DataBlock, C extends DataBlock> extends View
     private final BooleanProperty algorithmSettingsIsApplicable = new SimpleBooleanProperty(); // are the current settings applicable?
     private final BooleanProperty applicableChangeHasBeenMade = new SimpleBooleanProperty();
 
-    private Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we keep used panes around in case we want to undo back to one
+    private final Map<Algorithm<P, C>, AlgorithmPane> algorithm2pane = new HashMap<>(); // we keep used panes around in case we want to undo back to one
 
     private final Connector<P, C> connector;
 

@@ -34,7 +34,6 @@ public class OptionsAccessor {
      * gets all options associated with an optionable.
      * An option is given by a getOption/setOptionValue pair of methods
      *
-     * @param optionable
      * @return options
      */
     public static ArrayList<Option> getAllOptions(IOptionable optionable) {
@@ -133,7 +132,7 @@ public class OptionsAccessor {
         }
 
         for (String name : order) {
-            if (name2AnOption.keySet().contains(name)) {
+            if (name2AnOption.containsKey(name)) {
                 AnOption anOption = name2AnOption.get(name);
                 if (anOption.getMethod != null && anOption.setMethod != null && anOption.returnType != null) {
                     if (!Arrays.asList("int", "float", "double", "boolean").contains(anOption.returnType.getTypeName())) {
@@ -187,7 +186,6 @@ public class OptionsAccessor {
     /**
      * get updated options values
      *
-     * @param options
      */
     public static void getUpdatedOptionValues(List<Option> options) {
         for (Option option : options) {
@@ -198,9 +196,6 @@ public class OptionsAccessor {
     /**
      * set an option from a string value
      *
-     * @param options
-     * @param name
-     * @param value
      */
     public static void setOptionValue(List<Option> options, String name, String value) {
         for (Option option : options) {

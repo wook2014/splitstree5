@@ -135,8 +135,7 @@ public class CharactersBlock extends DataBlock {
      *
      * @param t     in range 1-nTax
      * @param pos   in range 1-nChar
-     * @param value
-     */
+	 */
     public void set(int t, int pos, char value) {
         matrix[t - 1][pos - 1] = Character.toLowerCase(value);
     }
@@ -265,8 +264,6 @@ public class CharactersBlock extends DataBlock {
     /**
      * get the color for a given taxon and position
      *
-     * @param t
-     * @param pos
      * @return color
      */
     public int getColor(int t, int pos) {
@@ -347,10 +344,7 @@ public class CharactersBlock extends DataBlock {
     /**
      * make a shallow copy of a row
      *
-     * @param parent
-     * @param parentIndex
-     * @param targetIndex
-     */
+	 */
     public void copyRow(CharactersBlock parent, int parentIndex, int targetIndex) {
         matrix[targetIndex - 1] = parent.matrix[parentIndex - 1];
     }

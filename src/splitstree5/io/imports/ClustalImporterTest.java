@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ClustalImporterTest {
 
-    private ClustalImporter clustalImporter = new ClustalImporter();
+    private final ClustalImporter clustalImporter = new ClustalImporter();
 
     @Test
     public void parse() throws Exception {
@@ -58,9 +58,9 @@ public class ClustalImporterTest {
             final StringWriter w1 = new StringWriter();
             w1.write("#nexus\n");
             new TaxaNexusOutput().write(w1, taxaBlock);
-            new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-            System.err.println(w1.toString());
-            System.err.println(format.isOptionInterleave());
+			new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+			System.err.println(w1);
+			System.err.println(format.isOptionInterleave());
         }
         //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
 
@@ -75,8 +75,8 @@ public class ClustalImporterTest {
             final StringWriter w2 = new StringWriter();
             w2.write("#nexus\n");
             new TaxaNexusOutput().write(w2, taxaBlock);
-            new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
-            System.err.println(w2.toString());
+			new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
+			System.err.println(w2);
             //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
         }
 
@@ -91,8 +91,8 @@ public class ClustalImporterTest {
             final StringWriter w3 = new StringWriter();
             w3.write("#nexus\n");
             new TaxaNexusOutput().write(w3, taxaBlock);
-            new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
-            System.err.println(w3.toString());
+			new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
+			System.err.println(w3);
             //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
         }
 
@@ -105,8 +105,8 @@ public class ClustalImporterTest {
             final StringWriter w4 = new StringWriter();
             w4.write("#nexus\n");
             new TaxaNexusOutput().write(w4, taxaBlock);
-            new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
-            System.err.println(w4.toString());
+			new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
+			System.err.println(w4);
             //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
         }
 
@@ -121,8 +121,8 @@ public class ClustalImporterTest {
             final StringWriter w5 = new StringWriter();
             w5.write("#nexus\n");
             new TaxaNexusOutput().write(w5, taxaBlock);
-            new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
-            System.err.println(w5.toString());
+			new CharactersNexusOutput().write(w5, taxaBlock, charactersBlock);
+			System.err.println(w5);
             //System.err.println("Ambiguous : " + charactersBlock.isHasAmbiguousStates());
         }
     }

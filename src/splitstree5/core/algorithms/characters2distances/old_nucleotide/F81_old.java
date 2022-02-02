@@ -71,10 +71,7 @@ public class F81_old extends DNAdistance implements IFromCharacters, IToDistance
     /**
      * return the exact distance
      *
-     * @param F
-     * @return
-     * @throws SaturatedDistancesException
-     */
+	 */
     protected double exactDist(double[][] F) throws SaturatedDistancesException {
         double D = 1 - (F[0][0] + F[1][1] + F[2][2] + F[3][3]);
         return -B * Minv(1 - D / B);

@@ -66,13 +66,8 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
     /**
      * compute the BIO nj tree
      *
-     * @param progressListener
-     * @param taxaBlock
-     * @param distances
      * @return tree
-     * @throws InterruptedException
-     * @throws CanceledException
-     */
+	 */
     private PhyloTree computeBioNJTree(ProgressListener progressListener, TaxaBlock taxaBlock, DistancesBlock distances) throws InterruptedException, CanceledException {
 
         final PhyloTree tree = new PhyloTree();
@@ -88,29 +83,29 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             tree.setLabel(v, taxaBlock.getLabel(t));
             taxaHashMap.put(tax[t].toString(), v);
             tree.addTaxon(v, t);
-        }
+		}
 
-        final double[][] h = new double[nTax + 1][nTax + 1];// distance matrix
+		final double[][] h = new double[nTax + 1][nTax + 1];// distance matrix
 
-        final BitSet active = new BitSet();
+		final BitSet active = new BitSet();
 
-        final double[][] var = new double[nTax + 1][nTax + 1]; // variances matrix. This really should be upper diag of h.
-        final double[] b = new double[nTax + 1];// the b variable in Neighbor Joining
-        int i_min = 0, j_min = 0; // needed for manipulation of h and b
-        double temp, dist_e, dist_f;//new edge weights
-        StringBuffer tax_old_i; //labels of taxa that are being merged
-        StringBuffer tax_old_j;
-        StringBuffer tax_old_k;
-        Node v;
-        Edge e, f; //from tax_old to new=merged edge
-        double lambda; //lambda value in BioNJ
+		final double[][] var = new double[nTax + 1][nTax + 1]; // variances matrix. This really should be upper diag of h.
+		final double[] b = new double[nTax + 1];// the b variable in Neighbor Joining
+		int i_min = 0, j_min = 0; // needed for manipulation of h and b
+		double temp, dist_e, dist_f;//new edge weights
+		StringBuilder tax_old_i; //labels of taxa that are being merged
+		StringBuilder tax_old_j;
+		StringBuilder tax_old_k;
+		Node v;
+		Edge e, f; //from tax_old to new=merged edge
+		double lambda; //lambda value in BioNJ
 
-        active.set(1, nTax + 1);
+		active.set(1, nTax + 1);
 
-        for (int i = 1; i <= nTax; i++) {
-            h[i][i] = 0.0;
-            for (int j = 1; j <= nTax; j++) { //fill up the distance matix h
-                if (i < j)
+		for (int i = 1; i <= nTax; i++) {
+			h[i][i] = 0.0;
+			for (int j = 1; j <= nTax; j++) { //fill up the distance matix h
+				if (i < j)
                     h[i][j] = distances.get(i, j);//
                 else
                     h[i][j] = distances.get(j, i);
@@ -142,28 +137,28 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
                         j_min = j;
                     }
                 }
-            }
-            dist_e = 0.5 * (h[i_min][j_min] + b[i_min] / ((double) actual - 2.0)
-                    - b[j_min] / ((double) actual - 2.0));
-            dist_f = h[i_min][j_min] - dist_e;
-            //dist_f=0.5*(h[i_min][j_min] + b[j_min]/((double)actual-2.0)
-            //	- b[i_min]/((double)actual-2.0) );
+			}
+			dist_e = 0.5 * (h[i_min][j_min] + b[i_min] / ((double) actual - 2.0)
+							- b[j_min] / ((double) actual - 2.0));
+			dist_f = h[i_min][j_min] - dist_e;
+			//dist_f=0.5*(h[i_min][j_min] + b[j_min]/((double)actual-2.0)
+			//	- b[i_min]/((double)actual-2.0) );
 
-            active.set(j_min, false);
+			active.set(j_min, false);
 
-            // tax taxa update:
-            tax_old_i = new StringBuffer(tax[i_min].toString());
-            tax_old_j = new StringBuffer(tax[j_min].toString());
-            tax[i_min].insert(0, "(");
-            tax[i_min].append(",");
-            tax[i_min].append(tax[j_min]);
-            tax[i_min].append(")");
-            tax[j_min].delete(0, tax[j_min].length());
+			// tax taxa update:
+			tax_old_i = new StringBuilder(tax[i_min].toString());
+			tax_old_j = new StringBuilder(tax[j_min].toString());
+			tax[i_min].insert(0, "(");
+			tax[i_min].append(",");
+			tax[i_min].append(tax[j_min]);
+			tax[i_min].append(")");
+			tax[j_min].delete(0, tax[j_min].length());
 
-            // b update:
+			// b update:
 
-            b[i_min] = 0.0;
-            b[j_min] = 0.0;
+			b[i_min] = 0.0;
+			b[j_min] = 0.0;
 
             // fusion of h
             // double h_min = h[i_min][j_min];
@@ -213,10 +208,10 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
             taxaHashMap.put(tax[i_min].toString(), v);
 
             // generate Edges from two Taxa that are merged to one:
-            e = tree.newEdge((Node) taxaHashMap.get(tax_old_i.toString()), v);
-            tree.setWeight(e, dist_e);
-            f = tree.newEdge((Node) taxaHashMap.get(tax_old_j.toString()), v);
-            tree.setWeight(f, dist_f);
+			e = tree.newEdge(taxaHashMap.get(tax_old_i.toString()), v);
+			tree.setWeight(e, dist_e);
+			f = tree.newEdge(taxaHashMap.get(tax_old_j.toString()), v);
+			tree.setWeight(f, dist_f);
             progressListener.incrementProgress();
         }
 
@@ -225,28 +220,28 @@ public class BioNJ extends Algorithm<DistancesBlock, TreesBlock> implements IFro
         i = 1;
         while (!active.get(i))
             i++;
-        i_min = i;
-        i++;
-        while (!active.get(i))
-            i++;
-        j_min = i;
-        i++;
-        while (!active.get(i))
-            i++;
-        k_min = i;
+		i_min = i;
+		i++;
+		while (!active.get(i))
+			i++;
+		j_min = i;
+		i++;
+		while (!active.get(i))
+			i++;
+		k_min = i;
 
-        tax_old_i = new StringBuffer(tax[i_min].toString());
-        tax_old_j = new StringBuffer(tax[j_min].toString());
-        tax_old_k = new StringBuffer(tax[k_min].toString());
+		tax_old_i = new StringBuilder(tax[i_min].toString());
+		tax_old_j = new StringBuilder(tax[j_min].toString());
+		tax_old_k = new StringBuilder(tax[k_min].toString());
 
-        tax[i_min].insert(0, "(");
-        tax[i_min].append(",");
-        tax[i_min].append(tax[j_min]);
-        tax[i_min].append(",");
-        tax[i_min].append(tax[k_min]);
-        tax[i_min].append(")");
-        tax[j_min].delete(0, tax[j_min].length()); //not neces. but sets content to NULL
-        tax[k_min].delete(0, tax[k_min].length()); //not neces. but sets content to NULL
+		tax[i_min].insert(0, "(");
+		tax[i_min].append(",");
+		tax[i_min].append(tax[j_min]);
+		tax[i_min].append(",");
+		tax[i_min].append(tax[k_min]);
+		tax[i_min].append(")");
+		tax[j_min].delete(0, tax[j_min].length()); //not neces. but sets content to NULL
+		tax[k_min].delete(0, tax[k_min].length()); //not neces. but sets content to NULL
 
         // System.err.println(tax[i_min].toString());
 

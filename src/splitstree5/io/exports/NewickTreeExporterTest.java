@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 public class NewickTreeExporterTest {
 
-    private NewickTreeExporter newickTreeExporter = new NewickTreeExporter();
+    private final NewickTreeExporter newickTreeExporter = new NewickTreeExporter();
 
     @Test
     public void export() throws Exception {

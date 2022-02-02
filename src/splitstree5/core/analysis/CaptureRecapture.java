@@ -32,8 +32,8 @@ import java.util.Random;
  * Daniel Huson, 2005
  */
 public class CaptureRecapture {
-    public static String DESCRIPTION = "Estimation of invariant sites using capture-recapture method (Lockhart, Huson, Steel, 2000)";
-    int optionTaxaCutoff = 20; // Cut off before we switch to sampling
+    public static final String DESCRIPTION = "Estimation of invariant sites using capture-recapture method (Lockhart, Huson, Steel, 2000)";
+	int optionTaxaCutoff = 20; // Cut off before we switch to sampling
 
     /**
      * gets a description of the method
@@ -48,9 +48,6 @@ public class CaptureRecapture {
     /**
      * Chooses a random (small) subset of size elements in [1...n]
      *
-     * @param size
-     * @param n
-     * @param random
      * @return array of size with numbers from [1...n]
      */
     private static int[] randomSubset(int size, int n, Random random) {
@@ -70,7 +67,6 @@ public class CaptureRecapture {
     /**
      * Checks to see that, for site m, the taxa in q are not missing, gaps, etc.
      *
-     * @param block
      * @param q     array of taxa ids
      * @param m     site
      * @return true iff all not missing, not gaps, and site not masked
@@ -89,8 +85,6 @@ public class CaptureRecapture {
     /**
      * Computes v statistic (Steel etal) for the quartet q
      *
-     * @param q
-     * @param block
      * @return v score
      */
 
@@ -154,7 +148,6 @@ public class CaptureRecapture {
     /**
      * Computes the proportion of Invariance sites using Steel et al.'s method
      *
-     * @param chars
      * @return proportion assumed invariant
      */
     public double estimatePropInvariableSites(ProgressListener progress, CharactersBlock chars) throws CanceledException {

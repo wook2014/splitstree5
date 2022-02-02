@@ -51,28 +51,25 @@ public class AlignmentView extends Pane {
         final TableView<Pair<String, String>> tableView = controller.getAlignmentTableView();
 
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tableView.getSelectionModel().setCellSelectionEnabled(true);
+		tableView.getSelectionModel().setCellSelectionEnabled(true);
 
-        getSequences().addListener((ListChangeListener<? super Pair<String, String>>) (c) -> {
-            while (c.next()) {
-                if (c.getRemovedSize() > 0 || c.getAddedSize() > 0) {
-                    updateTable();
-                }
-            }
-        });
+		getSequences().addListener((ListChangeListener<? super Pair<String, String>>) (c) -> {
+			while (c.next()) {
+				if (c.getRemovedSize() > 0 || c.getAddedSize() > 0) {
+					updateTable();
+				}
+			}
+		});
 
-        tableView.getSelectionModel().getSelectedCells().addListener(new ListChangeListener<TablePosition>() {
-            @Override
-            public void onChanged(Change<? extends TablePosition> c) {
-                while (c.next()) {
-                    for (TablePosition pos : c.getAddedSubList()) {
-                        System.err.println("Added: " + pos);
-                    }
+		tableView.getSelectionModel().getSelectedCells().addListener((ListChangeListener<TablePosition>) c -> {
+			while (c.next()) {
+				for (TablePosition pos : c.getAddedSubList()) {
+					System.err.println("Added: " + pos);
+				}
 
-                }
-            }
-        });
-    }
+			}
+		});
+	}
 
     public ObservableList<Pair<String, String>> getSequences() {
         return sequences;
@@ -133,15 +130,13 @@ public class AlignmentView extends Pane {
                 tableView.getColumns().add(column);
                 {
                     final MenuItem selectColumn = new MenuItem("Select");
-                    selectColumn.setOnAction((e) -> {
-                        tableView.getSelectionModel().selectRange(0, column, getSequences().size(), column);
-                    });
-                    column.setContextMenu(new ContextMenu(selectColumn));
+					selectColumn.setOnAction((e) -> tableView.getSelectionModel().selectRange(0, column, getSequences().size(), column));
+					column.setContextMenu(new ContextMenu(selectColumn));
                 }
             }
             tableView.setItems(getSequences());
 
-            columnReorder(tableView, tableView.getColumns().toArray(new TableColumn[tableView.getColumns().size()]));
+			columnReorder(tableView, tableView.getColumns().toArray(new TableColumn[0]));
         }
     }
 
@@ -152,11 +147,7 @@ public class AlignmentView extends Pane {
     /**
      * prevents reordering of columns
      *
-     * @param table
-     * @param columns
-     * @param <S>
-     * @param <T>
-     */
+	 */
     public static <S, T> void columnReorder(TableView table, TableColumn<S, T>[] columns) {
         table.getColumns().addListener(new ListChangeListener() {
             public boolean suspended;
@@ -165,9 +156,9 @@ public class AlignmentView extends Pane {
             public void onChanged(Change change) {
                 change.next();
                 if (change.wasReplaced() && !suspended) {
-                    this.suspended = true;
-                    table.getColumns().setAll((Object[]) columns);
-                    this.suspended = false;
+					this.suspended = true;
+					table.getColumns().setAll(columns);
+					this.suspended = false;
                 }
             }
         });

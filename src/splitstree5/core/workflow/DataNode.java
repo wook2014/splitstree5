@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * Daniel Huson, 12.2016
  */
 public class DataNode<D extends DataBlock> extends WorkflowNode {
-    private boolean verbose = false;
+    private final boolean verbose = false;
 
     private final D dataBlock;
     private final ObservableList<Connector<D, ? extends DataBlock>> children;
@@ -39,8 +39,7 @@ public class DataNode<D extends DataBlock> extends WorkflowNode {
     /**
      * constructor
      *
-     * @param dataBlock
-     */
+	 */
     public DataNode(D dataBlock) {
         this.dataBlock = dataBlock;
         this.dataBlock.setDataNode(this);

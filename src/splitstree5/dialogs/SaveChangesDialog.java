@@ -32,7 +32,6 @@ public class SaveChangesDialog {
     /**
      * ask whether to save before closing
      *
-     * @param mainWindow
      * @return true if doesn't need saving or saved, false else
      */
     public static boolean apply(MainWindow mainWindow) {
@@ -55,10 +54,8 @@ public class SaveChangesDialog {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == buttonTypeYes) {
-                    return SaveDialog.showSaveDialog(mainWindow, false);
-                } else if (result.get() == buttonTypeNo) {
-                    return true;
-                }
+					return SaveDialog.showSaveDialog(mainWindow, false);
+				} else return result.get() == buttonTypeNo;
             }
             return false; // canceled
         }

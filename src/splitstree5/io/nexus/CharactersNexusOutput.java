@@ -37,11 +37,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxa
-     * @param characters
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException {
         final CharactersNexusFormat format = (CharactersNexusFormat) characters.getFormat();
@@ -144,12 +140,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     /**
      * write the character matrix
      *
-     * @param w
-     * @param taxa
-     * @param characters
-     * @param format
-     * @throws IOException
-     */
+	 */
     private void writeMatrix(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 0;
@@ -192,12 +183,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     /**
      * write character matrix in transposed format
      *
-     * @param w
-     * @param taxa
-     * @param characters
-     * @param format
-     * @throws IOException
-     */
+	 */
     private void writeMatrixTranposed(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
         //Get the max width of a column, given taxa and token labels
 
@@ -254,12 +240,7 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     /**
      * write matrix in interleaved format
      *
-     * @param w
-     * @param taxa
-     * @param characters
-     * @param format
-     * @throws IOException
-     */
+	 */
     private void writeMatrixInterleaved(Writer w, TaxaBlock taxa, CharactersBlock characters, CharactersNexusFormat format) throws IOException {
         //Determine width of matrix columns (if appropriate) and taxa column (if appropriate)
         int columnWidth = 1;
@@ -335,7 +316,6 @@ public class CharactersNexusOutput extends NexusIOBase implements INexusOutput<C
     /**
      * Get the max length of all the labels.
      *
-     * @param taxa
      * @return longer the max length.
      */
     public static int maxLabelLength(TaxaBlock taxa) {

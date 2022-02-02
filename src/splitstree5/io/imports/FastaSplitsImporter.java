@@ -42,7 +42,7 @@ import java.util.List;
 public class FastaSplitsImporter extends CharactersFormat implements IToSplits, IImportSplits, IImportNoAutoDetect {
 
     public static final List<String> extensions = new ArrayList<>(Arrays.asList("fasta", "fas", "fa", "seq", "fsa", "fna"));
-    private static int numberOfLinesToCheckInApplicable = 10;
+	private static final int numberOfLinesToCheckInApplicable = 10;
 
     @Override
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxa, SplitsBlock splits) throws CanceledException, IOException {
@@ -56,8 +56,8 @@ public class FastaSplitsImporter extends CharactersFormat implements IToSplits, 
         try (FileLineIterator it = new FileLineIterator(fileName)) {
             progressListener.setMaximum(it.getMaximumProgress());
             progressListener.setProgress(0);
-            int currentSequenceLength = 0;
-            StringBuilder currentSequence = new StringBuilder("");
+			int currentSequenceLength = 0;
+			StringBuilder currentSequence = new StringBuilder();
 
             while (it.hasNext()) {
                 final String line = it.next();
@@ -81,8 +81,8 @@ public class FastaSplitsImporter extends CharactersFormat implements IToSplits, 
 
                     if (!currentSequence.toString().equals("")) binarySplits.add(currentSequence.toString());
                     nsplits = currentSequenceLength;
-                    currentSequenceLength = 0;
-                    currentSequence = new StringBuilder("");
+					currentSequenceLength = 0;
+					currentSequence = new StringBuilder();
                 } else {
                     String allowedChars = "" + getMissing() + getMatchChar() + getGap();
                     checkIfCharactersValid(line, counter, allowedChars);

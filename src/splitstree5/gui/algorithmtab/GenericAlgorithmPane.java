@@ -58,8 +58,7 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
     /**
      * constructor
      *
-     * @param connector
-     */
+	 */
     public GenericAlgorithmPane(Connector<P, C> connector) {
         this.connector = connector;
         options.addAll(OptionsAccessor.getAllOptions(connector.getAlgorithm()));
@@ -68,8 +67,7 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
     /**
      * constructor
      *
-     * @param algorithm
-     */
+	 */
     public GenericAlgorithmPane(Connector<P, C> connector, Algorithm<P, C> algorithm) {
         this.connector = connector;
         options.addAll(OptionsAccessor.getAllOptions(algorithm));
@@ -211,11 +209,9 @@ public class GenericAlgorithmPane<P extends DataBlock, C extends DataBlock> exte
                                 }
                             });
 
-                            textField.setText(option.getValue().toString());
-                            textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                                option.holdValue(newValue);
-                            });
-                            control = textField;
+							textField.setText(option.getValue().toString());
+							textField.textProperty().addListener((observable, oldValue, newValue) -> option.holdValue(newValue));
+							control = textField;
                         }
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));

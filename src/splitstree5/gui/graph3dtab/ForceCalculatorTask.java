@@ -37,31 +37,25 @@ import java.util.*;
  */
 public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
-    private final PhyloSplitsGraph graph;
-    private final HashMap<Integer, List<Edge>> split2edges;
+	private final PhyloSplitsGraph graph;
+	private final HashMap<Integer, List<Edge>> split2edges;
 
-    private double maxDist;
+	private double maxDist;
 
-    private final NodeArray<Point3D> nodeLocations;
+	private final NodeArray<Point3D> nodeLocations;
 
-    private double numOfSteps;
-    private boolean linear;
-    private boolean withZpush;
+	private final double numOfSteps;
+	private final boolean linear;
+	private final boolean withZpush;
 
-    /**
-     * constructor
-     *
-     * @param graph
-     * @param node2view
-     * @param numOfSteps
-     * @param linear
-     * @param withZpush
-     */
-    public ForceCalculatorTask(PhyloSplitsGraph graph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
-        this.graph = graph;
-        this.withZpush = withZpush;
-        this.linear = linear;
-        this.numOfSteps = numOfSteps;
+	/**
+	 * constructor
+	 */
+	public ForceCalculatorTask(PhyloSplitsGraph graph, NodeArray<NodeViewBase> node2view, int numOfSteps, boolean linear, boolean withZpush) {
+		this.graph = graph;
+		this.withZpush = withZpush;
+		this.linear = linear;
+		this.numOfSteps = numOfSteps;
 
         split2edges = new HashMap<>();
         for (Edge edge : graph.edges()) {
@@ -109,33 +103,30 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     /**
      * shift some random splits by a small amount
      *
-     * @param count
-     */
-    private void shiftRandomSplits(int count) {
-        final Integer[] keys = split2edges.keySet().toArray(new Integer[split2edges.size()]);
-        final Random random = new Random(666);
-        while (count-- > 0) {
+	 */
+	private void shiftRandomSplits(int count) {
+        final Integer[] keys = split2edges.keySet().toArray(new Integer[0]);
+		final Random random = new Random(666);
+		while (count-- > 0) {
             final Edge edge = split2edges.get(keys[random.nextInt(keys.length)]).get(0);
             final Point3D v1 = nodeLocations.get(edge.getSource());
             final Point3D v2 = nodeLocations.get(edge.getTarget());
 
-            double edgeLength = v1.subtract(v2).magnitude();
-            double zOffset = edgeLength * (0.02 * (0.5 - random.nextDouble()));
+			double edgeLength = v1.subtract(v2).magnitude();
+			double zOffset = edgeLength * (0.02 * (0.5 - random.nextDouble()));
 
-            Point3D v1New = new Point3D(v1.getX(), v1.getY(), v1.getZ() + zOffset);
-            Point3D v1NewVec = v1New.subtract(v2).multiply(edgeLength / v1New.subtract(v2).magnitude());
-            v1New = v2.add(v1NewVec);
-            Point3D moveVec = v1New.subtract(v1);
+			Point3D v1New = new Point3D(v1.getX(), v1.getY(), v1.getZ() + zOffset);
+			Point3D v1NewVec = v1New.subtract(v2).multiply(edgeLength / v1New.subtract(v2).magnitude());
+			v1New = v2.add(v1NewVec);
+			Point3D moveVec = v1New.subtract(v1);
 
-            final NodeSet splitNodes = new NodeSet(graph);
-            getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
-            splitNodes.forEach(v -> {
-                nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
-                        nodeLocations.get(v).getY() + moveVec.getY(),
-                        nodeLocations.get(v).getZ() + moveVec.getZ()));
-            });
-        }
-    }
+			final NodeSet splitNodes = new NodeSet(graph);
+			getSplitAssociatedNodes(graph.getSplit(edge), edge.getSource(), splitNodes);
+			splitNodes.forEach(v -> nodeLocations.put(v, new Point3D(nodeLocations.get(v).getX() + moveVec.getX(),
+					nodeLocations.get(v).getY() + moveVec.getY(),
+					nodeLocations.get(v).getZ() + moveVec.getZ())));
+		}
+	}
 
     private void calculateStep(NodeArray<Point3D> nodeLocations, boolean linear) {
         final NodeSet leftNodes = new NodeSet(graph);
@@ -198,10 +189,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
 
                 if (!Double.isNaN(move.getX()) || !Double.isNaN(move.getY()) || !Double.isNaN(move.getZ())) {
                     // move all nodes in split
-                    leftSplit.forEach(id -> {
-                        nodeLocations.put(id, nodeLocations.get(id).add(move));
-                    });
-                }
+                    leftSplit.forEach(id -> nodeLocations.put(id, nodeLocations.get(id).add(move)));
+				}
             }
         }
     }
@@ -209,11 +198,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     /**
      * determines all nodes on one side of split
      *
-     * @param splitId
-     * @param v
-     * @return nodes on one side of split
-     */
-    private void getSplitAssociatedNodes(int splitId, Node v, NodeSet nodes) {
+	 */
+	private void getSplitAssociatedNodes(int splitId, Node v, NodeSet nodes) {
         nodes.clear();
 
         final Stack<Node> stack = new Stack<>();
@@ -236,8 +222,6 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     /**
      * if this node is adjacent to an edge representing the given split, returns the oppposite node
      *
-     * @param v
-     * @param splitId
      * @return opposite or null
      */
     private Node getCorrespondingNodeFromSplit(Node v, int splitId) {
@@ -272,7 +256,6 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     /**
      * get the max distance
      *
-     * @param points
      * @return max distance between any two points
      */
     public static double calculateMaxDist(Iterable<Point3D> points) {
@@ -297,9 +280,8 @@ public class ForceCalculatorTask extends Task<NodeArray<Point3D>> {
     /**
      * center coordinates
      *
-     * @param points
-     */
-    public static void center(NodeArray<Point3D> points) {
+	 */
+	public static void center(NodeArray<Point3D> points) {
         double averageX = 0;
         double averageY = 0;
         double averageZ = 0;

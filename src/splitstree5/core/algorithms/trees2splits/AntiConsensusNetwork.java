@@ -104,11 +104,7 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * compute the consensus splits
      *
-     * @param progress
-     * @param taxaBlock
-     * @param treesBlock
-     * @param splitsBlock
-     */
+	 */
     @Override
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws Exception {
         boolean showTrees = false;
@@ -415,8 +411,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * is given a sin better than other? That is, does sin have a bigger score and overlap with other
      *
-     * @param sin
-     * @param other
      * @return true, if better score and overlaps with other
      */
     private boolean isBetter(SIN sin, Node u, SIN other, Node otherNode) {
@@ -427,7 +421,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * get all below
      *
-     * @param v
      * @return all below
      */
     private NodeSet allBelow(Node v) {
@@ -449,8 +442,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
      * computes the coverage graph: split s covers t, if the incompatibilities associated with t are contained in those for s
      * If s and t have the same set of incompatibilities, then additionally require that s is lexicographically smaller
      *
-     * @param splits
-     * @param split2incompatibilities
      * @return graph
      */
     private static Graph computeCoverageDAG(Collection<ASplit> splits, Map<BitSet, BitSet> split2incompatibilities) {
@@ -499,8 +490,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * count then number of incompatible splis
      *
-     * @param split
-     * @param referenceSplits
      * @return count
      */
     public static int computeNumberOfIncompatibleReferenceSplits(ASplit split, SplitsBlock referenceSplits) {
@@ -517,8 +506,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * determine all splits that are incompatible to the given split and return their total weight
      *
-     * @param split
-     * @param referenceSplits
      * @param incompatible    will contain indices of incompatible splits
      * @return count
      */
@@ -639,10 +626,6 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
     /**
      * reports the tree associated with a SIN
      *
-     * @param taxaBlock
-     * @param trivialSplitsSource
-     * @param sinSplits
-     * @param sinSplits
      * @return tree string
      */
     private static String reportTree(TaxaBlock taxaBlock, SplitsBlock trivialSplitsSource, Collection<ASplit> sinSplits) {
@@ -697,20 +680,20 @@ public class AntiConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> imp
         };
     }
 
-    /**
-     * set of strongly incompatible (SIN) splits
-     */
-    public class SIN {
-        private final int treeId;
-        private final String treeName;
-        private final double spanPercent;
-        private final int distortion;
+	/**
+	 * set of strongly incompatible (SIN) splits
+	 */
+	public static class SIN {
+		private final int treeId;
+		private final String treeName;
+		private final double spanPercent;
+		private final int distortion;
 
-        private final ArrayList<ASplit> splits = new ArrayList<>();
-        private double totalWeight = 0;
-        private int rank;
+		private final ArrayList<ASplit> splits = new ArrayList<>();
+		private double totalWeight = 0;
+		private int rank;
 
-        public SIN(int treeId, String treeName, double spanPercent, int distortion) {
+		public SIN(int treeId, String treeName, double spanPercent, int distortion) {
             this.treeId = treeId;
             this.treeName = treeName;
             this.spanPercent = spanPercent;

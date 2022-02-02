@@ -36,7 +36,7 @@ import java.io.StringWriter;
 
 public class PCoA2DTest {
 
-    private PCoA2D pCoA2D = new PCoA2D();
+    private final PCoA2D pCoA2D = new PCoA2D();
 
     @Test
     public void compute() throws Exception {
@@ -56,7 +56,7 @@ public class PCoA2DTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxa);
-        new NetworkNexusOutput().write(w1, taxa, networkBlock);
-        System.err.println(w1.toString());
+		new NetworkNexusOutput().write(w1, taxa, networkBlock);
+		System.err.println(w1);
     }
 }

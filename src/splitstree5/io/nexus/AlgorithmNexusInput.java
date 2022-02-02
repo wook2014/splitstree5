@@ -56,9 +56,7 @@ public class AlgorithmNexusInput extends NexusIOBase {
     /**
      * parse and create an algorithm
      *
-     * @param np
-     * @throws IOException
-     */
+	 */
     public Algorithm parse(NexusStreamParser np) throws IOException {
         np.matchBeginBlock(Algorithm.BLOCK_NAME);
         parseTitleAndLink(np);
@@ -125,7 +123,7 @@ public class AlgorithmNexusInput extends NexusIOBase {
                             final StringBuilder buf = new StringBuilder();
                             while (!np.peekMatchIgnoreCase(",") && !np.peekMatchIgnoreCase(";"))
                                 buf.append(" ").append(np.getWordRespectCase());
-                            System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "=" + buf.toString() + "' in line " + np.lineno());
+							System.err.println("WARNING: skipped unknown option for algorithm '" + algorithmName + "': '" + name + "=" + buf + "' in line " + np.lineno());
 
                         }
                         if (np.peekMatchIgnoreCase(";"))
@@ -170,7 +168,6 @@ public class AlgorithmNexusInput extends NexusIOBase {
     /**
      * creates an instance of the named algorithm
      *
-     * @param algorithmName
      * @return instance or null
      */
     public static Algorithm createAlgorithmFromName(String algorithmName) {
@@ -184,7 +181,6 @@ public class AlgorithmNexusInput extends NexusIOBase {
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

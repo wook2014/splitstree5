@@ -38,7 +38,7 @@ import static org.junit.Assert.assertEquals;
 
 public class FastaSplitsImporterTest {
 
-    private FastaSplitsImporter fastaSplitsImporter = new FastaSplitsImporter();
+    private final FastaSplitsImporter fastaSplitsImporter = new FastaSplitsImporter();
 
     @Test
     public void parse() throws Exception {
@@ -52,8 +52,8 @@ public class FastaSplitsImporterTest {
         final StringWriter w = new StringWriter();
         w.write("#nexus\n");
         //new TaxaNexusOutput().write(w, taxaBlock);
-        new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
+		System.err.println(w);
 
         String expectedOutput = "#nexus\n" +
                 "\n" +

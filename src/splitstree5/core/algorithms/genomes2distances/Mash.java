@@ -240,18 +240,18 @@ public class Mash extends Algorithm<GenomesBlock, DistancesBlock> implements IFr
 
 		final String name2 = FileUtils.replaceFileSuffix(FileUtils.getFileNameWithoutPath(file2), "");
 		final String seq2;
-        try (FileLineIterator it = new FileLineIterator(file2)) {
-            final StringBuilder buf = new StringBuilder();
-            it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->
-                    buf.append(s.replaceAll("\\s+", "")));
-            seq2 = buf.toString();
-        }
+		try (FileLineIterator it = new FileLineIterator(file2)) {
+			final StringBuilder buf = new StringBuilder();
+			it.stream().filter(s -> !s.startsWith(">")).collect(Collectors.toList()).forEach(s ->
+					buf.append(s.replaceAll("\\s+", "")));
+			seq2 = buf.toString();
+		}
 
-        final MashSketch sketch1 = MashSketch.compute(name1, Collections.singleton(seq1.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
-        final MashSketch sketch2 = MashSketch.compute(name2, Collections.singleton(seq2.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
+		final MashSketch sketch1 = MashSketch.compute(name1, Collections.singleton(seq1.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
+		final MashSketch sketch2 = MashSketch.compute(name2, Collections.singleton(seq2.getBytes()), true, 1000, 21, 42, false, false, new ProgressSilent());
 
-        System.err.println(String.format("Jaccard: %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.JaccardIndex)));
-        System.err.println(String.format("Mash:    %.5f", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.Mash)));
-    }
+		System.err.printf("Jaccard: %.5f%n", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.JaccardIndex));
+		System.err.printf("Mash:    %.5f%n", MashDistance.compute(sketch1, sketch2, GenomeDistanceType.Mash));
+	}
 }
 

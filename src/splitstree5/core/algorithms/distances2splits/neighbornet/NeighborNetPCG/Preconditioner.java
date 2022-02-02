@@ -26,21 +26,22 @@ import static splitstree5.core.algorithms.distances2splits.neighbornet.NeighborN
 
 public class Preconditioner {
 
-	public BlockXMatrix X;
+	public final BlockXMatrix X;
 
-	public TridiagonalMatrix[] L;
-	public TridiagonalMatrix[] U;
-	public SparseRowMatrix[] Y;
-	public SparseRowMatrix[] Z;
+	public final TridiagonalMatrix[] L;
+	public final TridiagonalMatrix[] U;
+	public final SparseRowMatrix[] Y;
+	public final SparseRowMatrix[] Z;
 
 	/**
 	 * Constructs the block conditioner, in O(n^2) time [linear in the number of variables].
-	 * @param X BlockXMatrix
+	 *
+	 * @param X     BlockXMatrix
 	 * @param bands Number of bands used when computing the Y and Z matrices.
 	 */
-	public Preconditioner(BlockXMatrix X,int bands) {
+	public Preconditioner(BlockXMatrix X, int bands) {
 		this.X = X; //TODO Check that this is the kind of copy/assignment that we want. I think copy by ref is ok here.
-		int n=X.n;
+		int n = X.n;
 		int[] m = X.m;
 
 		L = new TridiagonalMatrix[n];

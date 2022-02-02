@@ -33,10 +33,7 @@ public class AnalysisNexusOutput extends NexusIOBase {
     /**
      * writes the analysis block in nexus format
      *
-     * @param w
-     * @param block
-     * @throws IOException
-     */
+	 */
     public void write(Writer w, AnalysisBlock block) throws IOException {
         w.write("\nBEGIN " + AnalysisBlock.BLOCK_NAME + ";\n");
 		writeTitleAndLink(w);

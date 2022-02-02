@@ -132,7 +132,7 @@ public class Codominant extends Algorithm<CharactersBlock, DistancesBlock> imple
                         }
                     }
 
-                    distSquared += (double) diff;
+                    distSquared += diff;
                 }
 
                 double dij = nchar / 2.0 * distSquared / (double) nValidLoci;

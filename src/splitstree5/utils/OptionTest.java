@@ -52,7 +52,7 @@ public class OptionTest {
                     break;
                 }
                 case "String": {
-                    option.holdValue("changed " + (String) option.getValue());
+                    option.holdValue("changed " + option.getValue());
                     break;
                 }
             }

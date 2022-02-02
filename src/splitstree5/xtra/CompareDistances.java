@@ -54,8 +54,7 @@ public class CompareDistances {
     /**
      * run the program
      *
-     * @param args
-     */
+	 */
     public void run(String[] args) throws Exception {
         final ArgsOptions options = new ArgsOptions(args, this.getClass(), "Compares two distance matrices");
         options.setVersion(ProgramProperties.getProgramVersion());
@@ -150,28 +149,28 @@ public class CompareDistances {
                             else if (dist1 == 1.0)
                                 firstOnlyOne++;
                             else if (dist2 == 1.0)
-                                secondOnlyOne++;
-                        }
-                    }
+								secondOnlyOne++;
+						}
+					}
 
-                }
-            }
-        }
+				}
+			}
+		}
 
-        lines.stream().sorted((x, y) -> -Double.compare(x.getFirst(), y.getFirst())).forEach(p -> System.err.println(p.getSecond()));
+		lines.stream().sorted((x, y) -> -Double.compare(x.getFirst(), y.getFirst())).forEach(p -> System.err.println(p.getSecond()));
 
-        System.err.println(String.format("Both same: %5d", bothSame));
-        System.err.println(String.format("Both diff: %5d", bothDifferent));
+		System.err.printf("Both same: %5d%n", bothSame);
+		System.err.printf("Both diff: %5d%n", bothDifferent);
 
-        System.err.println(String.format("Both zero: %5d", bothZero));
-        System.err.println(String.format("Both one : %5d", bothOne));
-        System.err.println(String.format("First one: %5d", firstOnlyOne));
-        System.err.println(String.format("Second one: %5d", secondOnlyOne));
+		System.err.printf("Both zero: %5d%n", bothZero);
+		System.err.printf("Both one : %5d%n", bothOne);
+		System.err.printf("First one: %5d%n", firstOnlyOne);
+		System.err.printf("Second one: %5d%n", secondOnlyOne);
 
-        System.err.println(String.format("Bad taxa (%d):", badCount.size()));
-        badCount.entrySet().stream().sorted((x, y) -> -Integer.compare(x.getValue(), y.getValue()))
-                .forEach(p -> System.err.println(String.format("%s\t%d", p.getKey(), p.getValue())));
+		System.err.printf("Bad taxa (%d):%n", badCount.size());
+		badCount.entrySet().stream().sorted((x, y) -> -Integer.compare(x.getValue(), y.getValue()))
+				.forEach(p -> System.err.printf("%s\t%d%n", p.getKey(), p.getValue()));
 
-        System.err.println(new Statistics(differences).toString());
-    }
+		System.err.println(new Statistics(differences));
+	}
 }

@@ -38,7 +38,6 @@ public interface IImporter {
     /**
      * determines whether importer is applicable to data in given file
      *
-     * @param fileName
      * @return true if applicable
      */
     boolean isApplicable(String fileName) throws IOException;

@@ -278,10 +278,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
      * set the weight to the mean weight of all projections of this split and confidence to
      * the count of trees containing a projection of the split
      *
-     * @param pSplits
-     * @param supportSet
-     * @param splits
-     */
+	 */
     private void setWeightsConfidences(Map[] pSplits, BitSet[] supportSet, SplitsBlock splits) {
         for (int s = 1; s <= splits.getNsplits(); s++) {
             final PartialSplit current = new PartialSplit(splits.getSplits().get(s - 1).getA(),
@@ -334,11 +331,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
      * sets the weight of a split in the network as the average relative length of the edge
      * in the input trees
      *
-     * @param pSplits
-     * @param supportSet
-     * @param splits
-     * @throws CanceledException
-     */
+	 */
     private void setWeightAverageReleativeLength(Map[] pSplits, BitSet[] supportSet, SplitsBlock splits) {
         // compute average of weights and num of edges for each input tree
         float[] averageWeight = new float[pSplits.length];
@@ -386,22 +379,20 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * returns the set of all partial splits in the given tree
      *
-     * @param trees
-     * @param which
      * @param pSplitsOfTree partial splits are returned here
      * @param support       supporting taxa are returned here
      */
     private void computePartialSplits(TaxaBlock taxa, TreesBlock trees, int which, Map<PartialSplit, PartialSplit> pSplitsOfTree, BitSet support) {
-        final ArrayList<PartialSplit> list = new ArrayList<>(); // list of (onesided) partial splits
-        Node v = trees.getTrees().get(which - 1).getFirstNode();
-        computePSplitsFromTreeRecursively(v, null, trees, taxa, list, which, support);
+		final ArrayList<PartialSplit> list = new ArrayList<>(); // list of (onesided) partial splits
+		Node v = trees.getTrees().get(which - 1).getFirstNode();
+		computePSplitsFromTreeRecursively(v, null, trees, taxa, list, which, support);
 
-        for (Object aList : list) {
-            PartialSplit ps = (PartialSplit) aList;
-            ps.setComplement(support);
-            pSplitsOfTree.put(ps, ps);
-        }
-    }
+		for (PartialSplit aList : list) {
+			PartialSplit ps = aList;
+			ps.setComplement(support);
+			pSplitsOfTree.put(ps, ps);
+		}
+	}
 
     // recursively compute the splits:
 
@@ -433,9 +424,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * runs the closure method. Does this multiple times, if desired
      *
-     * @param partialSplits
-     * @throws CanceledException
-     */
+	 */
     private void computeClosureOuterLoop(ProgressListener progress, Set<PartialSplit> partialSplits) throws CanceledException {
         this.rand = new Random(getOptionSeed());
 
@@ -464,8 +453,6 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * gets the number of full splits
      *
-     * @param numAllTaxa
-     * @param partialSplits
      * @return number of full splits
      */
     public int getNumberOfFullSplits(int numAllTaxa, Set partialSplits) {
@@ -481,8 +468,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * computes the split closure obtained using the zig-zap rule
      *
-     * @param partialSplits
-     */
+	 */
     private void computeClosure(ProgressListener progress, Set<PartialSplit> partialSplits) throws CanceledException {
 
         PartialSplit[] splits;
@@ -530,39 +516,39 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
 
                 Iterator it1 = seniorSplits.iterator();
                 while (it1.hasNext()) {
-                    Integer pos1 = ((Integer) it1.next());
+					Integer pos1 = ((Integer) it1.next());
 
-                    for (Object activeSplit : activeSplits) {
-                        Integer pos2 = ((Integer) activeSplit);
-                        PartialSplit ps1 = splits[pos1];
-                        PartialSplit ps2 = splits[pos2];
-                        PartialSplit qs1 = new PartialSplit();
-                        PartialSplit qs2 = new PartialSplit();
-                        if (PartialSplit.applyZigZagRule(ps1, ps2, qs1, qs2)) {
-                            splits[pos1] = qs1;
-                            splits[pos2] = qs2;
-                            newSplits.add(pos1);
-                            newSplits.add(pos2);
-                        }
+					for (Integer activeSplit : activeSplits) {
+						Integer pos2 = activeSplit;
+						PartialSplit ps1 = splits[pos1];
+						PartialSplit ps2 = splits[pos2];
+						PartialSplit qs1 = new PartialSplit();
+						PartialSplit qs2 = new PartialSplit();
+						if (PartialSplit.applyZigZagRule(ps1, ps2, qs1, qs2)) {
+							splits[pos1] = qs1;
+							splits[pos2] = qs2;
+							newSplits.add(pos1);
+							newSplits.add(pos2);
+						}
                     }
                     progress.checkForCancel();
                 }
                 it1 = activeSplits.iterator();
                 while (it1.hasNext()) {
-                    Integer pos1 = ((Integer) it1.next());
+					Integer pos1 = ((Integer) it1.next());
 
-                    for (Object activeSplit : activeSplits) {
-                        Integer pos2 = ((Integer) activeSplit);
-                        PartialSplit ps1 = splits[pos1];
-                        PartialSplit ps2 = splits[pos2];
-                        PartialSplit qs1 = new PartialSplit();
-                        PartialSplit qs2 = new PartialSplit();
-                        if (PartialSplit.applyZigZagRule(ps1, ps2, qs1, qs2)) {
-                            splits[pos1] = qs1;
-                            splits[pos2] = qs2;
-                            newSplits.add(pos1);
-                            newSplits.add(pos2);
-                        }
+					for (Integer activeSplit : activeSplits) {
+						Integer pos2 = activeSplit;
+						PartialSplit ps1 = splits[pos1];
+						PartialSplit ps2 = splits[pos2];
+						PartialSplit qs1 = new PartialSplit();
+						PartialSplit qs2 = new PartialSplit();
+						if (PartialSplit.applyZigZagRule(ps1, ps2, qs1, qs2)) {
+							splits[pos1] = qs1;
+							splits[pos2] = qs2;
+							newSplits.add(pos1);
+							newSplits.add(pos2);
+						}
                     }
                     progress.checkForCancel();
                 }
@@ -587,8 +573,7 @@ public class SuperNetwork extends Algorithm<TreesBlock, SplitsBlock> implements 
     /**
      * applies a simple refinement heuristic
      *
-     * @param partialSplits
-     */
+	 */
     private void applyRefineHeuristic(Set partialSplits) {
 
 

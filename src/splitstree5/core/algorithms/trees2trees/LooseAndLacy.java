@@ -83,10 +83,10 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
 			System.err.println("Upper: " + StringUtils.toString(upper, " "));
 			lower = computeGreatestLowerBound(taxaBlock.getNtax(), traitsBlock);
 			System.err.println("Lower: " + StringUtils.toString(lower, " "));
-			System.err.println(String.format("Species definitions based on all %d traits", traitsBlock.getNTraits()));
+			System.err.printf("Species definitions based on all %d traits%n", traitsBlock.getNTraits());
         } else {
-            upper = lower = computeTax2ValueForTrait(taxaBlock.getNtax(), getOptionTraitNumber(), traitsBlock);
-            System.err.println(String.format("Species definitions based on trait: [%d] %s", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber())));
+			upper = lower = computeTax2ValueForTrait(taxaBlock.getNtax(), getOptionTraitNumber(), traitsBlock);
+			System.err.printf("Species definitions based on trait: [%d] %s%n", getOptionTraitNumber(), traitsBlock.getTraitLabel(getOptionTraitNumber()));
         }
 
         final PhyloTree tree = parent.getTrees().get(0);
@@ -106,11 +106,11 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
             PhyloTree looseTree = treeFromParition(taxaBlock, looseSpecies);
             looseTree.setName("Loose species");
 
-            System.err.println(String.format("Loose species (%d):", looseSpecies.size()));
+			System.err.printf("Loose species (%d):%n", looseSpecies.size());
             {
                 int count = 0;
                 for (BitSet set : looseSpecies) {
-					System.err.println(String.format("[%d] %s", ++count, StringUtils.toString(set, " ")));
+					System.err.printf("[%d] %s%n", ++count, StringUtils.toString(set, " "));
                 }
             }
 
@@ -130,11 +130,11 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
             PhyloTree lacyTree = treeFromParition(taxaBlock, lacySpecies);
             lacyTree.setName("Tight (lacy) species");
 
-            System.err.println(String.format("Tight (lacy) species (%d):", lacySpecies.size()));
+			System.err.printf("Tight (lacy) species (%d):%n", lacySpecies.size());
             {
                 int count = 0;
                 for (BitSet set : lacySpecies) {
-					System.err.println(String.format("[%d] %s", ++count, StringUtils.toString(set, " ")));
+					System.err.printf("[%d] %s%n", ++count, StringUtils.toString(set, " "));
                 }
             }
             child.getTrees().add(lacyTree);
@@ -145,9 +145,6 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     /**
      * compute the tax to value mapping
      *
-     * @param ntax
-     * @param trait
-     * @param traitsBlock
      * @return taxon to value m,apping
      */
     public int[] computeTax2ValueForTrait(int ntax, int trait, TraitsBlock traitsBlock) {
@@ -161,11 +158,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     /**
      * Label each node by all trait values on or below it
      *
-     * @param tree
-     * @param v
-     * @param tax2value
-     * @param traitValuesBelow
-     */
+	 */
     private void computeTaxaAndValuesBelowRec(PhyloTree tree, Node v, int[] tax2value, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow) {
         final BitSet taxa = new BitSet();
         final BitSet values = new BitSet();
@@ -188,8 +181,6 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      * compute the least upper bound for all traits
      * Runtime is O(ntax*ntax*nTraits)
      *
-     * @param ntax
-     * @param traitsBlock
      * @result lub, taxon to part mapping
      */
     private int[] computeLeastUpperBound(int ntax, TraitsBlock traitsBlock) {
@@ -224,8 +215,6 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
      * compute the greatest lower bound for all traits
      * Runtime is O(ntax*log(ntax)*nTraits)
      *
-     * @param ntax
-     * @param traitsBlock
      * @result glb, taxon to part mapping
      */
     private int[] computeGreatestLowerBound(int ntax, TraitsBlock traitsBlock) {
@@ -265,11 +254,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     /**
      * compute the loose species
      *
-     * @param v
-     * @param taxaBelow
-     * @param traitValuesBelow
-     * @param looseSpecies
-     */
+	 */
     private void computeLooseSpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> looseSpecies) {
         final int sizeV = traitValuesBelow.get(v).cardinality();
 
@@ -287,11 +272,7 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     /**
      * compute the lacy species
      *
-     * @param v
-     * @param taxaBelow
-     * @param traitValuesBelow
-     * @param lacySpecies
-     */
+	 */
     private void computeLacySpeciesRec(Node v, NodeArray<BitSet> taxaBelow, NodeArray<BitSet> traitValuesBelow, Set<BitSet> lacySpecies) {
         final int sizeV = traitValuesBelow.get(v).cardinality();
         if (sizeV == 1)
@@ -305,8 +286,6 @@ public class LooseAndLacy extends Algorithm<TreesBlock, TreesBlock> implements I
     /**
      * computes a tree from a partition of taxa
      *
-     * @param taxaBlock
-     * @param partition
      * @return tree
      */
     private PhyloTree treeFromParition(TaxaBlock taxaBlock, Set<BitSet> partition) {

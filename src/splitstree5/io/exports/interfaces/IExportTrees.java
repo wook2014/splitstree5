@@ -34,11 +34,7 @@ public interface IExportTrees extends IExporter, IFromTrees {
     /**
      * save characters
      *
-     * @param w
-     * @param taxa
-     * @param trees
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, TreesBlock trees) throws IOException;
 
-    ;
 }

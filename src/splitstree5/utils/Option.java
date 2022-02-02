@@ -40,11 +40,7 @@ public class Option {
     /**
      * constructors an option
      *
-     * @param name
-     * @param optionable
-     * @param getMethod
-     * @param setMethod
-     */
+	 */
     Option(String name, IOptionable optionable, IGetMethod<IOptionable, Object> getMethod, ISetMethod<IOptionable, Object> setMethod, IGetMethod<IOptionable, String> infoMethod, IGetMethod<IOptionable, String[]> legalValuesMethod, Type type) {
         this.name = name;
         this.optionable = optionable;
@@ -58,8 +54,7 @@ public class Option {
     /**
      * sets the name of the option
      *
-     * @return
-     */
+	 */
     public String getName() {
         return name;
     }
@@ -67,8 +62,7 @@ public class Option {
     /**
      * sets the description of the option
      *
-     * @return
-     */
+	 */
     public String getInfo() {
         try {
             return (infoMethod == null ? null : infoMethod.invoke(optionable));
@@ -107,8 +101,7 @@ public class Option {
     /**
      * sets a new value for the option, but does not write it back. Need to call setValue() for this value to be set
      *
-     * @param newValue
-     */
+	 */
     public void holdValue(Object newValue) {
         this.newValue = newValue;
     }
@@ -129,8 +122,7 @@ public class Option {
     /**
      * writes back the given value
      *
-     * @param newValue
-     */
+	 */
     public void setValue(Object newValue) {
         try {
             holdValue(newValue);

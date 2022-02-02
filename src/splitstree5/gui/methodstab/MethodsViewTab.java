@@ -32,8 +32,7 @@ public class MethodsViewTab extends TextViewTab {
     /**
      * constructor
      *
-     * @param document
-     */
+	 */
     public MethodsViewTab(Document document) {
         super("Methods", document.methodsTextProperty());
         setGraphic(new ImageView(ResourceManagerFX.getIcon("sun/History16.gif")));

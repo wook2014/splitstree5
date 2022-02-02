@@ -68,7 +68,7 @@ public class NeiMillerTest {
         w.write("#nexus\n");
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         throw new Exception("NO TEST DATA FROM ST4");
 

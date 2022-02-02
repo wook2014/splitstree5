@@ -61,9 +61,7 @@ public class GenomesAnalyzer {
     /**
      * constructor
      *
-     * @param fileNames
-     * @param line2label
-     */
+	 */
     public GenomesAnalyzer(List<String> fileNames, AnalyzeGenomesDialog.TaxonIdentification taxonIdentification, Map<String, String> line2label, int minLength, boolean storeFileLocations) {
         this.fileNames = new ArrayList<>(fileNames);
         perFile = (taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFile || taxonIdentification == AnalyzeGenomesDialog.TaxonIdentification.PerFileUsingFileName);
@@ -215,8 +213,6 @@ public class GenomesAnalyzer {
     /**
      * get a single input record from a single file
      *
-     * @param fileName
-     * @param useFileName
      * @return input record
      */
     private InputRecord getDataFromAFile(String fileName, boolean useFileName) {
@@ -245,10 +241,7 @@ public class GenomesAnalyzer {
     /**
      * save the data to a file
      *
-     * @param fileName
-     * @param statusFlowPane
-     * @throws IOException
-     */
+	 */
     public void saveData(AccessReferenceDatabase referenceDatabase, ObservableList<Integer> referenceIds, String fileName, FlowPane statusFlowPane, Consumer<Boolean> running) {
         AService<Integer> aService = new AService<>(statusFlowPane);
 
@@ -318,8 +311,8 @@ public class GenomesAnalyzer {
 
                 {
                     try (Writer sw = new StringWriter()) {
-                        (new GenomesNexusOutput()).write(sw, taxaBlock, genomesBlock);
-                        System.err.println(sw.toString());
+						(new GenomesNexusOutput()).write(sw, taxaBlock, genomesBlock);
+						System.err.println(sw);
                     }
                 }
             }

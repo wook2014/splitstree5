@@ -34,16 +34,13 @@ import java.util.List;
  */
 public interface INexusInput<D extends DataBlock> {
     /**
-     * get syntax
-     */
-    public abstract String getSyntax();
+	 * get syntax
+	 */
+	String getSyntax();
 
     /**
      * parse a nexus block
      *
-     * @param np
-     * @param taxaBlock
-     * @param dataBlock
      * @return taxon names, if found
      */
     List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, D dataBlock) throws IOException;
@@ -51,7 +48,6 @@ public interface INexusInput<D extends DataBlock> {
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     boolean atBeginOfBlock(NexusStreamParser np);

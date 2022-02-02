@@ -66,7 +66,7 @@ public class SuperNetworkTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
         TaxaBlock taxaFromST4 = new TaxaBlock();
@@ -113,8 +113,8 @@ public class SuperNetworkTest {
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock1);
         new TreesNexusOutput().write(w1, taxaBlock1, treesBlock1);
-        new SplitsNexusOutput().write(w1, taxaBlock1, splitsBlock1);
-        System.err.println(w1.toString());
+		new SplitsNexusOutput().write(w1, taxaBlock1, splitsBlock1);
+		System.err.println(w1);
 
         // compare splits
         TaxaBlock taxaFromST41 = new TaxaBlock();
@@ -164,8 +164,8 @@ public class SuperNetworkTest {
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
         new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2);
-        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
-        System.err.println(w2.toString());
+		new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
+		System.err.println(w2);
 
         // compare splits
         TaxaBlock taxaFromST42 = new TaxaBlock();
@@ -210,8 +210,8 @@ public class SuperNetworkTest {
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock3);
         new TreesNexusOutput().write(w3, taxaBlock3, treesBlock3);
-        new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3);
-        System.err.println(w3.toString());
+		new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3);
+		System.err.println(w3);
 
         // compare splits
         TaxaBlock taxaFromST43 = new TaxaBlock();
@@ -256,8 +256,8 @@ public class SuperNetworkTest {
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock4);
         new TreesNexusOutput().write(w4, taxaBlock4, treesBlock4);
-        new SplitsNexusOutput().write(w4, taxaBlock4, splitsBlock4);
-        System.err.println(w4.toString());
+		new SplitsNexusOutput().write(w4, taxaBlock4, splitsBlock4);
+		System.err.println(w4);
 
         // compare splits
         TaxaBlock taxaFromST44 = new TaxaBlock();

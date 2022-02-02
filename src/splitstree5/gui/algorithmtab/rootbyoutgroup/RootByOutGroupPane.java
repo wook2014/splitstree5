@@ -69,8 +69,7 @@ public class RootByOutGroupPane extends AlgorithmPane {
     /**
      * constructor
      *
-     * @param rootByOutGroup
-     */
+	 */
     public RootByOutGroupPane(RootByOutGroupAlgorithm rootByOutGroup) {
         this.rootByOutGroup = rootByOutGroup;
         final ExtendedFXMLLoader extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
@@ -201,9 +200,7 @@ public class RootByOutGroupPane extends AlgorithmPane {
     /**
      * set or deselect taxa
      *
-     * @param taxa
-     * @param select
-     */
+	 */
     private void select(Collection<? extends Taxon> taxa, boolean select) {
         if (select) {
             boolean firstActive = true;

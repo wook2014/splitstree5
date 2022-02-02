@@ -118,7 +118,7 @@ public class CharactersNexusIOTest {
                 }
                 StringWriter sw1 = new StringWriter();
                 new CharactersNexusOutput().write(sw1, taxaBlock, charactersBlock1);
-                System.err.println(sw1.toString());
+				System.err.println(sw1);
 
                 CharactersBlock charactersBlock2 = new CharactersBlock();
                 new CharactersNexusInput().parse(new NexusStreamParser(new StringReader(sw1.toString())), taxaBlock, charactersBlock2);
@@ -129,7 +129,7 @@ public class CharactersNexusIOTest {
                 StringWriter sw2 = new StringWriter();
                 new CharactersNexusOutput().write(sw2, taxaBlock, charactersBlock2);
 
-                System.err.println(sw2.toString());
+				System.err.println(sw2);
 
                 assertEquals(sw1.toString(), sw2.toString());
 

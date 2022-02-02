@@ -56,7 +56,7 @@ public class HammingDistancesTest {
         distances.getFormat().setOptionLabels(false);
         StringWriter w = new StringWriter();
         new DistancesNexusOutput().write(w, taxa, distances);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         final TaxaBlock taxaFromSplitsTree4 = new TaxaBlock();
         final DistancesBlock distancesFromSplitsTree4 = new DistancesBlock();

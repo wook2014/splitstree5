@@ -101,8 +101,7 @@ public class Genome {
      * get the sequence of a part
      *
      * @param i 1-based
-     * @return
-     */
+	 */
     public GenomePart getPart(int i) {
         return parts.get(i);
     }

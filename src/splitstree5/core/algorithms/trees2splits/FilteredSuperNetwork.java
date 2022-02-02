@@ -47,7 +47,7 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
     private final IntegerProperty optionMinNumberTrees = new SimpleIntegerProperty(1);
     private final IntegerProperty optionMaxDistortionScore = new SimpleIntegerProperty(0);
     private final BooleanProperty optionAllTrivial = new SimpleBooleanProperty(true);
-    private BooleanProperty optionUseTotalScore = new SimpleBooleanProperty(false);
+	private final BooleanProperty optionUseTotalScore = new SimpleBooleanProperty(false);
 
 
     @Override
@@ -82,9 +82,9 @@ public class FilteredSuperNetwork extends SuperNetwork implements IFromTrees, IT
             progress.setProgress(t);
         }
 
-        progress.setSubtask("Processing splits");
-        progress.setMaximum(splits.getNsplits() * trees.getNTrees());
-        progress.setProgress(0);
+		progress.setSubtask("Processing splits");
+		progress.setMaximum((long) splits.getNsplits() * trees.getNTrees());
+		progress.setProgress(0);
 
         System.err.println("Filtering splits:");
         if (isOptionUseTotalScore()) {

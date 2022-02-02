@@ -64,7 +64,7 @@ public class SplitDecompositionTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new DistancesNexusOutput().write(w, taxaBlock, distancesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
 

@@ -48,8 +48,8 @@ import java.util.ArrayList;
 public class GenericDatablockFormatToolBar extends ToolBar {
     private final TaxaBlock taxaBlock;
     private final DataBlock dataBlock;
-    private UndoManager undoManager;
-    private final StringProperty text = new SimpleStringProperty();
+	private final UndoManager undoManager;
+	private final StringProperty text = new SimpleStringProperty();
 
     private final ArrayList<Option> options = new ArrayList<>();
 
@@ -58,8 +58,7 @@ public class GenericDatablockFormatToolBar extends ToolBar {
     /**
      * constructor
      *
-     * @param dataBlock
-     */
+	 */
     public GenericDatablockFormatToolBar(TaxaBlock taxaBlock, DataBlock dataBlock) {
         this.taxaBlock = taxaBlock;
         this.dataBlock = dataBlock;
@@ -189,11 +188,9 @@ public class GenericDatablockFormatToolBar extends ToolBar {
                                 }
                             });
 
-                            textField.setText(option.getValue().toString());
-                            textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                                option.holdValue(newValue);
-                            });
-                            control = textField;
+							textField.setText(option.getValue().toString());
+							textField.textProperty().addListener((observable, oldValue, newValue) -> option.holdValue(newValue));
+							control = textField;
                         }
                         if (option.getInfo() != null)
                             control.setTooltip(new Tooltip(option.getInfo()));

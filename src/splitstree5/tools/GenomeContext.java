@@ -189,7 +189,7 @@ public class GenomeContext {
                             buf.append("LCA: ").append(lca).append(" ").append(database.getNames(Collections.singleton(lca)).get(lca));
                         }
                         if (buf.length() > 0) {
-                            w.write(buf.toString() + "\n");
+                            w.write(buf + "\n");
                         }
                         w.write("\n");
                         w.flush();

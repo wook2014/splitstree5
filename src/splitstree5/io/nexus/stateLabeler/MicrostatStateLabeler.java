@@ -52,12 +52,12 @@ public class MicrostatStateLabeler extends StateLabeler {
 
     @Override
     public String getSymbolsUsed() {
-        StringBuilder symbols = new StringBuilder();
-        for (Object aCharsUsed : charsUsed) {
-            symbols.append(((Character) aCharsUsed).charValue());
-        }
-        return symbols.toString();
-    }
+		StringBuilder symbols = new StringBuilder();
+		for (Character aCharsUsed : charsUsed) {
+			symbols.append(aCharsUsed.charValue());
+		}
+		return symbols.toString();
+	}
 
     @Override
     public boolean hasStates(int pos) {

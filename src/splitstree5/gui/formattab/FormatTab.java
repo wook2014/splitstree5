@@ -31,8 +31,6 @@ import splitstree5.gui.graphtab.base.GraphTabBase;
 import splitstree5.main.MainWindow;
 import splitstree5.menu.MenuController;
 
-import java.io.IOException;
-
 /**
  * style tab for setting fonts etc
  * Daniel Huson, 1.2018
@@ -48,9 +46,7 @@ public class FormatTab extends ViewerTab {
     /**
      * constructor
      *
-     * @param mainWindow
-     * @throws IOException
-     */
+	 */
     public FormatTab(MainWindow mainWindow) {
         setMainWindow(mainWindow);
         {
@@ -64,9 +60,7 @@ public class FormatTab extends ViewerTab {
         setGraphic(label);
         label.setText("Format");
 
-        mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> {
-            updateControls(n);
-        });
+		mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().selectedItemProperty().addListener((c, o, n) -> updateControls(n));
 
         updateControls(mainWindow.getMainWindowController().getMainTabPane().getSelectionModel().getSelectedItem());
 

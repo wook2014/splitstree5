@@ -34,9 +34,6 @@ public interface IExportCharacters extends IExporter, IFromCharacters {
     /**
      * save characters
      *
-     * @param w
-     * @param taxa
-     * @param characters
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, CharactersBlock characters) throws IOException;
 }

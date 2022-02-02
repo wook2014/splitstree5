@@ -54,7 +54,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
 
     private Algorithm<P, C> algorithm;
 
-    private BooleanProperty applicable = new SimpleBooleanProperty(false); // algorithm is set and applicable?
+    private final BooleanProperty applicable = new SimpleBooleanProperty(false); // algorithm is set and applicable?
 
     private final ChangeListener<UpdateState> parentStateChangeListener = new ChangeListener<>() {
         @Override
@@ -72,10 +72,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     /**
      * constructor
      *
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     */
+	 */
     public Connector(TaxaBlock taxaBlock, DataNode<P> parent, DataNode<C> child) {
         this(taxaBlock, parent, child, true);
     }
@@ -83,10 +80,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     /**
      * constructor
      *
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     */
+	 */
     public Connector(TaxaBlock taxaBlock, DataNode<P> parent, DataNode<C> child, boolean connectToGraph) {
         this.taxaBlock = taxaBlock;
         this.parent = parent;
@@ -103,11 +97,7 @@ public class Connector<P extends DataBlock, C extends DataBlock> extends Workflo
     /**
      * constructor
      *
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     * @param algorithm
-     */
+	 */
     public Connector(TaxaBlock taxaBlock, DataNode<P> parent, DataNode<C> child, Algorithm<P, C> algorithm) {
         this(taxaBlock, parent, child);
         setAlgorithm(algorithm);

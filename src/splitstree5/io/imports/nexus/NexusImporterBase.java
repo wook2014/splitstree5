@@ -57,13 +57,7 @@ public abstract class NexusImporterBase<D extends DataBlock> {
     /**
      * parse a nexus filer
      *
-     * @param progressListener
-     * @param fileName
-     * @param taxaBlock
-     * @param dataBlock
-     * @throws CanceledException
-     * @throws IOException
-     */
+	 */
     public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, D dataBlock) throws CanceledException, IOException {
         try (NexusStreamParser np = new NexusStreamParser(new FileReader(fileName))) {
             np.matchIgnoreCase("#nexus");
@@ -99,22 +93,15 @@ public abstract class NexusImporterBase<D extends DataBlock> {
     /**
      * parse a block
      *
-     * @param np
-     * @param taxaBlock
-     * @param dataBlock
      * @return taxon names found
-     * @throws IOException
-     */
+	 */
     public abstract List<String> parseBlock(NexusStreamParser np, TaxaBlock taxaBlock, D dataBlock) throws IOException;
 
     /**
      * only allow import of the first block that is not the taxa block
      *
-     * @param fileName
-     * @param blockName
      * @return true if the first block (except the taxa block, if present) has the block name
-     * @throws IOException
-     */
+	 */
     public boolean isApplicable(String fileName, String blockName) throws IOException {
         blockName = blockName.toLowerCase();
 

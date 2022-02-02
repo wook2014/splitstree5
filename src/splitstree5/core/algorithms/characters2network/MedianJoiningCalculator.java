@@ -36,10 +36,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * runs the median joining algorithm
      *
-     * @param inputSequences
-     * @param weights
-     * @return median joining network
-     */
+	 */
     public void computeGraph(ProgressListener progressListener, Set<String> inputSequences, double[] weights, PhyloGraph graph) throws CanceledException {
         System.err.println("Computing the median joining network for epsilon=" + getOptionEpsilon());
         Set<String> outputSequences = new HashSet<>();
@@ -64,10 +61,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * Main loop of the median joining algorithm
      *
-     * @param input
-     * @param epsilon
-     * @return sequences present in the median joining network
-     */
+	 */
     private void computeMedianJoiningMainLoop(ProgressListener progress, Set<String> input, double[] weights, int epsilon, Set<String> outputSequences) throws CanceledException {
         outputSequences.addAll(input);
 
@@ -142,12 +136,7 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * computes the minimum spanning network upto a tolerance of epsilon
      *
-     * @param sequences
-     * @param weights
-     * @param epsilon
-     * @param graph
-     * @param feasibleLinks
-     */
+	 */
     private void computeMinimumSpanningNetwork(Set<String> sequences, double[] weights, int epsilon, PhyloGraph graph, EdgeSet feasibleLinks) {
         var array = sequences.toArray(new String[0]);
         // compute a distance matrix between all sequences:
@@ -239,11 +228,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * determine whether v and target are connected by a chain of edges all of weight-threshold. Use for debugging
      *
-     * @param graph
-     * @param v
-     * @param target
-     * @param visited
-     * @param threshold
      * @return true, if connected
      */
     private boolean areConnected(PhyloGraph graph, Node v, Node target, NodeSet visited, double threshold) {
@@ -267,9 +251,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * iteratively removes all nodes that are connected to only two other and are not part of the original input
      *
-     * @param graph
-     * @param input
-     * @param sequences
      * @return true, if anything was removed
      */
     private boolean removeObsoleteNodes(PhyloGraph graph, Set<String> input, Set<String> sequences, EdgeSet feasibleLinks) {
@@ -307,10 +288,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * compute the cost of connecting seqM to the other three sequences
      *
-     * @param seqU
-     * @param seqV
-     * @param seqW
-     * @param seqM
      * @return cost
      */
     private double computeConnectionCost(String seqU, String seqV, String seqW, String seqM, double[] weights) {
@@ -320,8 +297,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * compute weighted distance between two sequences
      *
-     * @param seqA
-     * @param seqB
      * @return distance
      */
     private double computeDistance(String seqA, String seqB, double[] weights) {
@@ -340,9 +315,6 @@ public class MedianJoiningCalculator extends QuasiMedianBase {
     /**
      * computes the quasi median for three sequences
      *
-     * @param seqA
-     * @param seqB
-     * @param seqC
      * @return quasi median
      */
     private String[] computeQuasiMedian(String seqA, String seqB, String seqC) {

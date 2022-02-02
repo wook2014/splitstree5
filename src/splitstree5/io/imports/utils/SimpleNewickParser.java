@@ -45,9 +45,7 @@ public class SimpleNewickParser {
     /**
      * parse the tree
      *
-     * @param line
-     * @throws IOException
-     */
+	 */
     public PhyloTree parse(String line) throws IOException {
         this.tree = new PhyloTree();
         hasWeights = false;
@@ -84,8 +82,7 @@ public class SimpleNewickParser {
      * @param i     current position in string
      * @param str   string
      * @return new current position
-     * @throws IOException
-     */
+	 */
     private int parseBracketNotationRecursively(int depth, Node v, int i, String str) throws IOException {
         try {
 			for (i = StringUtils.skipSpaces(str, i); i < str.length(); i = StringUtils.skipSpaces(str, i + 1)) {

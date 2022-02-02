@@ -184,10 +184,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     /**
      * save an algorithms block
      *
-     * @param w
-     * @param algorithm
-     * @throws IOException
-     */
+	 */
     public void export(Writer w, Algorithm algorithm) throws IOException {
         final AlgorithmNexusOutput output = new AlgorithmNexusOutput();
         output.setTitleAndLink(getTitle(), getLink());
@@ -197,11 +194,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     /**
      * save a datablock
      *
-     * @param w
-     * @param taxaBlock
-     * @param dataBlock
-     * @throws IOException
-     */
+	 */
     public void export(Writer w, TaxaBlock taxaBlock, DataBlock dataBlock) throws IOException {
         if (dataBlock instanceof CharactersBlock)
             export(w, taxaBlock, (CharactersBlock) dataBlock);
@@ -240,8 +233,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     /**
      * get the title of the block to be exported.
      *
-     * @return
-     */
+	 */
     public String getTitle() {
         return title;
     }
@@ -249,8 +241,7 @@ public class NexusExporter implements IExportAnalysis, IExportTaxa, IExportChara
     /**
      * set the title of the block to be exported.
      *
-     * @param title
-     */
+	 */
     public void setTitle(String title) {
         this.title = title;
     }

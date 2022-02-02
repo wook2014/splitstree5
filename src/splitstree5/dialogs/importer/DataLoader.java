@@ -58,10 +58,7 @@ public class DataLoader {
      * loads data into document
      *
      * @param reload       if true, attempt to reload into current workflow, otherwise open new window
-     * @param taxaBlock
-     * @param dataBlock
-     * @param parentWindow
-     */
+	 */
     public static void load(boolean reload, String fileName, TaxaBlock taxaBlock, DataBlock dataBlock, MainWindow parentWindow) {
         if (reload && parentWindow != null) {
             final Workflow workflow = parentWindow.getWorkflow();

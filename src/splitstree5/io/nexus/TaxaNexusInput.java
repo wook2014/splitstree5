@@ -54,11 +54,8 @@ public class TaxaNexusInput extends NexusIOBase {
     /**
      * parse a taxa block
      *
-     * @param np
-     * @param taxaBlock
      * @return list of taxon names found
-     * @throws IOException
-     */
+	 */
     public ArrayList<String> parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
         final ArrayList<String> taxonNamesFound = new ArrayList<>();
 
@@ -149,7 +146,6 @@ public class TaxaNexusInput extends NexusIOBase {
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

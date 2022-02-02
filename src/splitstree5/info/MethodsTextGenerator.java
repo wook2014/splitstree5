@@ -35,23 +35,23 @@ import java.util.*;
  * Daniel Huson, June 2017
  */
 public class MethodsTextGenerator {
-    private static MethodsTextGenerator instance;
+	private static MethodsTextGenerator instance;
 
-    public static String preambleTemplate = "Analysis was performed using SplitsTree5 %s%s.\n";
-    public static String inputDataTemplate = "The original input consisted of %s and %s.\n";
-    public static String taxonFilterTemplate = "After removal of %d taxa, the input consisted of %s and %s.\n";
-    public static String methodWithOutputTemplate = "The %s method%s was used%s so as to obtain %s.\n";
-    public static String methodTemplate = "The %s method%s was used%s.\n";
+	public static final String preambleTemplate = "Analysis was performed using SplitsTree5 %s%s.\n";
+	public static final String inputDataTemplate = "The original input consisted of %s and %s.\n";
+	public static final String taxonFilterTemplate = "After removal of %d taxa, the input consisted of %s and %s.\n";
+	public static final String methodWithOutputTemplate = "The %s method%s was used%s so as to obtain %s.\n";
+	public static final String methodTemplate = "The %s method%s was used%s.\n";
 
-    public static String filterTemplate = "A %s%s was applied so as to be %s.\n";
+	public static final String filterTemplate = "A %s%s was applied so as to be %s.\n";
 
-    /**
-     * constructor
-     */
-    private MethodsTextGenerator() {
-    }
+	/**
+	 * constructor
+	 */
+	private MethodsTextGenerator() {
+	}
 
-    /**
+	/**
      * gets the single instance
      *
      * @return instance
@@ -65,7 +65,6 @@ public class MethodsTextGenerator {
     /**
      * generate the current methods text
      *
-     * @param workflow
      * @return method text
      */
     public String apply(Workflow workflow) {
@@ -151,7 +150,6 @@ public class MethodsTextGenerator {
     /**
      * gets the citation keys for an algorithm
      *
-     * @param algorithm
      * @return citation
      */
     public static String getKeysString(Algorithm algorithm) {
@@ -175,7 +173,6 @@ public class MethodsTextGenerator {
     /**
      * get all the key - paper pairs for an algorithm
      *
-     * @param algorithm
      * @return pairs
      */
     public static Collection<Pair<String, String>> getKeysAndPapers(Algorithm algorithm) {

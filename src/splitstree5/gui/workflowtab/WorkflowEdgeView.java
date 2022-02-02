@@ -35,9 +35,7 @@ public class WorkflowEdgeView extends Group {
     /**
      * constructor
      *
-     * @param source
-     * @param target
-     */
+	 */
     public WorkflowEdgeView(WorkflowNodeView source, WorkflowNodeView target) {
         line1 = new Line();
         line2 = new Line();
@@ -80,7 +78,6 @@ public class WorkflowEdgeView extends Group {
     /**
      * compute angle of vector in radian
      *
-     * @param p
      * @return angle of vector in radian
      */
     public static double computeAngle(Point2D p) {
@@ -97,29 +94,29 @@ public class WorkflowEdgeView extends Group {
             } else // p.getX()<0
             {
                 if (p.getY() > 0)
-                    return Math.PI - a;
-                else
-                    return Math.PI + a;
-            }
-        } else if (p.getY() > 0)
-            return 0.5 * Math.PI;
-        else // p.y<0
-            return -0.5 * Math.PI;
-    }
+					return Math.PI - a;
+				else
+					return Math.PI + a;
+			}
+		} else if (p.getY() > 0)
+			return 0.5 * Math.PI;
+		else // p.y<0
+			return -0.5 * Math.PI;
+	}
 
-    private class ArrowHead extends Group {
-        private Line part1 = new Line();
-        private Line part2 = new Line();
+	private static class ArrowHead extends Group {
+		private final Line part1 = new Line();
+		private final Line part2 = new Line();
 
-        public ArrowHead() {
-            getChildren().add(part1);
-            getChildren().add(part2);
-        }
+		public ArrowHead() {
+			getChildren().add(part1);
+			getChildren().add(part2);
+		}
 
-        public void update(Line line) {
-            Point2D start = new Point2D(line.getStartX(), line.getStartY());
-            Point2D end = new Point2D(line.getEndX(), line.getEndY());
-            double radian = computeAngle(end.subtract(start));
+		public void update(Line line) {
+			Point2D start = new Point2D(line.getStartX(), line.getStartY());
+			Point2D end = new Point2D(line.getEndX(), line.getEndY());
+			double radian = computeAngle(end.subtract(start));
 
             (new Point2D(line.getStartX(), line.getStartY())).angle(line.getEndX(), line.getEndY());
 

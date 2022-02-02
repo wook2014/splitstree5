@@ -34,8 +34,6 @@ public interface IExportTraits extends IExporter, IFromTraits {
     /**
      * save taxa
      *
-     * @param w
-     * @param taxa
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, TraitsBlock traitsBlock) throws IOException;
 }

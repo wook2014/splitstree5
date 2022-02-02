@@ -47,8 +47,6 @@ public class NameableBase {
     /**
      * constructor
      *
-     * @param name
-     * @param shortDescription
      */
     public NameableBase(String name, String shortDescription) {
         if (name != null)
@@ -95,7 +93,6 @@ public class NameableBase {
     /**
      * sets a short description
      *
-     * @param shortDescription
      */
     public void setShortDescription(String shortDescription) {
         if (shortDescription == null)
@@ -121,7 +118,6 @@ public class NameableBase {
     /**
      * sets the title of a block. This is used during IO
      *
-     * @param title
      */
     public void setTitle(String title) {
         titleProperty().set(title);
@@ -147,7 +143,6 @@ public class NameableBase {
     /**
      * gets a tool tip for the named option
      *
-     * @param optionName
      * @return tool tip
      */
     public String getToolTip(String optionName) {

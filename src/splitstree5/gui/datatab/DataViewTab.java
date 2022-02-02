@@ -45,9 +45,7 @@ public class DataViewTab extends EditTextViewTab {
     /**
      * constructor
      *
-     * @param document
-     * @param dataNode
-     */
+	 */
     public DataViewTab(Document document, DataNode dataNode) {
         super(dataNode.nameProperty());
 

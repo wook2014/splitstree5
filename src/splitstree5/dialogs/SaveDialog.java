@@ -35,7 +35,6 @@ public class SaveDialog {
     /**
      * save dialog
      *
-     * @param mainWindow
      * @return true if saved
      */
     public static boolean showSaveDialog(MainWindow mainWindow, boolean asWorkflowOnly) {

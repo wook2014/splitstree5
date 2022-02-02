@@ -80,11 +80,8 @@ public class ViewerNexusInput extends NexusIOBase {
     /**
      * parse a trees block
      *
-     * @param np
-     * @param taxaBlock
      * @return taxon names, if found
-     * @throws IOException
-     */
+	 */
     public ViewerBlock parse(NexusStreamParser np, TaxaBlock taxaBlock) throws IOException {
         np.matchBeginBlock(ViewerBlock.BLOCK_NAME);
         parseTitleAndLink(np);

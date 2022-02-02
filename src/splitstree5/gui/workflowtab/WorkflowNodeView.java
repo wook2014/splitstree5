@@ -49,9 +49,7 @@ public class WorkflowNodeView extends Group {
     /**
      * constructor
      *
-     * @param workflowView
-     * @param workflowNode
-     */
+	 */
     public WorkflowNodeView(WorkflowViewTab workflowView, WorkflowNode workflowNode) {
         rectangle = new Rectangle(160, 60);
         this.workflowNode = workflowNode;

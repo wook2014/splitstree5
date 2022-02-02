@@ -59,9 +59,7 @@ public class TreesGridTab extends GraphTabBase<PhyloTree> {
     /**
      * setup the shape
      *
-     * @param rows
-     * @param cols
-     */
+	 */
     public void setShape(int rows, int cols) {
         setRows(rows);
         setCols(cols);

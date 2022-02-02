@@ -60,12 +60,8 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
     /**
      * parse a trees block
      *
-     * @param np
-     * @param taxaBlock
-     * @param treesBlock
      * @return taxon names, if found
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, TreesBlock treesBlock) throws IOException {
         treesBlock.clear();
@@ -219,7 +215,6 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
     /**
      * are there any labeled internal nodes and are all such labels numbers?
      *
-     * @param tree
      * @return true, if some internal nodes labeled by numbers
      */
     public boolean hasNumbersOnInternalNodes(PhyloTree tree) {
@@ -241,7 +236,6 @@ public class TreesNexusInput extends NexusIOBase implements INexusInput<TreesBlo
     /**
      * reinterpret an numerical label of an internal node as the confidence associated with the incoming edge
      *
-     * @param tree
      */
     public void changeNumbersOnInternalNodesToEdgeConfidencies(PhyloTree tree) {
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {

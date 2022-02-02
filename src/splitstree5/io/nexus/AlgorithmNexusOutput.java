@@ -37,9 +37,7 @@ public class AlgorithmNexusOutput extends NexusIOBase {
     /**
      * write a description of the algorithm
      *
-     * @param w
-     * @throws IOException
-     */
+	 */
     public void write(Writer w, Algorithm algorithm) throws IOException {
         w.write("\nBEGIN " + Algorithm.BLOCK_NAME + ";\n");
         writeTitleAndLink(w);

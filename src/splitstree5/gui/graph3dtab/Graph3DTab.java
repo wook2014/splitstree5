@@ -53,7 +53,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     private final Pane bottomPane = new Pane();
 
     private LongBinding viewChanged;
-    private LongProperty viewNumber = new SimpleLongProperty(0);
+    private final LongProperty viewNumber = new SimpleLongProperty(0);
 
     final Property<Transform> worldTransformProperty;
     final LongProperty transformChangesProperty;
@@ -81,7 +81,6 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * initialize data structures
      *
-     * @param phyloGraph
      */
     public void init(G phyloGraph) {
         this.graph = phyloGraph;
@@ -156,9 +155,7 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
                 subScene.heightProperty().bind(centerPane.heightProperty());
                 borderPane.setCenter(centerPane);
                 borderPane.setTop(findToolBar);
-                findToolBar.visibleProperty().addListener((c, o, n) -> {
-                    borderPane.setTop(n ? findToolBar : null);
-                });
+                findToolBar.visibleProperty().addListener((c, o, n) -> borderPane.setTop(n ? findToolBar : null));
             }
 
             for (NodeViewBase nv : node2view.values()) {
@@ -191,7 +188,6 @@ public abstract class Graph3DTab<G extends PhyloGraph> extends GraphTabBase<G> {
             if (!e.isShiftDown()) {
                 final Point2D delta = new Point2D(e.getSceneX() - mousePosX, e.getSceneY() - mousePosY);
 
-                //noinspection SuspiciousNameCombination
                 final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0);
                 final Rotate rotate = new Rotate(0.25 * delta.magnitude(), dragOrthogonalAxis);
                 worldTransformProperty.setValue(rotate.createConcatenation(worldTransformProperty.getValue()));

@@ -1,5 +1,5 @@
 /*
- * NexmlCharactersImporter.java Copyright (C) 2022 Daniel H. Huson
+ * NexmlNetworkImporter.java Copyright (C) 2022 Daniel H. Huson
  *
  * (Some files contain contributions from other authors, who are then mentioned separately.)
  *
@@ -17,16 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.util.CanceledException;
 import jloda.util.FileUtils;
 import jloda.util.progress.ProgressListener;
-import splitstree5.core.datablocks.CharactersBlock;
+import splitstree5.core.datablocks.NetworkBlock;
 import splitstree5.core.datablocks.TaxaBlock;
-import splitstree5.core.datablocks.characters.CharactersType;
-import splitstree5.io.imports.CharactersFormat;
-import splitstree5.io.imports.NeXML.handlers.NexmlCharactersHandler;
+import splitstree5.io.imports.nexml.handlers.NexmlNetworkHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -38,54 +36,32 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * NexML characters importer
+ * nexml network importer
  * Daria Evseeva, 2019
- * todo: needs debugging and activation
+ * todo: debug and activate
  */
-public class NexmlCharactersImporter extends CharactersFormat { // implements IToCharacters, IImportCharacters {
+public class NexmlNetworkImporter { //  implements IToNetwork, IImportNetwork {
 
-    // todo applicable : iterate through the file ; use setSymbols
+    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, NetworkBlock dataBlock)
+            throws CanceledException, IOException {
 
-    public void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, CharactersBlock characters) throws CanceledException, IOException {
         try {
             progressListener.setProgress(-1);
 
             File file = new File(fileName);
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser saxParser = factory.newSAXParser();
-            NexmlCharactersHandler handler = new NexmlCharactersHandler();
+            NexmlNetworkHandler handler = new NexmlNetworkHandler();
+            dataBlock.clear();
+            handler.setNetworkBlock(dataBlock);
             saxParser.parse(file, handler);
             taxaBlock.addTaxaByNames(handler.getTaxaLabels());
-            //characters.set(handler.getMatrix());
-            char[][] matrix = handler.getMatrix();
-            characters.setDimension(matrix.length, matrix[0].length);
-            for (int i = 1; i <= matrix.length; i++) {
-                String line = String.valueOf(matrix[i]);
-                checkIfCharactersValid(line, -1, "" + getMissing() + getMatchChar() + getGap());
-                for (int j = 1; j <= matrix[0].length; j++) {
-                    characters.set(i, j, matrix[i - 1][j - 1]);
-                }
-            }
-            characters.setDataType(handler.getDataType());
-
-            // add new characters
-            if (characters.getDataType().equals(CharactersType.Standard)) {
-                for (String state : handler.getStates2symbols().keySet()) {
-                    Character symbol = handler.getStates2symbols().get(state);
-                    if (!symbol.equals('0') && !symbol.equals('1')
-                            && !symbol.equals(characters.getGapCharacter())
-                            && !symbol.equals(characters.getMissingCharacter()))
-                        characters.setSymbols(characters.getSymbols() + symbol);
-                }
-            }
-
-            characters.setGapCharacter(getGap());
-            characters.setMissingCharacter(getMissing());
 
             progressListener.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public List<String> getExtensions() {
@@ -93,7 +69,6 @@ public class NexmlCharactersImporter extends CharactersFormat { // implements IT
     }
 
     public boolean isApplicable(String fileName) throws IOException {
-
 		String firstLine = FileUtils.getFirstLineFromFile(new File(fileName));
         if (firstLine == null || !firstLine.equals("<nex:nexml") && !firstLine.startsWith("<?xml version="))
             return false;
@@ -102,7 +77,7 @@ public class NexmlCharactersImporter extends CharactersFormat { // implements IT
 					 new BufferedReader(new InputStreamReader(FileUtils.getInputStreamPossiblyZIPorGZIP(fileName)))) {
 			String aLine;
 			while ((aLine = ins.readLine()) != null) {
-				if (aLine.contains("<characters"))
+				if (aLine.contains("<network"))
 					return true;
 			}
 		} catch (IOException ex) {

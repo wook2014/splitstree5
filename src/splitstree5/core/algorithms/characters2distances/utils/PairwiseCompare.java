@@ -39,11 +39,7 @@ public class PairwiseCompare { // todo: add support for character weights
     /**
      * constructor
      *
-     * @param characters
-     * @param i
-     * @param j
-     * @throws SplitsException
-     */
+	 */
 
     // TODO: SOMETHING SLOWS DOWN THE ALGORITHM WHILE OPEN AMBIG. CHARACTERS. NEED TO FIND OUT!
     public PairwiseCompare(final CharactersBlock characters, final int i, final int j) throws SplitsException {
@@ -217,9 +213,6 @@ public class PairwiseCompare { // todo: add support for character weights
     /**
      * Returns negative log likelihood of a given F matrix and t value
      *
-     * @param model
-     * @param F
-     * @param t
      * @return negative log likelihood [double]
      */
     private double evalL(SubstitutionModel model, double[][] F, double t) {
@@ -238,12 +231,7 @@ public class PairwiseCompare { // todo: add support for character weights
     /**
      * golden section
      *
-     * @param model
-     * @param F
-     * @param tmin
-     * @param tmax
-     * @return
-     */
+	 */
     private double goldenSection(SubstitutionModel model, double[][] F, double tmin, double tmax) {
         final double GS_EPSILON = 0.000001;
         final double tau = 2.0 / (1.0 + Math.sqrt(5.0)); //Golden ratio

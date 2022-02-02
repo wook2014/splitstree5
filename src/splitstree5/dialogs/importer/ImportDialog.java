@@ -38,7 +38,6 @@ import splitstree5.io.imports.utils.DistanceSimilarityCalculator;
 import splitstree5.main.MainWindow;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.EnumSet;
 
 /**
@@ -53,9 +52,7 @@ public class ImportDialog {
     /**
      * constructor
      *
-     * @param parentMainWindow
-     * @throws IOException
-     */
+	 */
     public ImportDialog(MainWindow parentMainWindow, String fileName) {
         final ExtendedFXMLLoader<ImportDialogController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();
@@ -184,12 +181,12 @@ public class ImportDialog {
                     thread = null;
             } else {
                 thread = new Thread(() -> { // wait three seconds before showing the progress pane
-                    try {
-                        Thread.sleep(120000);
-                        if (thread != null)
-                            Platform.runLater(stage::close);
-                    } catch (InterruptedException e) {
-                    }
+					try {
+						Thread.sleep(120000);
+						if (thread != null)
+							Platform.runLater(stage::close);
+					} catch (InterruptedException ignored) {
+					}
                 });
                 thread.setDaemon(true);
                 thread.start();
@@ -205,8 +202,7 @@ public class ImportDialog {
     /**
      * show the import dialog
      *
-     * @param other
-     */
+	 */
     public static void show(MainWindow other, String file) {
         ImportDialog importDialog = new ImportDialog(other, file);
         importDialog.show();

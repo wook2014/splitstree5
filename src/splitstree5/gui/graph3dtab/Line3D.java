@@ -47,9 +47,7 @@ public class Line3D extends Cylinder {
     /**
      * change the coordinates
      *
-     * @param start
-     * @param end
-     */
+	 */
     public void setCoordinates(Point3D start, Point3D end) {
         final Point3D midpoint = start.midpoint(end);
         final Point3D direction = end.subtract(start);
@@ -89,14 +87,7 @@ public class Line3D extends Cylinder {
     /**
      * constructor
      *
-     * @param startXProperty
-     * @param startYProperty
-     * @param startZProperty
-     * @param endXProperty
-     * @param endYProperty
-     * @param endZProperty
-     * @param color
-     */
+	 */
     public Line3D(DoubleProperty startXProperty, DoubleProperty startYProperty, DoubleProperty startZProperty,
                   DoubleProperty endXProperty, DoubleProperty endYProperty, DoubleProperty endZProperty, Color color) {
         super(1, 100, 8);
@@ -120,13 +111,7 @@ public class Line3D extends Cylinder {
     /**
      * updates cylinder when location of start or end changes
      *
-     * @param startX
-     * @param startY
-     * @param startZ
-     * @param endX
-     * @param endY
-     * @param endZ
-     */
+	 */
     private InvalidationListener createInvalidationListener(DoubleProperty startX, DoubleProperty startY, DoubleProperty startZ, DoubleProperty endX, DoubleProperty endY, DoubleProperty endZ) {
         return observable -> {
             final Point3D start = new Point3D(startX.get(), startY.get(), startZ.get());

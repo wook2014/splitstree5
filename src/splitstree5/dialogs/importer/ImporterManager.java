@@ -36,7 +36,7 @@ import java.util.*;
 public class ImporterManager {
     public enum DataType {Genomes, Characters, Distances, Trees, Splits, Network, Unknown}
 
-    public static String UNKNOWN_FORMAT = "Unknown";
+    public static final String UNKNOWN_FORMAT = "Unknown";
 
     private final ArrayList<IImporter> importers;
     private final ArrayList<FileChooser.ExtensionFilter> extensionFilters;
@@ -69,8 +69,6 @@ public class ImporterManager {
     /**
      * complete extensions by adding prefix *. and also adding an extension with suffix .gz, if requested
      *
-     * @param extensions
-     * @param includeGZ
      * @return completed extensions
      */
     public static List<String> completeExtensions(Collection<String> extensions, boolean includeGZ) {
@@ -199,25 +197,24 @@ public class ImporterManager {
     /**
      * get the data type for the named file
      *
-     * @param fileName
      * @return data type
      */
     public DataType getDataType(String fileName) {
         DataType dataType = null;
 
         for (IImporter importer : importers) {
-            try {
-                if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
-                    DataType type = getDataType(importer);
-                    if (!type.equals(DataType.Unknown)) {
-                        if (dataType == null)
-                            dataType = type;
-                        else if (!dataType.equals(type))
-                            return DataType.Unknown;
-                    }
-                }
-            } catch (IOException ex) {
-            }
+			try {
+				if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
+					DataType type = getDataType(importer);
+					if (!type.equals(DataType.Unknown)) {
+						if (dataType == null)
+							dataType = type;
+						else if (!dataType.equals(type))
+							return DataType.Unknown;
+					}
+				}
+			} catch (IOException ignored) {
+			}
         }
         if (dataType == null)
             return DataType.Unknown;
@@ -229,16 +226,16 @@ public class ImporterManager {
         String fileFormat = null;
 
         for (IImporter importer : importers) {
-            try {
-                if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
-                    String format = getFileFormat(importer);
-                    if (fileFormat == null)
-                        fileFormat = format;
-                    else if (!fileFormat.equals(format))
-                        return UNKNOWN_FORMAT;
-                }
-            } catch (IOException ex) {
-            }
+			try {
+				if (!(importer instanceof IImportNoAutoDetect) && importer.isApplicable(fileName)) {
+					String format = getFileFormat(importer);
+					if (fileFormat == null)
+						fileFormat = format;
+					else if (!fileFormat.equals(format))
+						return UNKNOWN_FORMAT;
+				}
+			} catch (IOException ignored) {
+			}
         }
         if (fileFormat == null)
             return UNKNOWN_FORMAT;
@@ -249,8 +246,6 @@ public class ImporterManager {
     /**
      * gets the importer by type and file format
      *
-     * @param dataType
-     * @param fileFormat
      * @return importer or null
      */
     public IImporter getImporterByDataTypeAndFileFormat(DataType dataType, String fileFormat) {

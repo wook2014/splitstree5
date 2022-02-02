@@ -90,7 +90,7 @@ public class NeXMLExporter implements IFromTaxa, IExportTaxa, IFromTrees, IExpor
             } catch (IOException e) {
                 System.err.println(e.getMessage());
             }
-            System.err.println(sw.toString());
+            System.err.println(sw);
         }
         try {
             final XMLStreamWriter xmlWriter = createXMLStreamWriter(w);

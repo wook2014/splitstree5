@@ -52,11 +52,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * create an edge view
      *
-     * @param e
-     * @param start
-     * @param end
-     * @return edge view
-     */
+	 */
     public EdgeView2D(Edge e, final Point2D start, final Point2D end, String text) {
         super(e);
 
@@ -250,9 +246,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * set the coordinates of this edge from locations as a straight line
      *
-     * @param start
-     * @param end
-     */
+	 */
     public void setCoordinates(Point2D start, Point2D end) {
         if (shape != null) {
             if (shape instanceof Line) {
@@ -270,8 +264,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * rotate by given angle
      *
-     * @param angle
-     */
+	 */
     public void rotateCoordinates(double angle) {
         if (shape != null) {
             if (shape instanceof Path) {
@@ -326,9 +319,7 @@ public class EdgeView2D extends EdgeViewBase {
     /**
      * scale the coordinates of this edge
      *
-     * @param factorX
-     * @param factorY
-     */
+	 */
     public void scaleCoordinates(double factorX, double factorY) {
         if (shape != null) {
             if (shape instanceof Path) {

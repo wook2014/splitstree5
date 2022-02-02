@@ -82,11 +82,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
     /**
      * compute the consensus splits
      *
-     * @param progress
-     * @param taxaBlock
-     * @param treesBlock
-     * @param splitsBlock
-     */
+	 */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, TreesBlock treesBlock, SplitsBlock splitsBlock) throws CanceledException, SplitsException {
         final ObservableList<PhyloTree> trees = treesBlock.getTrees();
         final Map<BitSet, Pair<BitSet, WeightStats>> splitsAndWeights = new HashMap<>();
@@ -215,7 +211,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
                             }
                             if (threadNumber == 0) {
                                 try {
-                                    progress.setProgress(80 + 20 * (which / array.size()));
+									progress.setProgress(80 + 20L * (which / array.size()));
                                 } catch (CanceledException ex) {
                                     exception.set(ex);
                                 }
@@ -280,8 +276,8 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
      * a value object contains a set of all weights seen so far and their counts
      */
     private static class WeightStats {
-        private ArrayList<Float> weights;
-        private int totalCount;
+		private final ArrayList<Float> weights;
+		private int totalCount;
         private double sum;
         private int treeIndex;
 
@@ -298,8 +294,7 @@ public class ConsensusNetwork extends Algorithm<TreesBlock, SplitsBlock> impleme
         /**
          * add the given weight and count
          *
-         * @param weight
-         */
+		 */
         void add(float weight, int treeIndex) {
             weights.add(weight);
             totalCount++;

@@ -55,7 +55,7 @@ public class EditTextViewTab extends ViewerTab {
 	private final CodeArea codeArea = new CodeArea();
 	private final VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
 
-	BooleanBinding emptyProperty = new BooleanBinding() {
+	final BooleanBinding emptyProperty = new BooleanBinding() {
 		{
 			super.bind(codeArea.lengthProperty());
 		}
@@ -64,25 +64,24 @@ public class EditTextViewTab extends ViewerTab {
 		protected boolean computeValue() {
 			return codeArea.getLength() == 0;
 		}
-    };
+	};
 
-    BooleanBinding selectionEmpty = new BooleanBinding() {
-        {
+	final BooleanBinding selectionEmpty = new BooleanBinding() {
+		{
 			super.bind(codeArea.selectionProperty());
-        }
+		}
 
-        @Override
-        protected boolean computeValue() {
+		@Override
+		protected boolean computeValue() {
 			return codeArea.getSelection().getLength() == 0;
-        }
-    };
+		}
+	};
 
 
     /**
      * constructor
      *
-     * @param nameProperty
-     */
+	 */
     public EditTextViewTab(ReadOnlyStringProperty nameProperty) {
         this(nameProperty, null);
     }
@@ -90,9 +89,7 @@ public class EditTextViewTab extends ViewerTab {
     /**
      * constructor
      *
-     * @param nameProperty
-     * @param textProperty
-     */
+	 */
     public EditTextViewTab(ReadOnlyStringProperty nameProperty, ReadOnlyStringProperty textProperty) {
         final Label label = new Label();
         label.textProperty().bind(nameProperty);
@@ -133,7 +130,6 @@ public class EditTextViewTab extends ViewerTab {
     /**
      * go to given line and given col
      *
-     * @param lineNumber
      * @param col        if col<=1 or col>line length, will select the whole line, else selects line starting at given col
      */
     public void gotoLine(long lineNumber, int col) {
@@ -167,8 +163,7 @@ public class EditTextViewTab extends ViewerTab {
     /**
      * select matching brackets
      *
-     * @param codeArea
-     */
+	 */
     protected void selectBrackets(CodeArea codeArea) {
         int pos = codeArea.getCaretPosition() - 1;
         while (pos > 0 && pos < codeArea.getText().length()) {
@@ -210,16 +205,12 @@ public class EditTextViewTab extends ViewerTab {
 		controller.getPrintMenuitem().setOnAction((e) -> Print.print(getMainWindow().getStage(), scrollPane));
 
         if (getUndoManager() != null) {
-            controller.getUndoMenuItem().setOnAction((e) -> {
-                getUndoManager().undo();
-            });
-            controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
+			controller.getUndoMenuItem().setOnAction((e) -> getUndoManager().undo());
+			controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
             controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
-            controller.getRedoMenuItem().setOnAction((e) -> {
-                getUndoManager().redo();
-            });
-            controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
+			controller.getRedoMenuItem().setOnAction((e) -> getUndoManager().redo());
+			controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 

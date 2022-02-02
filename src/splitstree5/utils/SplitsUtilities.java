@@ -43,8 +43,6 @@ public class SplitsUtilities {
     /**
      * computes the least squares fit
      *
-     * @param distancesBlock
-     * @param splits
      * @return squares fit
      */
     public static float computeLeastSquaresFit(DistancesBlock distancesBlock, List<ASplit> splits) {
@@ -105,8 +103,6 @@ public class SplitsUtilities {
     /**
      * Given splits, returns the matrix split distances, as the number of splits separating each pair of taxa
      *
-     * @param ntax
-     * @param splits
      * @return distance matrix indexed 0 .. nTax-1 and 0 .. nTax-1
      */
     public static double[][] splitsToDistances(int ntax, List<ASplit> splits) {
@@ -130,7 +126,6 @@ public class SplitsUtilities {
     /**
      * normalize cycle so that it is lexicographically smallest
      *
-     * @param cycle
      * @return normalized cycle
      */
     public static int[] normalizeCycle(int[] cycle) {
@@ -171,10 +166,9 @@ public class SplitsUtilities {
     /**
      * sort splits by decreasing weight
      *
-     * @param splits
      */
     public static ArrayList<ASplit> sortByDecreasingWeight(List<ASplit> splits) {
-        final ASplit[] array = splits.toArray(new ASplit[splits.size()]);
+        final ASplit[] array = splits.toArray(new ASplit[0]);
         Arrays.sort(array, (a, b) -> {
             if (a.getWeight() > b.getWeight())
                 return -1;
@@ -188,9 +182,7 @@ public class SplitsUtilities {
     /**
      * is split circular with respect to the given cycle?
      *
-     * @param taxa
      * @param cycle uses indices 1 to number-of-taxa
-     * @param split
      * @return true if circular
      */
     public static boolean isCircular(TaxaBlock taxa, int[] cycle, ASplit split) {
@@ -209,9 +201,6 @@ public class SplitsUtilities {
     /**
      * verify that all splits are proper and are contained in the taxon set
      *
-     * @param splits
-     * @param taxa
-     * @throws SplitsException
      */
     public static void verifySplits(Collection<ASplit> splits, TaxaBlock taxa) throws SplitsException {
         final Set<BitSet> seen = new HashSet<>();
@@ -336,12 +325,8 @@ public class SplitsUtilities {
      * @param alt         use alternative side
      * @param nTax        number of taxa
      * @param outGroup    out group taxa or empty, if performing simple midpoint rooting
-     * @param cycle
-     * @param splitsBlock
      * @param useWeights  use split weights or otherwise give all splits weight 1
-     * @param progress
      * @return rooting split and both distances
-     * @throws CanceledException
      */
     public static Triplet<Integer, Double, Double> computeRootLocation(boolean alt, int nTax, Set<Integer> outGroup,
                                                                        int[] cycle, SplitsBlock splitsBlock, boolean useWeights, ProgressListener progress) {

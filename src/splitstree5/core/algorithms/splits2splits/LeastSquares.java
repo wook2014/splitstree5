@@ -205,14 +205,14 @@ public class LeastSquares {
             I = splits.getSplits().get(i).getA(); //Note - indices off by one.
             Isize = I.cardinality();
             for (int j = 0; j < i; j++) {
-                J = (BitSet) splits.getSplits().get(j).getA().clone();
-                Jsize = J.cardinality();
-                J.and(I);
-                int x = J.cardinality(); //Size of intersection
-                int Aij = x * (ntaxa - Isize - Jsize + x) + (Isize - x) * (Jsize - x);
-                Amat.set(i, j, (double) Aij);
-                Amat.set(j, i, (double) Aij);
-            }
+				J = (BitSet) splits.getSplits().get(j).getA().clone();
+				Jsize = J.cardinality();
+				J.and(I);
+				int x = J.cardinality(); //Size of intersection
+				int Aij = x * (ntaxa - Isize - Jsize + x) + (Isize - x) * (Jsize - x);
+				Amat.set(i, j, Aij);
+				Amat.set(j, i, Aij);
+			}
             Amat.set(i, i, Isize * (ntaxa - Isize));
         }
         return Amat;

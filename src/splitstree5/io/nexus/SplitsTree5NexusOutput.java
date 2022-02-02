@@ -33,10 +33,7 @@ public class SplitsTree5NexusOutput {
     /**
      * writes the taxa block in nexus format
      *
-     * @param w
-     * @param splitsTree5Block
-     * @throws IOException
-     */
+	 */
     public void write(Writer w, SplitsTree5Block splitsTree5Block) throws IOException {
         w.write("\nBEGIN " + SplitsTree5Block.BLOCK_NAME + ";\n");
         w.write("DIMENSIONS nDataNodes=" + splitsTree5Block.getOptionNumberOfDataNodes()

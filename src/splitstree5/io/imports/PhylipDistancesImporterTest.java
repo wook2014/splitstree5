@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PhylipDistancesImporterTest {
 
-    private PhylipDistancesImporter phylipDistancesImporter = new PhylipDistancesImporter();
+    private final PhylipDistancesImporter phylipDistancesImporter = new PhylipDistancesImporter();
 
     @org.junit.Test
     public void parse() throws Exception {
@@ -55,8 +55,8 @@ public class PhylipDistancesImporterTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new DistancesNexusOutput().write(w1, taxaBlock, distancesBlock);
-        System.err.println(w1.toString());
+		new DistancesNexusOutput().write(w1, taxaBlock, distancesBlock);
+		System.err.println(w1);
         String s1 = w1.toString();
 
         phylipDistancesImporter.parse(pl, "test/notNexusFiles/triangular.dist", taxaBlock, distancesBlock);
@@ -64,8 +64,8 @@ public class PhylipDistancesImporterTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock);
-        System.err.println(w2.toString());
+		new DistancesNexusOutput().write(w2, taxaBlock, distancesBlock);
+		System.err.println(w2);
         String s2 = w2.toString();
 
         phylipDistancesImporter.parse(pl, "test/notNexusFiles/triangularEOL.dist", taxaBlock, distancesBlock);
@@ -73,24 +73,24 @@ public class PhylipDistancesImporterTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new DistancesNexusOutput().write(w3, taxaBlock, distancesBlock);
-        System.err.println(w3.toString());
+		new DistancesNexusOutput().write(w3, taxaBlock, distancesBlock);
+		System.err.println(w3);
 
         phylipDistancesImporter.parse(pl, "test/notNexusFiles/squareEOL-bf.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock);
-        System.err.println(w4.toString());
+		new DistancesNexusOutput().write(w4, taxaBlock, distancesBlock);
+		System.err.println(w4);
 
         phylipDistancesImporter.parse(pl, "test/notNexusFiles/triangular_upper.dist", taxaBlock, distancesBlock);
         // printing
         final StringWriter w5 = new StringWriter();
         w5.write("#nexus\n");
         new TaxaNexusOutput().write(w5, taxaBlock);
-        new DistancesNexusOutput().write(w5, taxaBlock, distancesBlock);
-        System.err.println(w5.toString());
+		new DistancesNexusOutput().write(w5, taxaBlock, distancesBlock);
+		System.err.println(w5);
     }
 
     @Test

@@ -38,14 +38,11 @@ public class UnrootedNetworkNexusIO {
     /**
      * write an unrooted network
      *
-     * @param w
-     * @param graph
      * @param saveTaxonIds    save taxon ids
      * @param saveSplitIds    save split ids
      * @param node2attributes optional additional node attributes
      * @param edge2attributes optional additional edge attributes
-     * @throws IOException
-     */
+	 */
     public static void write(Writer w, PhyloSplitsGraph graph, boolean saveTaxonIds, boolean saveSplitIds, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
         w.write("\n\t{GRAPH\n");
         // report nodes:
@@ -113,12 +110,7 @@ public class UnrootedNetworkNexusIO {
     /**
      * parse an unrooted phylogenetic network
      *
-     * @param np
-     * @param graph
-     * @param node2attributes
-     * @param edge2attributes
-     * @throws IOException
-     */
+	 */
     public static void read(NexusStreamParser np, PhyloSplitsGraph graph, Map<Node, Map<String, String>> node2attributes, Map<Edge, Map<String, String>> edge2attributes) throws IOException {
         graph.clear();
 

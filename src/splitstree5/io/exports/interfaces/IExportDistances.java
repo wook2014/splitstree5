@@ -34,9 +34,6 @@ public interface IExportDistances extends IExporter, IFromDistances {
     /**
      * save distances
      *
-     * @param w
-     * @param taxa
-     * @param distances
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, DistancesBlock distances) throws IOException;
 }

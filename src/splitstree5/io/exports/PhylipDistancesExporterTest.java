@@ -29,7 +29,7 @@ import java.io.*;
 
 public class PhylipDistancesExporterTest {
 
-    private PhylipDistancesExporter phylipDistancesExporter = new PhylipDistancesExporter();
+    private final PhylipDistancesExporter phylipDistancesExporter = new PhylipDistancesExporter();
 
     @Test
     public void export() throws Exception {

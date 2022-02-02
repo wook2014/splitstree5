@@ -46,7 +46,6 @@ public class NodeViewIO {
     /**
      * write a node view to an output string
      *
-     * @param nv
      * @return string
      */
     public static String toOutputString(NodeView2D nv) {
@@ -79,11 +78,7 @@ public class NodeViewIO {
     /**
      * parse a node from a nexus parser
      *
-     * @param graph2DTab
-     * @param id2node
-     * @return
-     * @throws IOExceptionWithLineNumber
-     */
+	 */
     public static NodeView2D valueOf(NexusStreamParser np, PhyloGraph graph, Graph2DTab graph2DTab, Map<Integer, Node> id2node) throws IOExceptionWithLineNumber {
         np.matchIgnoreCase("N:");
         final int id = np.getInt();

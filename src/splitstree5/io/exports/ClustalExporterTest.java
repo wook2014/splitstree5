@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ClustalExporterTest {
 
-    private ClustalExporter clustalExporter = new ClustalExporter();
+    private final ClustalExporter clustalExporter = new ClustalExporter();
 
     @Test
     public void export() throws Exception {

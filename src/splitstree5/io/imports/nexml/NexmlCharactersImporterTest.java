@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.util.CanceledException;
 import jloda.util.progress.ProgressListener;
@@ -33,7 +33,7 @@ import java.io.StringWriter;
 
 public class NexmlCharactersImporterTest {
 
-    private NexmlCharactersImporter nexmlCharactersIn = new NexmlCharactersImporter();
+	private final NexmlCharactersImporter nexmlCharactersIn = new NexmlCharactersImporter();
 
     @Test
     public void parseSeq() throws IOException, CanceledException {
@@ -47,8 +47,8 @@ public class NexmlCharactersImporterTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
+		new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+		System.err.println(w1);
 
     }
 
@@ -64,8 +64,8 @@ public class NexmlCharactersImporterTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
+		new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+		System.err.println(w1);
     }
 
 }

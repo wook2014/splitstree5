@@ -61,46 +61,42 @@ import java.util.stream.Collectors;
  * This was copied from here: com.sun.javafx.charts.Legend (couldn't figure out how to enable this)
  */
 public class Legend extends TilePane {
-    private static final int GAP = 5;
+	private static final int GAP = 5;
 
-    private ListChangeListener<Legend.LegendItem> itemsListener = (c) -> {
-        List list = (List) this.getItems().stream().map((item) -> {
-            return item.label;
-        }).collect(Collectors.toList());
-        this.getChildren().setAll(list);
-        if (this.isVisible()) {
-            this.requestLayout();
-        }
+	private final ListChangeListener<Legend.LegendItem> itemsListener = (c) -> {
+		List list = this.getItems().stream().map((item) -> item.label).collect(Collectors.toList());
+		this.getChildren().setAll(list);
+		if (this.isVisible()) {
+			this.requestLayout();
+		}
 
-    };
-    private BooleanProperty vertical = new BooleanPropertyBase(false) {
-        protected void invalidated() {
-            Legend.this.setOrientation(this.get() ? Orientation.VERTICAL : Orientation.HORIZONTAL);
-        }
+	};
+	private final BooleanProperty vertical = new BooleanPropertyBase(false) {
+		protected void invalidated() {
+			Legend.this.setOrientation(this.get() ? Orientation.VERTICAL : Orientation.HORIZONTAL);
+		}
 
-        public Object getBean() {
-            return Legend.this;
-        }
+		public Object getBean() {
+			return Legend.this;
+		}
 
-        public String getName() {
-            return "vertical";
-        }
-    };
-    private ObjectProperty<ObservableList<Legend.LegendItem>> items = new ObjectPropertyBase<ObservableList<Legend.LegendItem>>() {
-        ObservableList<Legend.LegendItem> oldItems = null;
+		public String getName() {
+			return "vertical";
+		}
+	};
+	private final ObjectProperty<ObservableList<Legend.LegendItem>> items = new ObjectPropertyBase<ObservableList<Legend.LegendItem>>() {
+		ObservableList<Legend.LegendItem> oldItems = null;
 
-        protected void invalidated() {
-            if (this.oldItems != null) {
-                this.oldItems.removeListener(Legend.this.itemsListener);
-            }
+		protected void invalidated() {
+			if (this.oldItems != null) {
+				this.oldItems.removeListener(Legend.this.itemsListener);
+			}
 
-            Legend.this.getChildren().clear();
-            ObservableList items = (ObservableList) this.get();
-            if (items != null) {
+			Legend.this.getChildren().clear();
+			ObservableList items = this.get();
+			if (items != null) {
                 items.addListener(Legend.this.itemsListener);
-                List list = (List) items.stream().map((item) -> {
-                    return ((LegendItem) item).label;
-                }).collect(Collectors.toList());
+				List list = (List) items.stream().map((item) -> ((LegendItem) item).label).collect(Collectors.toList());
                 Legend.this.getChildren().addAll(list);
             }
 
@@ -134,7 +130,7 @@ public class Legend extends TilePane {
     }
 
     public final ObservableList<Legend.LegendItem> getItems() {
-        return (ObservableList) this.items.get();
+		return this.items.get();
     }
 
     public final ObjectProperty<ObservableList<Legend.LegendItem>> itemsProperty() {
@@ -156,25 +152,25 @@ public class Legend extends TilePane {
         return this.getItems().size() > 0 ? super.computePrefHeight(value) : 0.0D;
     }
 
-    public static class LegendItem {
-        private Label label;
-        private StringProperty text;
-        private ObjectProperty<Node> symbol;
+	public static class LegendItem {
+		private final Label label;
+		private final StringProperty text;
+		private final ObjectProperty<Node> symbol;
 
-        public final String getText() {
-            return this.text.getValue();
-        }
+		public final String getText() {
+			return this.text.getValue();
+		}
 
-        public final void setText(String text) {
-            this.text.setValue(text);
-        }
+		public final void setText(String text) {
+			this.text.setValue(text);
+		}
 
-        public final StringProperty textProperty() {
+		public final StringProperty textProperty() {
             return this.text;
         }
 
         public final Node getSymbol() {
-            return (Node) this.symbol.getValue();
+			return this.symbol.getValue();
         }
 
         public final void setSymbol(Node symbol) {
@@ -202,7 +198,7 @@ public class Legend extends TilePane {
             };
             this.symbol = new ObjectPropertyBase<Node>(new Region()) {
                 protected void invalidated() {
-                    Node var1 = (Node) this.get();
+					Node var1 = this.get();
                     if (var1 != null) {
                         var1.getStyleClass().setAll("chart-legend-item-symbol");
                     }

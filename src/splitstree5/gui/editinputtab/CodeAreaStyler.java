@@ -30,7 +30,7 @@ import splitstree5.gui.editinputtab.highlighters.XMLHighlighter;
  */
 
 public class CodeAreaStyler {
-    private static boolean debug = false;
+    private static final boolean debug = false;
 
     //todo change codearea highlighting color
 
@@ -43,9 +43,9 @@ public class CodeAreaStyler {
          */
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            if (t1.length() >= 6 && t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")) {
-                highlighter = new NexusHighlighter();
-            }
+			if (t1.length() >= 6 && t1.replaceAll("^\\n+", "").substring(0, 6).equalsIgnoreCase("#nexus")) {
+				highlighter = new NexusHighlighter();
+			}
         });
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
@@ -55,10 +55,10 @@ public class CodeAreaStyler {
         });
 
         codeArea.textProperty().addListener((observableValue, s, t1) -> {
-            if (t1.length() >= 6 && !t1.replaceAll("^\\n+", "").substring(0, 6).toLowerCase().equals("#nexus")
-                    && !t1.replaceAll("^\\n+", "").startsWith("<")) {
-                highlighter = new UniversalHighlighter();
-            }
+			if (t1.length() >= 6 && !t1.replaceAll("^\\n+", "").substring(0, 6).equalsIgnoreCase("#nexus")
+				&& !t1.replaceAll("^\\n+", "").startsWith("<")) {
+				highlighter = new UniversalHighlighter();
+			}
         });
     }
 

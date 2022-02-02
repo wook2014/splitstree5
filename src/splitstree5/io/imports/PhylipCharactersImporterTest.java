@@ -42,7 +42,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PhylipCharactersImporterTest {
 
-    private PhylipCharactersImporter phylipCharactersImporter = new PhylipCharactersImporter();
+    private final PhylipCharactersImporter phylipCharactersImporter = new PhylipCharactersImporter();
 
     @Test
     public void parse() throws Exception {
@@ -57,8 +57,8 @@ public class PhylipCharactersImporterTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
+		new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+		System.err.println(w1);
         String standard = w1.toString();
 
         phylipCharactersImporter.parse(pl, "test/notNexusFiles/standardEOL.phy", taxaBlock, charactersBlock);
@@ -66,8 +66,8 @@ public class PhylipCharactersImporterTest {
         final StringWriter w2 = new StringWriter();
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock);
-        new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
-        System.err.println(w2.toString());
+		new CharactersNexusOutput().write(w2, taxaBlock, charactersBlock);
+		System.err.println(w2);
         String standardEOL = w2.toString();
 
         phylipCharactersImporter.parse(pl, "test/notNexusFiles/interleaved.phy", taxaBlock, charactersBlock);
@@ -75,8 +75,8 @@ public class PhylipCharactersImporterTest {
         final StringWriter w3 = new StringWriter();
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock);
-        new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
-        System.err.println(w3.toString());
+		new CharactersNexusOutput().write(w3, taxaBlock, charactersBlock);
+		System.err.println(w3);
         String interleaved = w3.toString();
 
         phylipCharactersImporter.parse(pl, "test/notNexusFiles/interleaved-multi.phy", taxaBlock, charactersBlock);
@@ -84,8 +84,8 @@ public class PhylipCharactersImporterTest {
         final StringWriter w4 = new StringWriter();
         w4.write("#nexus\n");
         new TaxaNexusOutput().write(w4, taxaBlock);
-        new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
-        System.err.println(w4.toString());
+		new CharactersNexusOutput().write(w4, taxaBlock, charactersBlock);
+		System.err.println(w4);
         String interleavedMulti = w4.toString();
 
 

@@ -77,12 +77,7 @@ public class SplitsFilter extends Algorithm<SplitsBlock, SplitsBlock> implements
     /**
      * do the computation
      *
-     * @param progress
-     * @param taxaBlock
-     * @param parent
-     * @param child
-     * @throws CanceledException
-     */
+	 */
     public void compute(ProgressListener progress, TaxaBlock taxaBlock, SplitsBlock parent, SplitsBlock child) throws CanceledException {
         active = false;
 

@@ -53,8 +53,7 @@ public class TextViewTab extends ViewerTab {
     /**
      * constructor
      *
-     * @param name
-     */
+	 */
     public TextViewTab(String name) {
         this(name, null);
     }
@@ -62,8 +61,7 @@ public class TextViewTab extends ViewerTab {
     /**
      * constructor
      *
-     * @param textProperty
-     */
+	 */
     public TextViewTab(String name, ReadOnlyStringProperty textProperty) {
         setText(name);
         textArea = new TextArea();
@@ -97,8 +95,7 @@ public class TextViewTab extends ViewerTab {
     /**
      * select matching brackets
      *
-     * @param textArea
-     */
+	 */
     protected void selectBrackets(TextArea textArea) {
         int pos = textArea.getCaretPosition() - 1;
         while (pos > 0 && pos < textArea.getText().length()) {
@@ -140,16 +137,12 @@ public class TextViewTab extends ViewerTab {
         controller.getPrintMenuitem().setOnAction(e -> Print.print(getMainWindow().getStage(), textArea));
 
         if (getUndoManager() != null) {
-            controller.getUndoMenuItem().setOnAction(e -> {
-                getUndoManager().undo();
-            });
-            controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
+			controller.getUndoMenuItem().setOnAction(e -> getUndoManager().undo());
+			controller.getUndoMenuItem().disableProperty().bind(getUndoManager().undoableProperty().not());
             controller.getUndoMenuItem().textProperty().bind(getUndoManager().undoNameProperty());
 
-            controller.getRedoMenuItem().setOnAction(e -> {
-                getUndoManager().redo();
-            });
-            controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
+			controller.getRedoMenuItem().setOnAction(e -> getUndoManager().redo());
+			controller.getRedoMenuItem().disableProperty().bind(getUndoManager().redoableProperty().not());
             controller.getRedoMenuItem().textProperty().bind(getUndoManager().redoNameProperty());
         }
 

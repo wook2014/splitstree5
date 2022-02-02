@@ -48,12 +48,7 @@ public class FormatChangeCommand extends UndoableRedoableCommand {
     /**
      * constructor
      *
-     * @param formatItem
-     * @param nodes
-     * @param node2view
-     * @param edges
-     * @param edge2view
-     */
+	 */
     public FormatChangeCommand(final FormatItem formatItem, Collection<Node> nodes, NodeArray<NodeViewBase> node2view, Collection<Edge> edges, EdgeArray<EdgeViewBase> edge2view) {
         super(formatItem.getName());
 

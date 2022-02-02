@@ -136,9 +136,6 @@ public class CharactersUtilities {
     /**
      * Check to see if two sequences are identical on all the unmasked sites.
      *
-     * @param characters
-     * @param i
-     * @param j
      * @return true is sequences are identical. False otherwise.
      */
     static public boolean taxaIdentical(CharactersBlock characters, int i, int j) {
@@ -167,9 +164,6 @@ public class CharactersUtilities {
     /**
      * Check to see if two sequences are identical using the distance data
      *
-     * @param distances
-     * @param i
-     * @param j
      * @return true if two rows in the distance matrix are identical and the taxa have distance 0
      */
     static private boolean taxaIdentical(DistancesBlock distances, int i, int j) {

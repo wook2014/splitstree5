@@ -74,8 +74,8 @@ public class Workflow {
     private final BooleanProperty hasWorkingTraitsNodeForFXThread = new SimpleBooleanProperty(false);
 
     private final ObjectProperty<DataNode> topDataNode = new SimpleObjectProperty<>();
-    private ObjectProperty<ATopFilter<? extends DataBlock>> topFilter = new SimpleObjectProperty<>();
-    private final ObjectProperty<DataNode> workingDataNode = new SimpleObjectProperty<>();
+	private final ObjectProperty<ATopFilter<? extends DataBlock>> topFilter = new SimpleObjectProperty<>();
+	private final ObjectProperty<DataNode> workingDataNode = new SimpleObjectProperty<>();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final ObservableSet<WorkflowNode> invalidNodes = FXCollections.observableSet();
@@ -99,9 +99,7 @@ public class Workflow {
             // System.err.println("Workflow updating: " + updating.get());
         });
 
-        connectorNodes.addListener((InvalidationListener) observable -> {
-            size.set(connectorNodes.size() + dataNodes.size());
-        });
+		connectorNodes.addListener((InvalidationListener) observable -> size.set(connectorNodes.size() + dataNodes.size()));
 
         connectorNodes.addListener((SetChangeListener<Connector>) change -> {
             if (change.wasAdded() || change.wasRemoved()) {
@@ -141,7 +139,7 @@ public class Workflow {
                     else
                         name = dataNode.getName();
                     synchronized (name2count) {
-                        final int count = name2count.merge(name, 1, (a, b) -> a + b);
+						final int count = name2count.merge(name, 1, Integer::sum);
                         if (count == 1)
                             dataNode.setTitle(name);
                         else
@@ -206,9 +204,7 @@ public class Workflow {
     /**
      * setup the top nodes, taxa filter, top filter and working nodes
      *
-     * @param topTaxaBlock
-     * @param topDataBlock
-     */
+	 */
     public void setupTopAndWorkingNodes(TaxaBlock topTaxaBlock, DataBlock topDataBlock) {
         setTopTaxaNode(createDataNode(topTaxaBlock));
         setWorkingTaxaNode(createDataNode((TaxaBlock) topTaxaBlock.newInstance()));
@@ -224,9 +220,7 @@ public class Workflow {
     /**
      * creates the top filter
      *
-     * @param parent
-     * @param child
-     */
+	 */
     public void createTopFilter(DataNode parent, DataNode child) {
         final DataBlock dataBlock = parent.getDataBlock();
         if (dataBlock instanceof CharactersBlock) {
@@ -247,8 +241,6 @@ public class Workflow {
     /**
      * creates a new data node
      *
-     * @param dataBlock
-     * @param <D>
      * @return data node
      */
     public <D extends DataBlock> DataNode<D> createDataNode(D dataBlock) {
@@ -261,8 +253,7 @@ public class Workflow {
     /**
      * Adds a dataNode created outside of the Workflow
      *
-     * @param dataNode
-     */
+	 */
     public <D extends DataBlock> DataNode<D> addDataNode(DataNode<D> dataNode) {
         if (!dataNodes.contains(dataNode))
             register(dataNode);
@@ -282,11 +273,6 @@ public class Workflow {
     /**
      * creates a new connector node
      *
-     * @param parent
-     * @param child
-     * @param algorithm
-     * @param <P>
-     * @param <C>
      * @return connector node
      */
     public <P extends DataBlock, C extends DataBlock> Connector<P, C> createConnector(DataNode<P> parent, DataNode<C> child, Algorithm<P, C> algorithm) {
@@ -299,8 +285,7 @@ public class Workflow {
     /**
      * Adds a connector created outside of the Workflow
      *
-     * @param connector
-     */
+	 */
     public <P extends DataBlock, C extends DataBlock> Connector<P, C> addConnector(Connector<P, C> connector) {
         if (!connectorNodes.contains(connector))
             register(connector);
@@ -417,7 +402,6 @@ public class Workflow {
     /**
      * delete the given node, or only all below, or both node and all below. Note that setting both delete and all below to false doesn't make sense
      *
-     * @param node
      * @param deleteNode       delete the node
      * @param deleteNodesBelow delete all its dependents
      */
@@ -441,8 +425,7 @@ public class Workflow {
                 connectorNodes.remove(node);
                 ((Connector) node).getService().cancel();
             }
-            if (invalidNodes.contains(node))
-                invalidNodes.remove(node);
+			invalidNodes.remove(node);
         }
         topologyChanged.set(topologyChanged.get() + 1);
     }
@@ -450,10 +433,7 @@ public class Workflow {
     /**
      * Reconnect a node that was previously deleted
      *
-     * @param parent
-     * @param node
-     * @param children
-     */
+	 */
     public void reconnect(WorkflowNode parent, WorkflowNode node, ObservableList<WorkflowNode> children) {
         if (parent != null) {
             final ObservableList<WorkflowNode> theChildren;
@@ -483,8 +463,7 @@ public class Workflow {
     /**
      * delete the unique path to this node, this node and all its descendants
      *
-     * @param node
-     */
+	 */
     public void deleteNodeAndPathAndDescendants(WorkflowNode node) {
         // find highest node above that only has one child:
         while (node.getParent() != null && node.getParent() != getWorkingDataNode() && node.getParent().getChildren().size() == 1) {
@@ -498,7 +477,6 @@ public class Workflow {
     /**
      * duplicates the given set of nodes
      *
-     * @param nodes
      * @return new nodes
      */
     public Collection<WorkflowNode> duplicate(Collection<WorkflowNode> nodes) {
@@ -515,11 +493,7 @@ public class Workflow {
     /**
      * recursively does the work
      *
-     * @param parent
-     * @param parentCopy
-     * @param nodesToDuplicate
-     * @param newNodes
-     */
+	 */
     private void duplicateRec(DataNode parent, DataNode parentCopy, Collection<WorkflowNode> nodesToDuplicate, Set<WorkflowNode> newNodes) {
         ArrayList<Connector> children = new ArrayList<>(parent.getChildren());
         for (Connector connector : children) {
@@ -549,8 +523,7 @@ public class Workflow {
     /**
      * recompute the first nodes encountered in nodes
      *
-     * @param nodes
-     */
+	 */
     public void recomputeTop(Collection<WorkflowNode> nodes) {
         final DataNode root = getTopDataNode();
         if (root != null) {
@@ -586,8 +559,7 @@ public class Workflow {
     /**
      * registers a newly created node
      *
-     * @param node
-     */
+	 */
     private void register(final WorkflowNode node) {
         if (node instanceof DataNode) {
             dataNodes.add((DataNode) node);
@@ -597,11 +569,9 @@ public class Workflow {
         }
         node.stateProperty().addListener((ObservableValue<? extends UpdateState> c, UpdateState o, UpdateState n) -> {
             if (n != UpdateState.VALID && n != UpdateState.FAILED) {
-                if (!invalidNodes.contains(node))
-                    invalidNodes.add(node);
+				invalidNodes.add(node);
             } else {
-                if (invalidNodes.contains(node))
-                    invalidNodes.remove(node);
+				invalidNodes.remove(node);
             }
         });
     }
@@ -639,7 +609,6 @@ public class Workflow {
     /**
      * gets node and all its descendants
      *
-     * @param parent
      * @return node and all below
      */
     private Set<WorkflowNode> getAllDescendants(DataNode parent) {
@@ -678,8 +647,6 @@ public class Workflow {
     /**
      * finds the lowest ancestor whose datablock is of the given class. If no such ancestor found, but a single node of the given class exists, then returns that
      *
-     * @param dataNode
-     * @param clazz
      * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
     public <T extends DataBlock> DataNode<T> getAncestorForClass(DataNode dataNode, Class<T> clazz) {
@@ -707,8 +674,6 @@ public class Workflow {
     /**
      * finds the lowest ancestor whose datablock is of the given class. If no such ancestor found, but a single node of the given class exists, then returns that
      *
-     * @param dataNode
-     * @param clazz
      * @return lowest ancestor whose datablock is of the given class, or any datablock of the given class, if only one such exists, or null
      */
     public <T extends DataBlock> Pair<DataNode<T>, Connector<T, ? extends DataBlock>> getAncestorAndDescendantForClass(DataNode dataNode, Class<T> clazz) {
@@ -741,8 +706,6 @@ public class Workflow {
     /**
      * tries to match a path from data node using exactly the given types of data nodes and algorithms
      *
-     * @param dataNode
-     * @param path
      * @return first connector and last data node, if matched, else null
      */
     public Pair<Connector, DataNode> matchPath(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>... path) {
@@ -759,12 +722,7 @@ public class Workflow {
     /**
      * recursively does the work
      *
-     * @param dataNode
-     * @param path
-     * @param pos
-     * @param result
-     * @param mustForceRecompute
-     */
+	 */
     private boolean matchPathRecursively(DataNode dataNode, Pair<Class<? extends Algorithm>, Class<? extends DataBlock>>[] path, int pos, Pair<Connector, DataNode> result, Single<Connector> mustForceRecompute) {
         final Pair<Class<? extends Algorithm>, Class<? extends DataBlock>> pair = path[pos];
 
@@ -799,7 +757,6 @@ public class Workflow {
     /**
      * can data of this type be loaded into the current workflow?
      *
-     * @param dataBlock
      * @return true if can be loaded
      */
     public boolean canLoadData(DataBlock dataBlock) {
@@ -810,9 +767,7 @@ public class Workflow {
     /**
      * load the data into the current workflow
      *
-     * @param taxaBlock
-     * @param dataBlock
-     */
+	 */
     public void loadData(TaxaBlock taxaBlock, DataBlock dataBlock) {
         getTopTaxaNode().getDataBlock().copy(taxaBlock);
         getTopDataNode().getDataBlock().copy(taxaBlock, dataBlock);
@@ -821,10 +776,8 @@ public class Workflow {
     /**
      * select all nodes  below
      *
-     * @param nodes
      * @param strictlyBelow don't select the given nodes, only ones below
-     * @return
-     */
+	 */
     public boolean selectAllBelow(Collection<WorkflowNode> nodes, boolean strictlyBelow) {
         final Set<WorkflowNode> nodesToSelect = new HashSet<>();
 
@@ -840,8 +793,8 @@ public class Workflow {
                 nodesToSelect.add(w);
             }
         }
-        nodesToSelect.removeAll(getNodeSelectionModel().getSelectedItems());
-        getNodeSelectionModel().selectItems(nodesToSelect);
+		getNodeSelectionModel().getSelectedItems().forEach(nodesToSelect::remove);
+		getNodeSelectionModel().selectItems(nodesToSelect);
         return nodesToSelect.size() > 0;
     }
 
@@ -860,7 +813,6 @@ public class Workflow {
     /**
      * finds a data node by title
      *
-     * @param title
      * @return node by title
      */
     public DataNode findDataNode(String title) {

@@ -124,10 +124,7 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
     /**
      * only applicable to nucleotide data
      *
-     * @param taxa
-     * @param charactersBlock
-     * @return
-     */
+	 */
     public boolean isApplicable(TaxaBlock taxa, CharactersBlock charactersBlock) {
         return charactersBlock.getDataType() == CharactersType.DNA || charactersBlock.getDataType() == CharactersType.RNA;
     }
@@ -135,7 +132,6 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
     /**
      * REturn the inverse of the moment generating function corresponding to the current settings
      *
-     * @param x
      * @return double
      */
     protected double Minv(double x) throws SaturatedDistancesException {
@@ -157,22 +153,14 @@ public abstract class DNAdistance extends Algorithm<CharactersBlock, DistancesBl
      * exact Distance - use an exact distance formula (if available) SHould never be called
      * if the transform does not have an exact dist formula.
      *
-     * @param F
-     * @return
-     * @throws SaturatedDistancesException
-     */
+	 */
     abstract protected double exactDist(double[][] F) throws SaturatedDistancesException;
 
     /**
      * Fill in the distance matrix
      *
      * @param progressListener used to display the progress
-     * @param characters
-     * @param model
-     * @return
-     * @throws SplitsException
-     * @throws CanceledException
-     */
+	 */
     protected DistancesBlock fillDistanceMatrix(ProgressListener progressListener, CharactersBlock characters, NucleotideModel model) throws SplitsException, CanceledException {
         final int ntax = characters.getNtax();
         final DistancesBlock distances = new DistancesBlock();

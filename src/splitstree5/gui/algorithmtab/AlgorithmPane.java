@@ -33,24 +33,21 @@ public abstract class AlgorithmPane extends StackPane {
     /**
      * sets the document
      *
-     * @param document
-     */
+	 */
     public void setDocument(Document document) {
     }
 
     /**
      * sets the undo manager
      *
-     * @param undoManager
-     */
+	 */
     public void setUndoManager(UndoManager undoManager) {
     }
 
     /**
      * sets the connector
      *
-     * @param connector
-     */
+	 */
     public void setConnector(Connector connector) {
     }
 

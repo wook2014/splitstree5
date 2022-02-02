@@ -68,12 +68,8 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
     /**
      * parse a network block
      *
-     * @param np
-     * @param taxaBlock
-     * @param networkBlock
      * @return taxa labels found
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, NetworkBlock networkBlock) throws IOException {
         networkBlock.clear();
@@ -201,7 +197,6 @@ public class NetworkNexusInput extends NexusIOBase implements INexusInput<Networ
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class NeighborJoiningTest {
 
-    private NeighborJoining nj = new NeighborJoining();
+    private final NeighborJoining nj = new NeighborJoining();
 
     @Test
     public void testCompute() throws Exception {

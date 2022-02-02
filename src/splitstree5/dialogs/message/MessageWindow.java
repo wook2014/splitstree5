@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MessageWindow {
     private static MessageWindow instance;
-    private static BooleanProperty visible = new SimpleBooleanProperty(false);
+	private static final BooleanProperty visible = new SimpleBooleanProperty(false);
 
     private final MessageWindowController controller;
     private final Stage stage;

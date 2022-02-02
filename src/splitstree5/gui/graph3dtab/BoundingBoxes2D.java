@@ -49,9 +49,7 @@ public class BoundingBoxes2D {
     /**
      * constructor
      *
-     * @param node2view
-     * @param properties
-     */
+	 */
     public BoundingBoxes2D(Pane bottomPane, NodeArray<NodeViewBase> node2view, AMultipleSelectionModel<jloda.graph.Node> nodeSelectionModel, ReadOnlyProperty... properties) {
         changeListener = c -> {
             while (c.next()) {

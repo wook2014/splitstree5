@@ -62,7 +62,7 @@ public class AverageConsensusTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
         TaxaBlock taxaFromST4 = new TaxaBlock();
@@ -98,8 +98,8 @@ public class AverageConsensusTest {
         w2.write("#nexus\n");
         new TaxaNexusOutput().write(w2, taxaBlock2);
         new TreesNexusOutput().write(w2, taxaBlock2, treesBlock2);
-        new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
-        System.err.println(w2.toString());
+		new SplitsNexusOutput().write(w2, taxaBlock2, splitsBlock2);
+		System.err.println(w2);
 
         // compare splits
         TaxaBlock taxaFromST42 = new TaxaBlock();
@@ -135,8 +135,8 @@ public class AverageConsensusTest {
         w3.write("#nexus\n");
         new TaxaNexusOutput().write(w3, taxaBlock3);
         new TreesNexusOutput().write(w3, taxaBlock3, treesBlock3);
-        new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3);
-        System.err.println(w3.toString());
+		new SplitsNexusOutput().write(w3, taxaBlock3, splitsBlock3);
+		System.err.println(w3);
 
         // compare splits
         TaxaBlock taxaFromST43 = new TaxaBlock();

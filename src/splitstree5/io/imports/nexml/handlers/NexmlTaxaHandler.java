@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML.handlers;
+package splitstree5.io.imports.nexml.handlers;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -27,8 +27,8 @@ import java.util.ArrayList;
 
 public class NexmlTaxaHandler extends DefaultHandler {
 
-    boolean otu = false;
-    private ArrayList<String> taxaLabels = new ArrayList<>();
+	boolean otu = false;
+	private final ArrayList<String> taxaLabels = new ArrayList<>();
 
     @Override
     public void startElement(String uri,

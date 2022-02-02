@@ -48,8 +48,7 @@ public class ImportMultipleTreeFilesDialog {
     /**
      * run dialog for import of multiple trees files to be merged into one
      *
-     * @param parentMainWindow
-     */
+	 */
     public static void apply(MainWindow parentMainWindow) {
         final File previousDir = new File(ProgramProperties.get("ImportDir", ""));
         final FileChooser fileChooser = new FileChooser();
@@ -129,40 +128,35 @@ public class ImportMultipleTreeFilesDialog {
                             }
                             getProgressListener().incrementProgress();
                         }
-                        System.err.println(String.format("Trees:%,11d", allTrees.size()));
+						System.err.printf("Trees:%,11d%n", allTrees.size());
                         if (countErrors > 0)
-                            System.err.println(String.format("Errors:%,10d", countErrors));
+							System.err.printf("Errors:%,10d%n", countErrors);
 
                         return new Pair<>(allTaxa, allTrees);
                     } catch (Exception ex) {
-                        Basic.caught(ex);
-                        throw ex;
-                    }
-                }
-            });
+						Basic.caught(ex);
+						throw ex;
+					}
+				}
+			});
 
-            service.setOnRunning((e) -> parentMainWindow.getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service)));
+			service.setOnRunning((e) -> parentMainWindow.getMainWindowController().getBottomPane().getChildren().add(new ProgressPane(service)));
 
-            service.setOnFailed((e) -> NotificationManager.showError("Error: " + service.getException().getMessage()));
+			service.setOnFailed((e) -> NotificationManager.showError("Error: " + service.getException().getMessage()));
 
-            service.setOnSucceeded((e) -> {
-                Platform.runLater(() -> {
-                    final Pair<TaxaBlock, TreesBlock> pair = service.getValue();
-                    DataLoader.load(false, "Trees.tmp", pair.getFirst(), pair.getSecond(), parentMainWindow);
-                });
-            });
+			service.setOnSucceeded((e) -> Platform.runLater(() -> {
+				final Pair<TaxaBlock, TreesBlock> pair = service.getValue();
+				DataLoader.load(false, "Trees.tmp", pair.getFirst(), pair.getSecond(), parentMainWindow);
+			}));
 
-            service.start();
-        }
+			service.start();
+		}
     }
 
     /**
      * adjust taxa in tree so that the match new taxon block
      *
-     * @param oldTaxaBlock
-     * @param newTaxaBlock
-     * @param tree
-     */
+	 */
     private static void fixTaxonNumbers(TaxaBlock oldTaxaBlock, TaxaBlock newTaxaBlock, PhyloTree tree) {
         final Map<Integer, Integer> old2new = new HashMap<>();
         for (int t = 1; t <= oldTaxaBlock.getNtax(); t++) {

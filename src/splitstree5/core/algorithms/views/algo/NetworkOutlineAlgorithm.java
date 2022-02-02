@@ -45,13 +45,7 @@ public class NetworkOutlineAlgorithm {
     /**
      * apply the algorithm to build a new graph
      *
-     * @param progress
-     * @param useWeights
-     * @param taxaBlock
-     * @param splits
-     * @param graph
-     * @param node2point
-     */
+	 */
     public static void apply(ProgressListener progress, boolean useWeights, TaxaBlock taxaBlock, SplitsBlock splits,
                              PhyloSplitsGraph graph, NodeArray<Point2D> node2point, BitSet forbiddenSplits, BitSet usedSplits,
                              ArrayList<ArrayList<Node>> loops, boolean rooted) throws CanceledException {
@@ -209,10 +203,7 @@ public class NetworkOutlineAlgorithm {
     /**
      * determines loop that is closed by reentering v
      *
-     * @param v
-     * @param inEdge
-     * @return
-     */
+	 */
     private static ArrayList<Node> createLoop(Node v, Edge inEdge) {
         final ArrayList<Node> loop = new ArrayList<>();
         Node w = v;

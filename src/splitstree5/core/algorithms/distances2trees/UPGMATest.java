@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 public class UPGMATest {
 
-    private UPGMA upgma = new UPGMA();
+    private final UPGMA upgma = new UPGMA();
 
     @Test
     public void testCompute() throws Exception {

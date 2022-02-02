@@ -58,7 +58,7 @@ public class RubberBandSelection {
     private final Rectangle rectangle;
     private Point2D start;
     private Point2D end;
-    private Handler handler;
+	private final Handler handler;
 
     private boolean stillDownWithoutMoving;
     private boolean inWait;

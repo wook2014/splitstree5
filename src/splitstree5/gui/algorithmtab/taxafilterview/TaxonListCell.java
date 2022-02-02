@@ -34,8 +34,7 @@ public class TaxonListCell {
     /**
      * forListView a taxon list view cell
      *
-     * @return
-     */
+	 */
     public static Callback<ListView<Taxon>, ListCell<Taxon>> forListView() {
         return TextFieldListCell.forListView(new TaxonConverter());
     }

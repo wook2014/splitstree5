@@ -55,8 +55,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     /**
      * named constructor
      *
-     * @param name
-     */
+	 */
     public Algorithm(String name) {
 		this(name, name.endsWith("Filter") ?
 				StringUtils.fromCamelCase(name).replaceAll("Filter", "filter") :
@@ -66,8 +65,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     /**
      * named constructor
      *
-     * @param name
-     */
+	 */
     public Algorithm(String name, String shortDescription) {
         super(name, shortDescription);
     }
@@ -75,10 +73,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     /**
      * setup properties here, called just before algorithm pane is displayed
      *
-     * @param taxaBlock
-     * @param parent
-     * @throws Exception
-     */
+	 */
     public void setupBeforeDisplay(TaxaBlock taxaBlock, P parent) {
     }
 
@@ -97,9 +92,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     /**
      * determines whether applicable
      *
-     * @param taxaBlock
-     * @param parent
-     */
+	 */
     public boolean isApplicable(TaxaBlock taxaBlock, P parent) {
         return true;
     }
@@ -228,9 +221,7 @@ abstract public class Algorithm<P extends DataBlock, C extends DataBlock> extend
     /**
      * is assignable from
      *
-     * @param clazz
-     * @return
-     */
+	 */
     public boolean isAssignableFrom(Class clazz) {
         return this.getClass().isAssignableFrom(clazz);
     }

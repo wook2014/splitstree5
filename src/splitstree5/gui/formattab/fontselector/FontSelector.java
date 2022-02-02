@@ -56,9 +56,7 @@ public class FontSelector extends ComboBox<String> {
     }
 
     public FontSelector(Font font) {
-        fontValueProperty().addListener((c, o, n) -> {
-            setValue(n.getFamily() + String.format(" %.0fpx", n.getSize()));
-        });
+        fontValueProperty().addListener((c, o, n) -> setValue(n.getFamily() + String.format(" %.0fpx", n.getSize())));
 
         final ExtendedFXMLLoader<FontSelectorController> extendedFXMLLoader = new ExtendedFXMLLoader<>(this.getClass());
         controller = extendedFXMLLoader.getController();

@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MSFExporterTest {
 
-    private MSFExporter msfExporter = new MSFExporter();
+    private final MSFExporter msfExporter = new MSFExporter();
 
     @Test
     public void export() throws IOException {

@@ -26,7 +26,7 @@ import splitstree5.core.datablocks.CharactersBlock;
  * Daniel Huson, 1/16/17.
  */
 public class AmbiguityCodes {
-    public static String CODES = "wrkysmbhdvn";
+    public static final String CODES = "wrkysmbhdvn";
 
     /**
      * gets all nucleotides associated with a given code

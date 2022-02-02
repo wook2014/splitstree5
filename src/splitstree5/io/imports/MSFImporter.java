@@ -69,8 +69,8 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
                     tokens.nextToken();
                     String taxon = tokens.nextToken();
 
-                    if (taxa2seq.keySet().contains(taxon))
-                        throw new IOExceptionWithLineNumber("Repeated taxon name", linesCounter);
+                    if (taxa2seq.containsKey(taxon))
+						throw new IOExceptionWithLineNumber("Repeated taxon name", linesCounter);
 
                     taxaBlock.add(new Taxon(taxon));
                     taxa2seq.put(taxon, "");
@@ -134,15 +134,15 @@ public class MSFImporter extends CharactersFormat implements IToCharacters, IImp
 
     @Override
     public List<String> getExtensions() {
-        return Arrays.asList("msf");
+		return List.of("msf");
     }
 
     @Override
     public boolean isApplicable(String fileName) throws IOException {
 		String line = FileUtils.getFirstLineFromFile(new File(fileName));
-        return line != null &&
-                (line.toUpperCase().equals("!!NA_MULTIPLE_ALIGNMENT 1.0")
-                        || line.toUpperCase().equals("!!AA_MULTIPLE_ALIGNMENT 1.0")
-                        || line.toUpperCase().equals("!!??_MULTIPLE_ALIGNMENT 1.0"));
+		return line != null &&
+			   (line.equalsIgnoreCase("!!NA_MULTIPLE_ALIGNMENT 1.0")
+				|| line.equalsIgnoreCase("!!AA_MULTIPLE_ALIGNMENT 1.0")
+				|| line.equalsIgnoreCase("!!??_MULTIPLE_ALIGNMENT 1.0"));
     }
 }

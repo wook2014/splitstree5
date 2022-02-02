@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class NexusHighlighter implements Highlighter {
-    private static boolean verbose = false;
+    private static final boolean verbose = false;
 
     private boolean collapsingActive = false;
 
@@ -86,12 +86,12 @@ public class NexusHighlighter implements Highlighter {
         while (matcher.find()) {
 
             //System.err.println(matcher.group(0));
-            if (matcher.group(0).toLowerCase().equals("begin")) {
+            if (matcher.group(0).equalsIgnoreCase("begin")) {
                 if (verbose)
                     System.err.println(matcher.group(0) + matcher.start(0));
 
             }
-            if (matcher.group(0).toLowerCase().equals("end;")) { //todo add endblock
+            if (matcher.group(0).equalsIgnoreCase("end;")) { //todo add endblock
                 if (verbose)
                     System.err.println(matcher.group(0) + matcher.end(0));
             }

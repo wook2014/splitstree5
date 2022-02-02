@@ -35,11 +35,7 @@ public class TraitsNexusOutput extends NexusIOBase implements INexusOutput<Trait
     /**
      * write a block in nexus format
      *
-     * @param w
-     * @param taxaBlock
-     * @param traitsBlock
-     * @throws IOException
-     */
+	 */
     @Override
     public void write(Writer w, TaxaBlock taxaBlock, TraitsBlock traitsBlock) throws IOException {
         final TraitsNexusFormat format = (TraitsNexusFormat) traitsBlock.getFormat();

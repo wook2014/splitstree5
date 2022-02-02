@@ -164,9 +164,8 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
                 final Point3D mover = pair.getSecond();
                 final Point2D delta = new Point2D(mouseX - e.getScreenX(), mouseY - e.getScreenY());
 
-                //noinspection SuspiciousNameCombination
-                final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0).multiply(-1);
-                final Rotate rotate = new Rotate(0.25 * delta.magnitude(), anchor.getX(), anchor.getY(), anchor.getZ(), dragOrthogonalAxis);
+				final Point3D dragOrthogonalAxis = new Point3D(delta.getY(), -delta.getX(), 0).multiply(-1);
+				final Rotate rotate = new Rotate(0.25 * delta.magnitude(), anchor.getX(), anchor.getY(), anchor.getZ(), dragOrthogonalAxis);
                 final Point3D translateVector = rotate.transform(mover).subtract(mover);
 
                 // move stuff:
@@ -219,9 +218,6 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
      * gets the location of the anchor and mover nodes
      * Assumes there is an selected edge and that every selected edge is incident to precisely one not selected node
      *
-     * @param nodeSelectionModel
-     * @param edgeSelectionModel
-     * @param node2view
      * @return anchor and mover
      */
     private Pair<Point3D, Point3D> getAnchorAndMover(ItemSelectionModel<Node> nodeSelectionModel, ItemSelectionModel<Edge> edgeSelectionModel, NodeArray<NodeViewBase> node2view) {
@@ -238,7 +234,6 @@ public class SplitsView3DTab extends Graph3DTab<PhyloSplitsGraph> implements ISp
     /**
      * get list of adjacent edges sorted by decreasing weight
      *
-     * @param v
      * @return adjacent edges
      */
     private ArrayList<Edge> getAdjacentEdgesSortedByDecreasingWeight(Node v) {

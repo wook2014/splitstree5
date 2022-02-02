@@ -122,7 +122,7 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
                 for (int j : BitSetUtils.members(alive, i + 1)) {
                     final float q = (alive.cardinality() - 2) * matrix[i][j] - rowSum[i] - rowSum[j];
 
-                    if (verbose) System.err.printf(" %d", q);
+                    if (verbose) System.err.printf(" %f", q);
 
                     if (q < minQ) {
                         minQ = q;
@@ -170,8 +170,8 @@ public class NeighborJoining extends Algorithm<DistancesBlock, TreesBlock> imple
             final int i = BitSetUtils.min(alive);
             final int j = BitSetUtils.max(alive);
 
-            tree.setWeight(tree.newEdge(nodes[i], nodes[j]), (double) matrix[i][j]);
-            tree.setRoot(nodes[i]);
+			tree.setWeight(tree.newEdge(nodes[i], nodes[j]), matrix[i][j]);
+			tree.setRoot(nodes[i]);
         }
         progressListener.setProgress(ntax);
 

@@ -62,7 +62,7 @@ public class BalancedConfidenceNetworkTest {
         new TaxaNexusOutput().write(w, taxaBlock);
         new TreesNexusOutput().write(w, taxaBlock, treesBlock);
         new SplitsNexusOutput().write(w, taxaBlock, splitsBlock);
-        System.err.println(w.toString());
+		System.err.println(w);
 
         // compare splits
         TaxaBlock taxaFromST4 = new TaxaBlock();

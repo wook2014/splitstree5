@@ -61,18 +61,14 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
     /**
      * parse a distances block
      *
-     * @param np
-     * @param taxaBlock
-     * @param distancesBlock
      * @return taxon names, if found
-     * @throws IOException
-     */
+	 */
     @Override
     public List<String> parse(NexusStreamParser np, TaxaBlock taxaBlock, DistancesBlock distancesBlock) throws IOException {
         try {
             distancesBlock.clear();
 
-            final DistancesNexusFormat format = (DistancesNexusFormat) distancesBlock.getFormat();
+			final DistancesNexusFormat format = distancesBlock.getFormat();
 
             np.matchBeginBlock(DistancesBlock.BLOCK_NAME);
             parseTitleAndLink(np);
@@ -247,7 +243,6 @@ public class DistancesNexusInput extends NexusIOBase implements INexusInput<Dist
     /**
      * is the parser at the beginning of a block that this class can parse?
      *
-     * @param np
      * @return true, if can parse from here
      */
     public boolean atBeginOfBlock(NexusStreamParser np) {

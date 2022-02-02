@@ -84,8 +84,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * initialize data structures
      *
-     * @param graph
-     */
+	 */
     public void init(G graph) {
         this.graph = graph;
         node2view = new NodeArray<>(this.graph);
@@ -220,9 +219,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * change scale by the given factors
      *
-     * @param xFactor
-     * @param yFactor
-     */
+	 */
     public void scale(double xFactor, double yFactor) {
         scaleChangeX.set(scaleChangeX.get() * xFactor);
         scaleChangeY.set(scaleChangeY.get() * yFactor);
@@ -241,8 +238,7 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * rotate by given angle
      *
-     * @param angle
-     */
+	 */
     public void rotate(double angle) {
         angleChange.set(angleChange.get() + angle);
         for (NodeViewBase nv : getNode2view().values()) {
@@ -277,39 +273,18 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * creates a node view
      *
-     * @param v
-     * @param workingTaxonIds
-     * @param location
-     * @param shape
-     * @param shapeWidth
-     * @param shapeHeight
-     * @param label
-     * @return
-     */
+	 */
     abstract public NodeView2D createNodeView(Node v, Iterable<Integer> workingTaxonIds, Point2D location, NodeShape shape, double shapeWidth, double shapeHeight, String label);
 
     /**
      * creates a simple straight edge
      *
-     * @param e
-     * @param start
-     * @param end
-     * @param label
-     * @return
-     */
+	 */
     abstract public EdgeView2D createEdgeView(Edge e, final Point2D start, final Point2D end, String label);
 
     /**
      * create a complex edge view
      *
-     * @param e
-     * @param shape
-     * @param start
-     * @param control1
-     * @param mid
-     * @param control2
-     * @param support
-     * @param end
      * @return edge view
      */
     abstract public EdgeView2D createEdgeView(Edge e, GraphLayout graphLayout, EdgeView2D.EdgeShape shape, final Point2D start, final Point2D control1, final Point2D mid, final Point2D control2, final Point2D support, final Point2D end, String label);
@@ -317,9 +292,6 @@ public abstract class Graph2DTab<G extends PhyloGraph> extends GraphTabBase<G> {
     /**
      * create an edge view
      *
-     * @param e
-     * @param elements
-     * @param label
      * @return edge view
      */
     public EdgeView2D createEdgeView(Edge e, final ArrayList<PathElement> elements, String label) {

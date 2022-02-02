@@ -40,11 +40,7 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
      * /**
      * constructor
      *
-     * @param originalTaxaNode
-     * @param modifiedTaxaNode
-     * @param parentNode
-     * @param childNode
-     */
+	 */
     public SplitsTopFilter(DataNode<TaxaBlock> originalTaxaNode, DataNode<TaxaBlock> modifiedTaxaNode, DataNode<SplitsBlock> parentNode, DataNode<SplitsBlock> childNode) {
         super(originalTaxaNode.getDataBlock(), modifiedTaxaNode, parentNode, childNode);
 
@@ -81,9 +77,6 @@ public class SplitsTopFilter extends ATopFilter<SplitsBlock> {
     /**
      * compute an induced split
      *
-     * @param originalSplit
-     * @param originalIndex2ModifiedIndex
-     * @param inducedNtax
      * @return induced split or null
      */
     private static ASplit computeInducedSplit(ASplit originalSplit, Map<Integer, Integer> originalIndex2ModifiedIndex, int inducedNtax) {

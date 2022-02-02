@@ -31,59 +31,52 @@ public class WorkflowTreeSupport {
     /**
      * constructor sets up tree view support
      *
-     * @param treeView
-     * @param document
-     */
+	 */
     public WorkflowTreeSupport(TreeView<String> treeView, Document document) {
-        final Workflow workflow = document.getWorkflow();
+		final Workflow workflow = document.getWorkflow();
 
-        treeView.setOnMouseEntered((e) -> treeView.requestFocus());
-        treeView.setOnMouseExited((e) -> document.getMainWindow().getMainWindowController().getMainTabPane().requestFocus());
+		treeView.setOnMouseEntered((e) -> treeView.requestFocus());
+		treeView.setOnMouseExited((e) -> document.getMainWindow().getMainWindowController().getMainTabPane().requestFocus());
 
-        workflow.getTopologyChanged().addListener((c, o, n) -> {
-            Platform.runLater(() -> {
-                treeView.getRoot().getChildren().clear();
-                treeView.getRoot().setExpanded(true);
+		workflow.getTopologyChanged().addListener((c, o, n) -> Platform.runLater(() -> {
+			treeView.getRoot().getChildren().clear();
+			treeView.getRoot().setExpanded(true);
 
-                if (workflow.getTopTaxaNode() != null) {
-                    WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
-                    treeView.getRoot().getChildren().add(topTaxaItem);
-                    if (workflow.getTopTraitsNode() != null)
-                        topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
+			if (workflow.getTopTaxaNode() != null) {
+				WorkflowTreeItem topTaxaItem = new WorkflowTreeItem(document, workflow.getTopTaxaNode());
+				treeView.getRoot().getChildren().add(topTaxaItem);
+				if (workflow.getTopTraitsNode() != null)
+					topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getTopTraitsNode()));
 
-                    if (workflow.getTopDataNode() != null) {
-                        final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
-                        topTaxaItem.getChildren().add(topDataItem);
-                    }
+				if (workflow.getTopDataNode() != null) {
+					final WorkflowTreeItem topDataItem = new WorkflowTreeItem(document, workflow.getTopDataNode());
+					topTaxaItem.getChildren().add(topDataItem);
+				}
 
-                    WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
-                    topTaxaItem.getChildren().add(taxaFilterItem);
+				WorkflowTreeItem taxaFilterItem = new WorkflowTreeItem(document, workflow.getTaxaFilter());
+				topTaxaItem.getChildren().add(taxaFilterItem);
 
-                    WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
-                    topTaxaItem.getChildren().add(workingTaxaItem);
+				WorkflowTreeItem workingTaxaItem = new WorkflowTreeItem(document, workflow.getWorkingTaxaNode());
+				topTaxaItem.getChildren().add(workingTaxaItem);
 
-                    if (workflow.getWorkingTraitsNode() != null)
-                        topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getWorkingTraitsNode()));
+				if (workflow.getWorkingTraitsNode() != null)
+					topTaxaItem.getChildren().add(new WorkflowTreeItem(document, workflow.getWorkingTraitsNode()));
 
-                    if (workflow.getWorkingDataNode() != null) {
-                        final WorkflowTreeItem workingDataItem = new WorkflowTreeItem(document, workflow.getWorkingDataNode());
-                        treeView.getRoot().getChildren().add(workingDataItem);
-                        workingDataItem.setExpanded(true);
-                        addToTreeRec(document, workingDataItem, workflow.getWorkingDataNode());
-                    }
-                }
-            });
-        });
+				if (workflow.getWorkingDataNode() != null) {
+					final WorkflowTreeItem workingDataItem = new WorkflowTreeItem(document, workflow.getWorkingDataNode());
+					treeView.getRoot().getChildren().add(workingDataItem);
+					workingDataItem.setExpanded(true);
+					addToTreeRec(document, workingDataItem, workflow.getWorkingDataNode());
+				}
+			}
+		}));
 
     }
 
     /**
      * recursively set up the tree
      *
-     * @param document
-     * @param treeItem
-     * @param workflowNode
-     */
+	 */
     private void addToTreeRec(final Document document, final TreeItem<String> treeItem, final WorkflowNode workflowNode) {
         for (WorkflowNode child : workflowNode.getChildren()) {
             TreeItem<String> childItem = new WorkflowTreeItem(document, child);

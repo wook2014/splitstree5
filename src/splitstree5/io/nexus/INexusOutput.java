@@ -30,16 +30,11 @@ import java.io.Writer;
  * Daniel Huson, 2.2018
  *
  * @param <D>
- * @param <F>
  */
 public interface INexusOutput<D extends DataBlock> {
     /**
      * write a datablock
      *
-     * @param w
-     * @param taxaBlock
-     * @param dataBlock
-     * @throws IOException
      */
     void write(Writer w, TaxaBlock taxaBlock, D dataBlock) throws IOException;
 }

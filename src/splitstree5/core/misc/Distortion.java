@@ -42,7 +42,6 @@ public class Distortion {
      * score over all possible refinements of the tree.
      * See Huson, Steel and Witfield, 2006
      *
-     * @param tree
      * @param A    one side of split
      * @param B    other side of split
      * @param root the root to use, this should not make any difference, but is here for testing
@@ -57,20 +56,20 @@ public class Distortion {
         Map<Node, Integer> scoreA = new HashMap<>(); // optimal score for subtree labeled A at root
         Map<Node, Integer> scoreB = new HashMap<>(); // optimal score for subtree labeled B at root
         for (Node v = tree.getFirstNode(); v != null; v = v.getNext()) {
-            boolean hasA = false;
-            boolean hasB = false;
-            for (Object aVTaxa : tree.getTaxa(v)) {
-                int t = (Integer) aVTaxa;
-                if (A.get(t))
-                    hasA = true;
-                else if (B.get(t))
-                    hasB = true;
-                else
-                    throw new RuntimeException("Taxon t=" + t + ": not present in split");
-                treeTaxa.set(t);
-            }
-            int aValue = 0;
-            int bValue = 0;
+			boolean hasA = false;
+			boolean hasB = false;
+			for (Integer aVTaxa : tree.getTaxa(v)) {
+				int t = aVTaxa;
+				if (A.get(t))
+					hasA = true;
+				else if (B.get(t))
+					hasB = true;
+				else
+					throw new RuntimeException("Taxon t=" + t + ": not present in split");
+				treeTaxa.set(t);
+			}
+			int aValue = 0;
+			int bValue = 0;
             if (hasA && !hasB)
                 bValue = Integer.MAX_VALUE;
             else if (!hasA && hasB)
@@ -112,11 +111,7 @@ public class Distortion {
     /**
      * recursively does the work
      *
-     * @param v
-     * @param e
-     * @param scoreA
-     * @param scoreB
-     */
+	 */
     private static void computeScoreRec(Node v, Edge e, Map<Node, Integer> scoreA, Map<Node, Integer> scoreB) {
         //System.out.println("Entering with v=" + v);
         //printScores(tree,scoreA,scoreB);

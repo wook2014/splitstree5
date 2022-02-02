@@ -44,8 +44,7 @@ public abstract class NodeViewBase {
     /**
      * construct a simple node view
      *
-     * @param v
-     */
+	 */
     public NodeViewBase(Node v, Iterable<Integer> workingTaxonIds) {
         this.v = v;
         if (workingTaxonIds.iterator().hasNext()) {

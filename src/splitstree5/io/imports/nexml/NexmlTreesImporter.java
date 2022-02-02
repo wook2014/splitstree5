@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import jloda.fx.window.NotificationManager;
 import jloda.graph.Node;
@@ -29,8 +29,8 @@ import jloda.util.progress.ProgressListener;
 import splitstree5.core.algorithms.interfaces.IToTrees;
 import splitstree5.core.datablocks.TaxaBlock;
 import splitstree5.core.datablocks.TreesBlock;
-import splitstree5.io.imports.NeXML.handlers.NexmlTreesHandler;
 import splitstree5.io.imports.interfaces.IImportTrees;
+import splitstree5.io.imports.nexml.handlers.NexmlTreesHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;

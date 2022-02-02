@@ -34,11 +34,7 @@ public interface IExportNetwork extends IExporter, IFromNetwork {
     /**
      * save characters
      *
-     * @param w
-     * @param taxa
-     * @param network
-     */
+	 */
     void export(Writer w, TaxaBlock taxa, NetworkBlock network) throws IOException;
 
-    ;
 }

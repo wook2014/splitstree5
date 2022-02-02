@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package splitstree5.io.imports.NeXML;
+package splitstree5.io.imports.nexml;
 
 import org.junit.Test;
 import splitstree5.core.datablocks.CharactersBlock;
@@ -42,8 +42,8 @@ public class NexmlFileParserTest {
         // printing
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
-        new TaxaNexusOutput().write(w1, taxaBlock);
-        System.err.println(w1.toString());
+		new TaxaNexusOutput().write(w1, taxaBlock);
+		System.err.println(w1);
 
     }
 
@@ -59,8 +59,8 @@ public class NexmlFileParserTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         //new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
+		new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+		System.err.println(w1);
     }
 
     @Test
@@ -75,8 +75,8 @@ public class NexmlFileParserTest {
         final StringWriter w1 = new StringWriter();
         w1.write("#nexus\n");
         new TaxaNexusOutput().write(w1, taxaBlock);
-        new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
-        System.err.println(w1.toString());
+		new CharactersNexusOutput().write(w1, taxaBlock, charactersBlock);
+		System.err.println(w1);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class NexmlFileParserTest {
         new TaxaNexusOutput().write(w1, taxaBlock);
         TreesNexusFormat treesNexusFormat = new TreesNexusFormat();
         treesNexusFormat.setOptionTranslate(false);
-        new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
-        System.err.println(w1.toString());
+		new TreesNexusOutput().write(w1, taxaBlock, treesBlock);
+		System.err.println(w1);
     }
 
 }

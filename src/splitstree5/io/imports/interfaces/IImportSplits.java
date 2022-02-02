@@ -30,10 +30,7 @@ public interface IImportSplits extends IImporter {
     /**
      * parse a file
      *
-     * @param fileName
-     * @param taxaBlock
-     * @param dataBlock
-     */
+	 */
     void parse(ProgressListener progressListener, String fileName, TaxaBlock taxaBlock, SplitsBlock dataBlock) throws CanceledException, IOException;
 
 
