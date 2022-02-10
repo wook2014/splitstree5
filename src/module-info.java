@@ -84,4 +84,5 @@ module splitstreefive {
     exports splitstree5.io.nexus;
     exports splitstree5.io.imports.nexml;
     exports splitstree5.io.imports.nexml.handlers;
+    exports splitstree5.core.algorithms.distances2splits;
 }
