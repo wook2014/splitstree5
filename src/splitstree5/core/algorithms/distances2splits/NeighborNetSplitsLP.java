@@ -80,19 +80,19 @@ public class NeighborNetSplitsLP extends Algorithm<DistancesBlock, SplitsBlock> 
             return new ArrayList<>();
         }
         if (nTax == 2) {
-            final ArrayList<ASplit> splits = new ArrayList<>();
-            float d_ij = (float) distances[cycle[1] - 1][cycle[2] - 1];
+            var splits = new ArrayList<ASplit>();
+            var d_ij = (float) distances[cycle[1] - 1][cycle[2] - 1];
             if (d_ij > 0.0) {
-                final BitSet A = new BitSet();
+                var A = new BitSet();
                 A.set(cycle[1]);
                 splits.add(new ASplit(A, 2, d_ij));
             }
             return splits;
         }
 
-        final var all = computeAllCircular(nTax, cycle);
-        final var nSplits = all.size();
-        final int nPairs = (nTax * (nTax - 1)) / 2;
+        final var sideBs = computeAllCircularSideB(nTax, cycle);
+        final var nSplits = sideBs.size();
+        final var nPairs = (nTax * (nTax - 1)) / 2;
 
         System.err.println("LP: " + nPairs + " rows, " + nSplits + " cols");
 
@@ -106,13 +106,12 @@ public class NeighborNetSplitsLP extends Algorithm<DistancesBlock, SplitsBlock> 
 
         {
             var numConstraints = 0;
-            for (int i = 0; i < nTax; i++) {
-                for (int j = i + 1; j < nTax; j++) {
+            for (var i = 0; i < nTax; i++) {
+                for (var j = i + 1; j < nTax; j++) {
                     final var row = new double[nSplits];
-
-                    for (int s = 0; s < nSplits; s++) {
-                        var split = all.get(s);
-                        if (split.separates(i + 1, j + 1)) {
+                    for (var s = 0; s < nSplits; s++) {
+                        var sideB = sideBs.get(s);
+                        if (sideB.get(i + 1) != sideB.get(j + 1)) {
                             c[s]++;
                             row[s] = 1;
                         } else
@@ -131,32 +130,30 @@ public class NeighborNetSplitsLP extends Algorithm<DistancesBlock, SplitsBlock> 
 
         var linearProgram = new LinearProgramming(A, b, c);
 
-        final double[] weights = linearProgram.primal();
+        final var weights = linearProgram.primal();
 
-        final ArrayList<ASplit> splits = new ArrayList<>();
+        final var splits = new ArrayList<ASplit>();
 
-        for (int s = 0; s < nSplits; s++) {
+        for (var s = 0; s < nSplits; s++) {
             if (weights[s] >= cutoff) {
-                final ASplit split = all.get(s);
-                split.setWeight(weights[s]);
-                splits.add(split);
+                splits.add(new ASplit(sideBs.get(s), nTax, weights[s]));
             }
         }
         return splits;
     }
 
-    static private ArrayList<ASplit> computeAllCircular(int nTax, int[] cycle) {
-        final ArrayList<ASplit> splits = new ArrayList<>();
+    static private ArrayList<BitSet> computeAllCircularSideB(int nTax, int[] cycle) {
+        final ArrayList<BitSet> sideBs = new ArrayList<>();
 
-        for (int p = 2; p < cycle.length; p++)
-            for (int q = p; q < cycle.length; q++) {
-                final BitSet A = new BitSet();
-                for (int i = p; i <= q; i++) {
-                    A.set(cycle[i]);
+        for (var p = 2; p < cycle.length; p++)
+            for (var q = p; q < cycle.length; q++) {
+                final var sideB = new BitSet();
+                for (var i = p; i <= q; i++) {
+                    sideB.set(cycle[i]);
                 }
-                splits.add(new ASplit(A, nTax));
+                sideBs.add(sideB);
             }
-        return splits;
+        return sideBs;
     }
 }
 
